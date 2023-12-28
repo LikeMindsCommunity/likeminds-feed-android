@@ -6,14 +6,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/frame_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toTopOf="parent"
+        <com.likeminds.feed.android.ui.base.views.LMFeedTextView
+            android:id="@+id/tv_customisable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Customisable Text View"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
