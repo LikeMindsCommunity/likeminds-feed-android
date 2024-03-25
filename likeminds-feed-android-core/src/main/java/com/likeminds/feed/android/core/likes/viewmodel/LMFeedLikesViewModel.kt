@@ -13,14 +13,25 @@ import com.likeminds.likemindsfeed.post.model.GetPostLikesResponse
 
 class LMFeedLikesViewModel : ViewModel() {
 
-    private val lmFeedClient: LMFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient: LMFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
-    private val _likesResponse: MutableLiveData<Pair<List<LMFeedLikeViewData>, Int>> =
+    private val _likesResponse: MutableLiveData<Pair<List<LMFeedLikeViewData>, Int>> by lazy {
         MutableLiveData()
-    val likesResponse: LiveData<Pair<List<LMFeedLikeViewData>, Int>> = _likesResponse
+    }
 
-    private val _errorMessage: MutableLiveData<String?> = MutableLiveData()
-    val errorMessage: LiveData<String?> = _errorMessage
+    val likesResponse: LiveData<Pair<List<LMFeedLikeViewData>, Int>> by lazy {
+        _likesResponse
+    }
+
+    private val _errorMessage: MutableLiveData<String?> by lazy {
+        MutableLiveData()
+    }
+
+    val errorMessage: LiveData<String?> by lazy {
+        _errorMessage
+    }
 
     companion object {
         const val PAGE_SIZE = 20

@@ -16,15 +16,27 @@ class LMFeedTopicSelectionViewModel : ViewModel() {
         const val PAGE_SIZE = 10
     }
 
-    private val lmFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
     //first -> page
     //second -> list of topics
-    private val _topicsViewData = MutableLiveData<Pair<Int, List<LMFeedBaseViewType>>>()
-    val topicsViewData: LiveData<Pair<Int, List<LMFeedBaseViewType>>> = _topicsViewData
+    private val _topicsViewData by lazy {
+        MutableLiveData<Pair<Int, List<LMFeedBaseViewType>>>()
+    }
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> = _errorMessage
+    val topicsViewData: LiveData<Pair<Int, List<LMFeedBaseViewType>>> by lazy {
+        _topicsViewData
+    }
+
+    private val _errorMessage by lazy {
+        MutableLiveData<String?>()
+    }
+
+    val errorMessage: LiveData<String?> by lazy {
+        _errorMessage
+    }
 
     private val selectedTopics by lazy {
         HashMap<String, LMFeedTopicViewData>()

@@ -6,6 +6,7 @@ import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
+import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.comment.model.*
@@ -15,46 +16,97 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 class LMFeedPostDetailViewModel : ViewModel() {
 
-    private val lmFeedClient: LMFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient: LMFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
     // it holds the Pair of [page] and [postViewData]
-    private val _postResponse = MutableLiveData<Pair<Int, LMFeedPostViewData>>()
-    val postResponse: LiveData<Pair<Int, LMFeedPostViewData>> = _postResponse
+    private val _postResponse by lazy {
+        MutableLiveData<Pair<Int, LMFeedPostViewData>>()
+    }
 
-    private val _addCommentResponse = MutableLiveData<LMFeedCommentViewData>()
-    val addCommentResponse: LiveData<LMFeedCommentViewData> = _addCommentResponse
+    val postResponse: LiveData<Pair<Int, LMFeedPostViewData>> by lazy {
+        _postResponse
+    }
 
-    private val _editCommentResponse = MutableLiveData<LMFeedCommentViewData>()
-    val editCommentResponse: LiveData<LMFeedCommentViewData> = _editCommentResponse
+    private val _addCommentResponse by lazy {
+        MutableLiveData<LMFeedCommentViewData>()
+    }
 
-    //todo: check if we need parentCommentId or not
-    // it holds pair of [parentCommentId] and [replyComment]
-    private val _addReplyResponse = MutableLiveData<Pair<String, LMFeedCommentViewData>>()
-    val addReplyResponse: LiveData<Pair<String, LMFeedCommentViewData>> = _addReplyResponse
+    val addCommentResponse: LiveData<LMFeedCommentViewData> by lazy {
+        _addCommentResponse
+    }
+
+    private val _editCommentResponse by lazy {
+        MutableLiveData<LMFeedCommentViewData>()
+    }
+
+    val editCommentResponse: LiveData<LMFeedCommentViewData> by lazy {
+        _editCommentResponse
+    }
+
+    //it holds pair of [parentCommentId] and [replyComment]
+    private val _addReplyResponse by lazy {
+        MutableLiveData<Pair<String, LMFeedCommentViewData>>()
+    }
+
+    val addReplyResponse: LiveData<Pair<String, LMFeedCommentViewData>> by lazy {
+        _addReplyResponse
+    }
 
     // it holds the Pair of [page] and [commentViewData]
-    private val _getCommentResponse = MutableLiveData<Pair<Int, LMFeedCommentViewData>>()
-    val getCommentResponse: LiveData<Pair<Int, LMFeedCommentViewData>> = _getCommentResponse
+    private val _getCommentResponse by lazy {
+        MutableLiveData<Pair<Int, LMFeedCommentViewData>>()
+    }
 
-    private val _hasCommentRights = MutableLiveData(true)
-    val hasCommentRights: LiveData<Boolean> = _hasCommentRights
+    val getCommentResponse: LiveData<Pair<Int, LMFeedCommentViewData>> by lazy {
+        _getCommentResponse
+    }
+
+    private val _hasCommentRights by lazy {
+        MutableLiveData(true)
+    }
+
+    val hasCommentRights: LiveData<Boolean> by lazy {
+        _hasCommentRights
+    }
 
     /**
      * it holds the Pair of [commentId] and [parentCommentId]
      * if comment level is 0 then [parentCommentId] is null
      * if comment level is 1 then [parentCommentId] is non null
      */
-    private val _deleteCommentResponse = MutableLiveData<Pair<String, String?>>()
-    val deleteCommentResponse: LiveData<Pair<String, String?>> = _deleteCommentResponse
+    private val _deleteCommentResponse by lazy {
+        MutableLiveData<Pair<String, String?>>()
+    }
 
-    private val _deletePostResponse = MutableLiveData<String>()
-    val deletePostResponse: LiveData<String> = _deletePostResponse
+    val deleteCommentResponse: LiveData<Pair<String, String?>> by lazy {
+        _deleteCommentResponse
+    }
 
-    private val _postSavedResponse = MutableLiveData<LMFeedPostViewData>()
-    val postSavedResponse: LiveData<LMFeedPostViewData> = _postSavedResponse
+    private val _deletePostResponse by lazy {
+        MutableLiveData<String>()
+    }
 
-    private val _postPinnedResponse = MutableLiveData<LMFeedPostViewData>()
-    val postPinnedResponse: LiveData<LMFeedPostViewData> = _postPinnedResponse
+    val deletePostResponse: LiveData<String> by lazy {
+        _deletePostResponse
+    }
+
+    private val _postSavedResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
+
+    val postSavedResponse: LiveData<LMFeedPostViewData> by lazy {
+        _postSavedResponse
+    }
+
+    private val _postPinnedResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
+
+    val postPinnedResponse: LiveData<LMFeedPostViewData> by lazy {
+        _postPinnedResponse
+    }
 
     sealed class ErrorMessageEvent {
         data class GetPost(val errorMessage: String?) : ErrorMessageEvent()
@@ -90,8 +142,13 @@ class LMFeedPostDetailViewModel : ViewModel() {
         data class GetComment(val errorMessage: String?) : ErrorMessageEvent()
     }
 
-    private val errorMessageChannel = Channel<ErrorMessageEvent>(Channel.BUFFERED)
-    val errorMessageEventFlow = errorMessageChannel.receiveAsFlow()
+    private val errorMessageChannel by lazy {
+        Channel<ErrorMessageEvent>(Channel.BUFFERED)
+    }
+
+    val errorMessageEventFlow by lazy {
+        errorMessageChannel.receiveAsFlow()
+    }
 
     companion object {
         const val PAGE_SIZE = 10
@@ -488,24 +545,22 @@ class LMFeedPostDetailViewModel : ViewModel() {
         }
     }
 
-    //todo:
-    // gets user from db and check if it has comment rights or not
     fun checkCommentRights() {
         viewModelScope.launchIO {
-//            val userId = userPreferences.getUserUniqueId()
-//
-//
-//            // fetches user with rights from DB with user.id
-//            val userWithRights = userWithRightsRepository.getUserWithRights(userId)
-//            val memberState = userWithRights.user.state
-//            val memberRights = userWithRights.memberRights
-//
-//            _hasCommentRights.postValue(
-//                MemberRightUtil.hasCommentRight(
-//                    memberState,
-//                    memberRights
-//                )
-//            )
+            // fetches user with rights from DB with user.id
+            val response = lmFeedClient.getLoggedInUserWithRights()
+
+            val loggedInUserData = response.data ?: return@launchIO
+
+            val memberState = loggedInUserData.user.state
+            val memberRights = loggedInUserData.rights
+
+            _hasCommentRights.postValue(
+                LMFeedMemberRightsUtil.hasCommentRight(
+                    memberState,
+                    memberRights
+                )
+            )
         }
     }
 

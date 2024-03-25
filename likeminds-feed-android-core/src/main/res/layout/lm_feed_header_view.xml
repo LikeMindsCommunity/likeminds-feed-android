@@ -11,7 +11,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toTopOf="@+id/iv_header_navigation"
+            app:layout_constraintTop_toTopOf="@+id/iv_header_navigation">
 
             <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
                 android:id="@+id/iv_header_navigation"
@@ -59,19 +61,64 @@
                 tools:text="14 comments" />
 
             <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
+                android:id="@+id/iv_header_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:foreground="?selectableItemBackground"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_header_search"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription,UseAppTint"
+                tools:padding="6dp"
+                tools:src="@drawable/lm_feed_ic_notification_bell"
+                tools:visibility="visible" />
+
+            <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+                android:id="@+id/tv_header_notification_count"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/lm_feed_notification_badge"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:translationX="2dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/iv_header_notification"
+                app:layout_constraintEnd_toEndOf="@id/iv_header_notification"
+                app:layout_constraintTop_toTopOf="@id/iv_header_notification"
+                tools:text="1"
+                tools:textColor="@color/lm_feed_white"
+                tools:textSize="10sp"
+                tools:visibility="visible" />
+
+            <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
                 android:id="@+id/iv_header_search"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginVertical="14dp"
                 android:layout_marginEnd="12dp"
-                android:layout_marginBottom="14dp"
                 android:foreground="?selectableItemBackgroundBorderless"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_user_profile"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription,UnusedAttribute,UseAppTint"
+                tools:srcCompat="@drawable/lm_feed_ic_search_icon"
+                tools:visibility="visible" />
+
+            <com.likeminds.feed.android.core.ui.base.views.LMFeedImageView
+                android:id="@+id/iv_user_profile"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginVertical="8dp"
+                android:layout_marginEnd="12dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription,UnusedAttribute,UseAppTint"
-                tools:srcCompat="@drawable/lm_feed_ic_search_icon"
+                tools:src="@color/lm_feed_majorelle_blue"
                 tools:visibility="visible" />
 
             <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
@@ -82,6 +129,7 @@
                 android:clickable="false"
                 android:foreground="?selectableItemBackgroundBorderless"
                 android:padding="4dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -98,8 +146,7 @@
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

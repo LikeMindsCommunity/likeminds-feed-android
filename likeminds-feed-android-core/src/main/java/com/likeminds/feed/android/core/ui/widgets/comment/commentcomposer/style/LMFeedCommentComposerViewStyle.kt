@@ -2,6 +2,8 @@ package com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.style
 
 import android.graphics.Typeface
 import android.text.TextUtils
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
@@ -25,9 +27,10 @@ class LMFeedCommentComposerViewStyle private constructor(
     //replying to view style
     val replyingToStyle: LMFeedTextStyle?,
     //remove replying to view style
-    val removeReplyingToStyle: LMFeedIconStyle?
+    val removeReplyingToStyle: LMFeedIconStyle?,
+    @DimenRes val elevation: Int?,
+    @ColorRes val backgroundColor: Int?
 ) : LMFeedViewStyle {
-
     class Builder {
         private var commentInputStyle: LMFeedEditTextStyle = LMFeedEditTextStyle.Builder()
             .inputTextStyle(
@@ -38,11 +41,11 @@ class LMFeedCommentComposerViewStyle private constructor(
                     .textColor(R.color.lm_feed_dark_grey)
                     .typeface(Typeface.NORMAL)
                     .fontResource(R.font.lm_feed_roboto)
+                    .backgroundColor(R.color.lm_feed_white)
                     .build()
             )
-            .elevation(R.dimen.lm_feed_elevation_small)
-            .hintTextColor(R.color.lm_feed_maastricht_blue_40)
             .backgroundColor(R.color.lm_feed_white)
+            .hintTextColor(R.color.lm_feed_maastricht_blue_40)
             .build()
 
         private var commentSendStyle: LMFeedIconStyle = LMFeedIconStyle.Builder()
@@ -50,33 +53,56 @@ class LMFeedCommentComposerViewStyle private constructor(
             .inActiveSrc(R.drawable.lm_feed_ic_comment_send_disable)
             .backgroundColor(R.color.lm_feed_white)
             .iconTint(R.color.lm_feed_majorelle_blue)
-            .elevation(R.dimen.lm_feed_elevation_small)
             .build()
+
         private var commentRestrictedStyle: LMFeedTextStyle? = null
+
         private var replyingToStyle: LMFeedTextStyle? = null
+
         private var removeReplyingToStyle: LMFeedIconStyle? = null
 
-        fun commentInputStyle(commentInputStyle: LMFeedEditTextStyle) =
-            apply { this.commentInputStyle = commentInputStyle }
+        @DimenRes
+        private var elevation: Int? = null
 
-        fun commentSendStyle(commentSendStyle: LMFeedIconStyle) =
-            apply { this.commentSendStyle = commentSendStyle }
+        @ColorRes
+        private var backgroundColor: Int? = null
 
-        fun commentRestrictedStyle(commentRestrictedStyle: LMFeedTextStyle?) =
-            apply { this.commentRestrictedStyle = commentRestrictedStyle }
+        fun commentInputStyle(commentInputStyle: LMFeedEditTextStyle) = apply {
+            this.commentInputStyle = commentInputStyle
+        }
 
-        fun replyingToStyle(replyingToStyle: LMFeedTextStyle?) =
-            apply { this.replyingToStyle = replyingToStyle }
+        fun commentSendStyle(commentSendStyle: LMFeedIconStyle) = apply {
+            this.commentSendStyle = commentSendStyle
+        }
 
-        fun removeReplyingToStyle(removeReplyingToStyle: LMFeedIconStyle?) =
-            apply { this.removeReplyingToStyle = removeReplyingToStyle }
+        fun commentRestrictedStyle(commentRestrictedStyle: LMFeedTextStyle?) = apply {
+            this.commentRestrictedStyle = commentRestrictedStyle
+        }
+
+        fun replyingToStyle(replyingToStyle: LMFeedTextStyle?) = apply {
+            this.replyingToStyle = replyingToStyle
+        }
+
+        fun removeReplyingToStyle(removeReplyingToStyle: LMFeedIconStyle?) = apply {
+            this.removeReplyingToStyle = removeReplyingToStyle
+        }
+
+        fun elevation(@DimenRes elevation: Int?) = apply {
+            this.elevation = elevation
+        }
+
+        fun backgroundColor(@ColorRes backgroundColor: Int?) = apply {
+            this.backgroundColor = backgroundColor
+        }
 
         fun build() = LMFeedCommentComposerViewStyle(
             commentInputStyle,
             commentSendStyle,
             commentRestrictedStyle,
             replyingToStyle,
-            removeReplyingToStyle
+            removeReplyingToStyle,
+            elevation,
+            backgroundColor
         )
     }
 
@@ -86,5 +112,7 @@ class LMFeedCommentComposerViewStyle private constructor(
             .commentRestrictedStyle(commentRestrictedStyle)
             .replyingToStyle(replyingToStyle)
             .removeReplyingToStyle(removeReplyingToStyle)
+            .elevation(elevation)
+            .backgroundColor(backgroundColor)
     }
 }

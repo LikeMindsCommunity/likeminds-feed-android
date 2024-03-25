@@ -16,18 +16,15 @@ import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
 
 class LMFeedCommentComposerView : ConstraintLayout {
 
-    constructor(context: Context) : super(context) {
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-    }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle
-    ) {
-    }
+    )
 
     private val inflater =
         (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
@@ -41,11 +38,25 @@ class LMFeedCommentComposerView : ConstraintLayout {
     //sets provided [LMFeedCommentComposerViewStyle] to the comment composer view
     fun setStyle(commentComposerStyle: LMFeedCommentComposerViewStyle) {
 
-        configureCommentInput(commentComposerStyle.commentInputStyle)
-        configureCommentSend(commentComposerStyle.commentSendStyle)
-        configureCommentRestricted(commentComposerStyle.commentRestrictedStyle)
-        configureReplyingTo(commentComposerStyle.replyingToStyle)
-        configureRemoveReplyingTo(commentComposerStyle.removeReplyingToStyle)
+        commentComposerStyle.apply {
+            //sets elevation to the comment composer view
+            elevation?.let {
+                this@LMFeedCommentComposerView.elevation = resources.getDimension(it)
+            }
+
+            //sets background color of the comment composer view
+            backgroundColor?.let {
+                this@LMFeedCommentComposerView.setBackgroundColor(ContextCompat.getColor(context, it))
+            }
+
+            //configures each view inside comment composer view
+            configureCommentInput(commentInputStyle)
+            configureCommentSend(commentSendStyle)
+            configureCommentRestricted(commentRestrictedStyle)
+            configureReplyingTo(replyingToStyle)
+            configureRemoveReplyingTo(removeReplyingToStyle)
+
+        }
     }
 
     private fun configureCommentInput(commentInputStyle: LMFeedEditTextStyle) {

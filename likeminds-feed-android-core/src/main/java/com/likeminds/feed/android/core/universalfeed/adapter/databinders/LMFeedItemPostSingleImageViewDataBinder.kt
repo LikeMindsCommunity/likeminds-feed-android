@@ -4,7 +4,6 @@ import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.util.LinkifyCompat
-import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostSingleImageBinding
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
@@ -118,9 +117,7 @@ class LMFeedItemPostSingleImageViewDataBinder(
 
             postHeader.setAuthorFrameClickListener {
                 val post = postViewData ?: return@setAuthorFrameClickListener
-                val headerViewData = post.headerViewData
-                val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
-                coreCallback?.openProfile(headerViewData.user)
+                universalFeedAdapterListener.onPostAuthorHeaderClicked(position, post)
             }
 
             ivPost.setOnClickListener {

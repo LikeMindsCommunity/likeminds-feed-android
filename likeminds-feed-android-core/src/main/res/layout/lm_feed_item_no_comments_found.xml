@@ -10,6 +10,7 @@
             android:id="@+id/layout_no_comments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/lm_feed_cultured"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

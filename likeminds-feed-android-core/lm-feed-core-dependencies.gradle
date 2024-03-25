@@ -18,9 +18,11 @@ dependencies {
     implementation platform("com.google.firebase:firebase-bom:30.0.1")
     implementation "com.google.firebase:firebase-messaging-ktx"
 
+    implementation "community.likeminds:likeminds-custom-gallery:0.1.0"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    api 'community.likeminds:likemindsfeed:10.8.2'
+    api 'community.likeminds:likemindsfeed:1.8.0'
 }

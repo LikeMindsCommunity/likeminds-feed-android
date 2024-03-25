@@ -26,19 +26,19 @@
         <com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
             android:id="@+id/layout_no_topics"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/header_view_topic_selection" />
 
         <com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionListView
             android:id="@+id/rv_topics"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_view_topic_selection"/>
+            app:layout_constraintTop_toBottomOf="@id/header_view_topic_selection" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
             android:id="@+id/fab_submit_selected_topics"

@@ -11,7 +11,8 @@ import com.likeminds.feed.android.core.databinding.LmFeedPostHeaderViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
-import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.LMFeedTimeUtil
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
@@ -19,18 +20,15 @@ import com.likeminds.feed.android.core.utils.user.LMFeedUserImageUtil
 
 class LMFeedPostHeaderView : ConstraintLayout {
 
-    constructor(context: Context) : super(context) {
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet) {
-    }
+    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
 
     constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
         context,
         attributeSet,
         defStyle
-    ) {
-    }
+    )
 
     val headerMenu: View get() = binding.ivPostMenu
 
@@ -98,7 +96,6 @@ class LMFeedPostHeaderView : ConstraintLayout {
                 tvEdited.hide()
                 viewDotEdited.hide()
             } else {
-                viewDotEdited.show()
                 tvEdited.setStyle(postEditedTextStyle)
             }
         }

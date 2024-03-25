@@ -9,18 +9,15 @@ import androidx.appcompat.widget.AppCompatTextView
  * To customize this view use [LMFeedTextStyle]
  */
 class LMFeedTextView : AppCompatTextView {
-    constructor(context: Context) : super(context) {
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-    }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle
-    ) {
-    }
+    )
 
     //clears drawables from the text view
     fun clearDrawables() {

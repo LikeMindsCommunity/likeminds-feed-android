@@ -100,4 +100,8 @@ interface LMFeedPostDetailAdapterListener {
     fun onCommentContentLinkClicked(url: String) {
         //triggered when link in the reply content is clicked
     }
+
+    fun onCommenterHeaderClicked(position: Int, commentViewData: LMFeedCommentViewData) {
+        //triggered when the header of the commenter is clicked
+    }
 }

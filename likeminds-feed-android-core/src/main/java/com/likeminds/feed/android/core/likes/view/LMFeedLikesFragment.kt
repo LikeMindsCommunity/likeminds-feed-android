@@ -1,19 +1,18 @@
 package com.likeminds.feed.android.core.likes.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentLikesBinding
 import com.likeminds.feed.android.core.likes.adapter.LMFeedLikesAdapterListener
 import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikesScreenExtras
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity.Companion.LM_FEED_LIKES_SCREEN_EXTRAS
-import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity.Companion.TAG
 import com.likeminds.feed.android.core.likes.viewmodel.LMFeedLikesViewModel
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.utils.*
@@ -27,6 +26,18 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
     private lateinit var likesScreenExtras: LMFeedLikesScreenExtras
 
     private val likesViewModel: LMFeedLikesViewModel by viewModels()
+
+    companion object {
+        const val TAG = "LMFeedLikesFragment"
+
+        fun getInstance(likesScreenExtras: LMFeedLikesScreenExtras): LMFeedLikesFragment {
+            val likesFragment = LMFeedLikesFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(LM_FEED_LIKES_SCREEN_EXTRAS, likesScreenExtras)
+            likesFragment.arguments = bundle
+            return likesFragment
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,7 +154,7 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
     }
 
     protected open fun onNavigationIconClick() {
-        Log.d("PUI", "default onNavigationIconClick")
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     private fun fetchData(fromRefresh: Boolean = false) {
@@ -195,5 +206,8 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
 
     override fun onUserLikeItemClicked(position: Int, likesViewData: LMFeedLikeViewData) {
         super.onUserLikeItemClicked(position, likesViewData)
+
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.openProfile(likesViewData.user)
     }
 }

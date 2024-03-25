@@ -5,7 +5,7 @@
     <string name="lm_feed_feed">Feed</string>
     <string name="lm_feed_no_s_to_show">No %s to show</string>
     <string name="lm_feed_be_the_first_one_to_s_here">Be the first one to create %s here</string>
-    <string name="lm_feed_no_comment_found">No comment found</string>
+    <string name="lm_feed_no_comments_found">No comments found</string>
     <string name="lm_feed_be_the_first_one_to_comment">Be the first one to comment</string>
     <string name="lm_feed_creating_s">Creating %s</string>
     <string name="lm_feed_retry">Retry</string>
@@ -39,6 +39,7 @@
     <string name="lm_feed_s_unpinned">%s unpinned!</string>
     <string name="lm_feed_replying_to_s">Replying to %s</string>
     <string name="lm_feed_write_a_comment">Write a comment</string>
+    <string name="lm_feed_you_do_not_have_permission_to_create_a_s">You do not have permission to create a %s</string>
     <string name="lm_feed_you_do_not_have_permission_to_comment">You do not have permission to comment</string>
     <string name="lm_feed_request_not_processed">Couldn\'t process your request</string>
     <plurals name="lm_feed_replies">
@@ -54,7 +55,7 @@
     <string name="lm_feed_comment_deleted">Comment Deleted!</string>
     <string name="lm_feed_reply">Reply</string>
     <string name="lm_feed_ellipsize">…</string>
-    <string name="lm_feed_s_post">%s Post</string>
+    <string name="lm_feed_s_post">%s</string>
     <string name="lm_feed_notification_feed">Notification Feed</string>
     <string name="lm_feed_likes">Likes</string>
     <plurals name="lm_feed_likes_small">
@@ -96,5 +97,18 @@
     <string name="lm_feed_search_hint_text">Search…</string>
     <string name="lm_feed_general_channel_name">General notifications</string>
     <string name="lm_feed_general_channel_description">All general notifications</string>
+    <string name="lm_feed_a_s_is_already_uploading">A %s is already uploading!</string>
+    <string name="lm_feed_select_topics">Select Topics</string>
+    <plurals name="lm_feed_topic_disabled_message_s">
+        <item quantity="one">The following topic is disabled. Please remove it to save the %s.</item>
+        <item quantity="other">The following topics are disabled. Please remove them to save the %s.</item>
+    </plurals>
+    <plurals name="lm_feed_topic_disabled">
+        <item quantity="one">Topic is Disabled</item>
+        <item quantity="other">Topics are Disabled</item>
+    </plurals>
+    <string name="lm_feed_nine_nine_plus">99+</string>
+    <string name="lm_feed_no_notifications_yet">Oops! You don\'t have any notifications yet!</string>
     <string name="lm_feed_our_team_will_look_into_your_feedback_and_will_take_appropriate_action_on_this_s">Our team will look into your feedback and will take appropriate action on this %s</string>
+    <string name="lm_feed_add_more">Add More</string>
 </resources>

@@ -13,6 +13,7 @@ import com.likeminds.feed.android.core.databinding.LmFeedFragmentTopicSelectionB
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.topicselection.adapter.LMFeedTopicSelectionAdapterListener
 import com.likeminds.feed.android.core.topicselection.model.*
+import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionActivity.Companion.LM_FEED_TOPIC_SELECTION_EXTRAS
 import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionActivity.Companion.LM_FEED_TOPIC_SELECTION_RESULT_EXTRAS
 import com.likeminds.feed.android.core.topicselection.viewmodel.LMFeedTopicSelectionViewModel
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
@@ -40,6 +41,14 @@ open class LMFeedTopicSelectionFragment :
 
     companion object {
         const val TAG = "LMFeedTopicSelectionFragment"
+
+        fun getInstance(topicSelectionExtras: LMFeedTopicSelectionExtras): LMFeedTopicSelectionFragment {
+            val topicSelectionFragment = LMFeedTopicSelectionFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(LM_FEED_TOPIC_SELECTION_EXTRAS, topicSelectionExtras)
+            topicSelectionFragment.arguments = bundle
+            return topicSelectionFragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

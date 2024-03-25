@@ -149,4 +149,8 @@ interface LMFeedUniversalFeedAdapterListener {
     fun onPostMultipleDocumentsExpanded(position: Int, postViewData: LMFeedPostViewData) {
         //triggered when a user clicks on "See More" of document type post
     }
+
+    fun onPostAuthorHeaderClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when a user clicks post author header
+    }
 }

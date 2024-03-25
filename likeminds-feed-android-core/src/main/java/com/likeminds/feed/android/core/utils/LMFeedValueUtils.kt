@@ -2,6 +2,9 @@ package com.likeminds.feed.android.core.utils
 
 import android.util.Patterns
 import android.webkit.URLUtil
+import com.likeminds.feed.android.core.utils.pluralize.LMFeedPluralize.pluralize
+import com.likeminds.feed.android.core.utils.pluralize.LMFeedPluralize.singularize
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 object LMFeedValueUtils {
 
@@ -51,5 +54,43 @@ object LMFeedValueUtils {
             return false
         }
         return Patterns.WEB_URL.matcher(this).matches()
+    }
+
+    fun String.pluralizeOrCapitalize(action: LMFeedWordAction): String {
+        return when (action) {
+            LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR -> {
+                val singular = this.singularize()
+                singular.replaceFirstChar {
+                    it.uppercase()
+                }
+            }
+
+            LMFeedWordAction.ALL_CAPITAL_SINGULAR -> {
+                val singular = this.singularize()
+                singular.uppercase()
+            }
+
+            LMFeedWordAction.ALL_SMALL_SINGULAR -> {
+                val singular = this.singularize()
+                singular.lowercase()
+            }
+
+            LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL -> {
+                val plural = this.pluralize()
+                plural.replaceFirstChar {
+                    it.uppercase()
+                }
+            }
+
+            LMFeedWordAction.ALL_CAPITAL_PLURAL -> {
+                val plural = this.pluralize()
+                plural.uppercase()
+            }
+
+            LMFeedWordAction.ALL_SMALL_PLURAL -> {
+                val plural = this.pluralize()
+                plural.lowercase()
+            }
+        }
     }
 }

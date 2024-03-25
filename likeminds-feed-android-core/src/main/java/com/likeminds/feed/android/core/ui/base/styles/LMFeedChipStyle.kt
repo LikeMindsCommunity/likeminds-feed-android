@@ -2,8 +2,7 @@ package com.likeminds.feed.android.core.ui.base.styles
 
 import android.content.res.ColorStateList
 import android.util.TypedValue
-import androidx.annotation.ColorRes
-import androidx.annotation.DimenRes
+import androidx.annotation.*
 import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChip
@@ -31,7 +30,10 @@ class LMFeedChipStyle private constructor(
     @DimenRes val chipStartPadding: Int?,
     @DimenRes val chipEndPadding: Int?,
     @DimenRes val chipCornerRadius: Int,
-    @DimenRes val chipTextSize: Int
+    @DimenRes val chipTextSize: Int,
+    @DrawableRes val chipIcon: Int?,
+    @DimenRes val chipIconSize: Int?,
+    @ColorRes val chipIconTint: Int?
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -61,6 +63,15 @@ class LMFeedChipStyle private constructor(
 
         @DimenRes
         private var chipTextSize: Int = R.dimen.lm_feed_text_medium
+
+        @DrawableRes
+        private var chipIcon: Int? = null
+
+        @DimenRes
+        private var chipIconSize: Int? = null
+
+        @ColorRes
+        private var chipIconTint: Int? = null
 
         fun chipBackgroundColor(@ColorRes chipBackgroundColor: Int?) = apply {
             this.chipBackgroundColor = chipBackgroundColor
@@ -98,6 +109,18 @@ class LMFeedChipStyle private constructor(
             this.chipTextSize = chipTextSize
         }
 
+        fun chipIcon(@DrawableRes chipIcon: Int?) = apply {
+            this.chipIcon = chipIcon
+        }
+
+        fun chipIconSize(@DimenRes chipIconSize: Int?) = apply {
+            this.chipIconSize = chipIconSize
+        }
+
+        fun chipIconTint(@ColorRes chipIconTint: Int?) = apply {
+            this.chipIconTint = chipIconTint
+        }
+
         fun build() = LMFeedChipStyle(
             chipBackgroundColor,
             chipStrokeColor,
@@ -107,7 +130,10 @@ class LMFeedChipStyle private constructor(
             chipStartPadding,
             chipEndPadding,
             chipCornerRadius,
-            chipTextSize
+            chipTextSize,
+            chipIcon,
+            chipIconSize,
+            chipIconTint
         )
     }
 
@@ -167,6 +193,18 @@ class LMFeedChipStyle private constructor(
                 )
             )
 
+            this@LMFeedChipStyle.chipIcon?.let {
+                setChipIconResource(it)
+            }
+
+            this@LMFeedChipStyle.chipIconSize?.let {
+                setChipIconSizeResource(it)
+            }
+
+            this@LMFeedChipStyle.chipIconTint?.let {
+                setChipIconTintResource(it)
+            }
+
             setEnsureMinTouchTargetSize(false)
         }
     }
@@ -181,6 +219,9 @@ class LMFeedChipStyle private constructor(
             .chipEndPadding(chipEndPadding)
             .chipCornerRadius(chipCornerRadius)
             .chipTextSize(chipTextSize)
+            .chipIcon(chipIcon)
+            .chipIconSize(chipIconSize)
+            .chipIconTint(chipIconTint)
     }
 }
 

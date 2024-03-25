@@ -4,23 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedActivityTopicSelectionBinding
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
-import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
-import com.likeminds.feed.android.core.utils.emptyExtrasException
+import com.likeminds.feed.android.core.utils.*
 
 class LMFeedTopicSelectionActivity : AppCompatActivity() {
 
     private lateinit var binding: LmFeedActivityTopicSelectionBinding
 
     private lateinit var topicSelectionExtras: LMFeedTopicSelectionExtras
-
-    //Navigation
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var navController: NavController
 
     companion object {
         const val TAG = "LMFeedTopicSelectionActivity"
@@ -53,24 +46,48 @@ class LMFeedTopicSelectionActivity : AppCompatActivity() {
         binding = LmFeedActivityTopicSelectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //parse extras
+        assignExtras()
+
+        //inflates topic selection fragment
+        inflateTopicSelectionFragment()
+    }
+
+    private fun assignExtras() {
+        //get bundle
         val bundle = intent.getBundleExtra(LM_FEED_TOPIC_SELECTION_BUNDLE)
 
-        bundle?.let {
+        //assign to global variable
+        if (bundle != null) {
             topicSelectionExtras = LMFeedExtrasUtil.getParcelable(
-                it,
+                bundle,
                 LM_FEED_TOPIC_SELECTION_EXTRAS,
                 LMFeedTopicSelectionExtras::class.java
             ) ?: throw emptyExtrasException(TAG)
-
-            val args = Bundle().apply {
-                putParcelable(LM_FEED_TOPIC_SELECTION_EXTRAS, topicSelectionExtras)
-            }
-
-            //Navigation
-            navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-            navController = navHostFragment.navController
-            navController.setGraph(R.navigation.lm_feed_nav_graph_topic_selection, args)
+        } else {
+            redirectActivity()
         }
+    }
+
+    private fun inflateTopicSelectionFragment() {
+        //gets topic selection fragment instance
+        val topicSelectionFragment =
+            LMFeedTopicSelectionFragment.getInstance(topicSelectionExtras = topicSelectionExtras)
+
+        //commits fragment replace transaction
+        supportFragmentManager.beginTransaction()
+            .replace(
+                binding.containerTopicSelection.id,
+                topicSelectionFragment,
+                TAG
+            )
+            .commit()
+    }
+
+    private fun redirectActivity() {
+        LMFeedViewUtils.showShortToast(this, getString(R.string.lm_feed_request_not_processed))
+        supportFragmentManager.popBackStack()
+        onBackPressedDispatcher.onBackPressed()
+        overridePendingTransition(R.anim.lm_feed_slide_from_left, R.anim.lm_feed_slide_to_right)
     }
 }

@@ -36,7 +36,7 @@ class LMFeedPostDetailFragmentViewStyle private constructor(
     //comment composer view
     val commentComposerStyle: LMFeedCommentComposerViewStyle,
     //view more reply view style
-    val viewMoreReplyStyle: LMFeedViewMoreStyle,
+    val viewMoreReplyStyle: LMFeedViewMoreStyle
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -166,6 +166,7 @@ class LMFeedPostDetailFragmentViewStyle private constructor(
                         .textSize(R.dimen.lm_feed_text_medium)
                         .build()
                 )
+                .backgroundColor(R.color.lm_feed_cultured)
                 .build()
 
         private var commentComposerStyle: LMFeedCommentComposerViewStyle =
@@ -173,7 +174,6 @@ class LMFeedPostDetailFragmentViewStyle private constructor(
                 .commentRestrictedStyle(
                     LMFeedTextStyle.Builder()
                         .backgroundColor(R.color.lm_feed_white)
-                        .elevation(R.dimen.lm_feed_elevation_small)
                         .minHeight(R.dimen.lm_feed_text_min_height)
                         .textColor(R.color.lm_feed_grey_brown_50)
                         .textSize(R.dimen.lm_feed_text_medium)
@@ -199,6 +199,8 @@ class LMFeedPostDetailFragmentViewStyle private constructor(
                         .inActiveSrc(R.drawable.lm_feed_ic_multiply)
                         .build()
                 )
+                .elevation(R.dimen.lm_feed_elevation_small)
+                .backgroundColor(R.color.lm_feed_white)
                 .build()
 
         private var viewMoreReplyStyle = LMFeedViewMoreStyle.Builder()

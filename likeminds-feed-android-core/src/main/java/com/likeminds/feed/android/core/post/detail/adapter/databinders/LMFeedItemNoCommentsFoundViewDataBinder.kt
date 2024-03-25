@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.post.detail.adapter.databinders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedItemNoCommentsFoundBinding
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
@@ -21,12 +22,15 @@ class LMFeedItemNoCommentsFoundViewDataBinder :
             false
         )
 
-        val noCommentsFoundViewStyle =
-            LMFeedStyleTransformer.postDetailFragmentViewStyle.noCommentsFoundViewStyle
+        binding.apply {
+            val noCommentFoundStyle =
+                LMFeedStyleTransformer.postDetailFragmentViewStyle.noCommentsFoundViewStyle
 
-        binding.layoutNoComments.setStyle(noCommentsFoundViewStyle)
+            root.setBackgroundColor(noCommentFoundStyle.backgroundColor)
+            layoutNoComments.setStyle(noCommentFoundStyle)
+        }
 
-        return binding
+            return binding
     }
 
     override fun bindData(
@@ -35,5 +39,9 @@ class LMFeedItemNoCommentsFoundViewDataBinder :
         position: Int
     ) {
         //showing static data
+        binding.layoutNoComments.apply {
+            setTitleText(context.getString(R.string.lm_feed_no_comments_found))
+            setSubtitleText(context.getString(R.string.lm_feed_be_the_first_one_to_comment))
+        }
     }
 }

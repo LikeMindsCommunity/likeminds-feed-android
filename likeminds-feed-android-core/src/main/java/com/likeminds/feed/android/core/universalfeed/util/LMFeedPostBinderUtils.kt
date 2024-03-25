@@ -14,7 +14,8 @@ import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.overflowmenu.model.PIN_POST_MENU_ITEM_ID
 import com.likeminds.feed.android.core.overflowmenu.model.UNPIN_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.post.model.*
+import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
+import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.*
@@ -27,13 +28,12 @@ import com.likeminds.feed.android.core.universalfeed.model.LMFeedMediaViewData
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostFooterViewData
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostHeaderViewData
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
-import com.likeminds.feed.android.core.utils.LMFeedSeeMoreUtil
-import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
-import com.likeminds.feed.android.core.utils.base.model.ITEM_MULTIPLE_MEDIA_IMAGE
-import com.likeminds.feed.android.core.utils.base.model.ITEM_MULTIPLE_MEDIA_VIDEO
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 object LMFeedPostBinderUtils {
 
@@ -332,8 +332,13 @@ object LMFeedPostBinderUtils {
         val pinPostMenuItem = menuItems[pinPostIndex]
         val newPinPostMenuItem =
             pinPostMenuItem.toBuilder().id(UNPIN_POST_MENU_ITEM_ID)
-                //todo: post as variable
-                .title(context.getString(R.string.lm_feed_unpin_this_s))
+                .title(
+                    context.getString(
+                        R.string.lm_feed_unpin_this_s,
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                    )
+                )
                 .build()
         menuItems[pinPostIndex] = newPinPostMenuItem
 
@@ -368,7 +373,13 @@ object LMFeedPostBinderUtils {
         val unPinPostMenuItem = menuItems[unPinPostIndex]
         val newUnPinPostMenuItem =
             unPinPostMenuItem.toBuilder().id(PIN_POST_MENU_ITEM_ID)
-                .title(context.getString(R.string.lm_feed_pin_this_s))
+                .title(
+                    context.getString(
+                        R.string.lm_feed_pin_this_s,
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                    )
+                )
                 .build()
         menuItems[unPinPostIndex] = newUnPinPostMenuItem
 

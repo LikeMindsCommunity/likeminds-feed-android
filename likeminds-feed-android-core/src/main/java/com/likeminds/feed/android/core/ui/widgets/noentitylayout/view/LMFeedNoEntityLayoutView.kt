@@ -1,8 +1,10 @@
 package com.likeminds.feed.android.core.ui.widgets.noentitylayout.view
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.databinding.LmFeedNoEntityLayoutViewBinding
@@ -17,21 +19,15 @@ import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
 
 class LMFeedNoEntityLayoutView : ConstraintLayout {
 
-    constructor(context: Context) : super(context) {
+    constructor(context: Context) : super(context)
 
-    }
-
-    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet) {
-
-    }
+    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
 
     constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
         context,
         attributeSet,
         defStyle
-    ) {
-
-    }
+    )
 
     private val inflater =
         (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
@@ -64,6 +60,11 @@ class LMFeedNoEntityLayoutView : ConstraintLayout {
      */
     fun setActionCTAText(ctaAction: String) {
         binding.fabAction.text = ctaAction
+    }
+
+    fun setActionFABColor(@ColorRes fabColor: Int) {
+        binding.fabAction.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(context, fabColor))
     }
 
     /**

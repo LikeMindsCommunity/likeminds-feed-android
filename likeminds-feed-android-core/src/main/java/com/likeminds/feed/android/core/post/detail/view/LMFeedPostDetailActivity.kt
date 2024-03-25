@@ -4,27 +4,21 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedActivityPostDetailBinding
 import com.likeminds.feed.android.core.post.detail.model.LMFeedPostDetailExtras
-import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
-import com.likeminds.feed.android.core.utils.LMFeedViewUtils
+import com.likeminds.feed.android.core.utils.*
 
 class LMFeedPostDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: LmFeedActivityPostDetailBinding
 
-    private var postDetailExtras: LMFeedPostDetailExtras? = null
-
-    //Navigation
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var navController: NavController
+    private lateinit var postDetailExtras: LMFeedPostDetailExtras
 
     companion object {
         const val LM_FEED_POST_DETAIL_EXTRAS = "LM_FEED_POST_DETAIL_EXTRAS"
         const val LM_FEED_POST_DETAIL_BUNDLE = "lm_feed_bundle"
+        const val TAG = "LMFeedPostDetailActivity"
 
         @JvmStatic
         fun start(context: Context, extras: LMFeedPostDetailExtras) {
@@ -51,26 +45,43 @@ class LMFeedPostDetailActivity : AppCompatActivity() {
         binding = LmFeedActivityPostDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //parse extras
+        assignExtras()
+
+        //inflates post detail fragment
+        inflatePostDetailFragment()
+    }
+
+    private fun assignExtras() {
+        //get bundle
         val bundle = intent.getBundleExtra(LM_FEED_POST_DETAIL_BUNDLE)
 
+        //assign to global variable
         if (bundle != null) {
             postDetailExtras = LMFeedExtrasUtil.getParcelable(
                 bundle,
                 LM_FEED_POST_DETAIL_EXTRAS,
                 LMFeedPostDetailExtras::class.java
-            )
-            val args = Bundle().apply {
-                putParcelable(LM_FEED_POST_DETAIL_EXTRAS, postDetailExtras)
-            }
-
-            //Navigation
-            navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-            navController = navHostFragment.navController
-            navController.setGraph(R.navigation.lm_feed_nav_graph_post_detail, args)
+            ) ?: throw emptyExtrasException(TAG)
         } else {
+            //close activity
             redirectActivity()
         }
+    }
+
+    private fun inflatePostDetailFragment() {
+        //gets post detail fragment instance
+        val postDetailFragment =
+            LMFeedPostDetailFragment.getInstance(postDetailExtras = postDetailExtras)
+
+        //commits fragment replace transaction
+        supportFragmentManager.beginTransaction()
+            .replace(
+                binding.containerPostDetail.id,
+                postDetailFragment,
+                TAG
+            )
+            .commit()
     }
 
     private fun redirectActivity() {
@@ -78,9 +89,5 @@ class LMFeedPostDetailActivity : AppCompatActivity() {
         supportFragmentManager.popBackStack()
         onBackPressedDispatcher.onBackPressed()
         overridePendingTransition(R.anim.lm_feed_slide_from_left, R.anim.lm_feed_slide_to_right)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp()
     }
 }

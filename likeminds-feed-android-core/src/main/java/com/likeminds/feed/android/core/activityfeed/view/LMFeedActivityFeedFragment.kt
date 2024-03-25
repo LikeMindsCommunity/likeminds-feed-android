@@ -12,6 +12,7 @@ import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.activityfeed.viewmodel.LMFeedActivityFeedViewModel
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentActivityFeedBinding
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
+import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
@@ -26,6 +27,14 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
 
     private val activityFeedViewModel: LMFeedActivityFeedViewModel by viewModels()
 
+    companion object {
+        const val TAG = "LMFeedActivityFeedFragment"
+
+        fun getInstance(): LMFeedActivityFeedFragment {
+            return LMFeedActivityFeedFragment()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +44,7 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
 
         binding.apply {
             customizeActivityFeedHeaderView(headerViewActivityFeed)
+            customizeNoTopicsLayout(layoutNoActivity)
 
             //set background color
             val backgroundColor =
@@ -61,10 +71,21 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
         }
     }
 
+    protected open fun customizeNoTopicsLayout(layoutNoActivity: LMFeedNoEntityLayoutView) {
+        layoutNoActivity.apply {
+            val noActivityLayoutStyle =
+                LMFeedStyleTransformer.activityFeedFragmentViewStyle.noActivityLayoutViewStyle
+
+            setStyle(noActivityLayoutStyle)
+            setTitleText(getString(R.string.lm_feed_no_notifications_yet))
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initUI()
+        initListeners()
         fetchData()
         observeData()
     }
@@ -72,6 +93,18 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
     private fun initUI() {
         initRecyclerView()
         initSwipeRefreshLayout()
+    }
+
+    private fun initListeners() {
+        binding.apply {
+            headerViewActivityFeed.setNavigationIconClickListener {
+                onNavigationIconClick()
+            }
+        }
+    }
+
+    protected open fun onNavigationIconClick() {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     private fun initRecyclerView() {
@@ -162,18 +195,16 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
         }
     }
 
-    //todo:
     //checks if there is any activity or not
     private fun checkForNoActivity(feed: List<LMFeedBaseViewType>) {
         if (feed.isNotEmpty()) {
             binding.apply {
-                //todo:
-//                layoutNoNotification.root.hide()
+                layoutNoActivity.hide()
                 rvActivityFeed.show()
             }
         } else {
             binding.apply {
-//                layoutNoNotification.root.show()
+                layoutNoActivity.show()
                 rvActivityFeed.hide()
             }
         }
@@ -208,13 +239,12 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
         activityFeedViewModel.markReadActivity(activityViewData.id)
 
         // handle route
-        //todo: route
-//        val routeIntent = Route.getRouteIntent(
-//            requireContext(),
-//            activityViewData.cta,
-//        )
-//        if (routeIntent != null) {
-//            requireContext().startActivity(routeIntent)
-//        }
+        val routeIntent = LMFeedRoute.getRouteIntent(
+            requireContext(),
+            activityViewData.cta,
+        )
+        if (routeIntent != null) {
+            requireContext().startActivity(routeIntent)
+        }
     }
 }

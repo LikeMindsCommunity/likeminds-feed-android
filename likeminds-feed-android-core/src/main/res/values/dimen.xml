@@ -2,7 +2,8 @@
 <resources>
     <dimen name="zero_dp">0dp</dimen>
     <!--Header View-->
-    <dimen name="lm_feed_header_view_title_text_size">22sp</dimen>
+    <dimen name="lm_feed_header_view_title_text_size">18sp</dimen>
+    <dimen name="lm_feed_header_view_height">54dp</dimen>
 
     <!--    Text Size-->
     <dimen name="lm_feed_text_small">12sp</dimen>
@@ -23,6 +24,7 @@
     <dimen name="lm_feed_passing_small">4dp</dimen>
 
     <!--    Standard Margins-->
+    <dimen name="lm_feed_small_margin">4dp</dimen>
     <dimen name="lm_feed_standard_margin">16dp</dimen>
 
     <!--    Universal Feed Screen-->
@@ -30,6 +32,7 @@
     <dimen name="lm_feed_create_new_post_padding">20dp</dimen>
     <dimen name="lm_feed_icon_padding">4dp</dimen>
     <dimen name="lm_feed_create_new_post_icon_size">30dp</dimen>
+    <dimen name="lm_feed_notification_badge_text_size">10dp</dimen>
 
     <!--    Media related-->
     <dimen name="lm_feed_indicator_dots_spacing">4dp</dimen>
@@ -38,6 +41,8 @@
     <!--    Chip related-->
     <dimen name="lm_feed_default_chip_group_horizontal_spacing">4dp</dimen>
     <dimen name="lm_feed_default_chip_group_vertical_spacing">4dp</dimen>
+    <dimen name="lm_feed_chip_default_icon_size">12dp</dimen>
+    <dimen name="lm_feed_edit_chip_end_size">12dp</dimen>
 
     <!--    Min and max heights for input/text boxes -->
     <dimen name="lm_feed_text_max_height">100dp</dimen>
@@ -50,4 +55,7 @@
 
     <!--    Report Screen -->
     <dimen name="lm_feed_report_button_corner_radius">24dp</dimen>
+
+    <!--    Create Post-->
+    <dimen name="lm_feed_create_post_add_more_padding">24dp</dimen>
 </resources>

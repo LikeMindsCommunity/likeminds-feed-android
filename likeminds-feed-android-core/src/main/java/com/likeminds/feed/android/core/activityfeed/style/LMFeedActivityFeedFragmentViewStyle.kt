@@ -1,5 +1,6 @@
 package com.likeminds.feed.android.core.activityfeed.style
 
+import android.graphics.Typeface
 import android.text.TextUtils
 import android.widget.ImageView
 import androidx.annotation.ColorRes
@@ -7,6 +8,7 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.widgets.acitivityfeed.style.LMFeedActivityViewStyle
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
+import com.likeminds.feed.android.core.ui.widgets.noentitylayout.style.LMFeedNoEntityLayoutViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 
@@ -22,6 +24,8 @@ class LMFeedActivityFeedFragmentViewStyle private constructor(
     val headerViewStyle: LMFeedHeaderViewStyle,
     //activity view style
     val activityViewStyle: LMFeedActivityViewStyle,
+    //no activity layout style
+    val noActivityLayoutViewStyle: LMFeedNoEntityLayoutViewStyle,
     //background color of the screen
     @ColorRes val backgroundColor: Int?
 ) : LMFeedViewStyle {
@@ -69,6 +73,23 @@ class LMFeedActivityFeedFragmentViewStyle private constructor(
             .unreadActivityBackgroundColor(R.color.lm_feed_cloudy_blue_40)
             .build()
 
+        private var noActivityLayoutViewStyle: LMFeedNoEntityLayoutViewStyle =
+            LMFeedNoEntityLayoutViewStyle.Builder()
+                .imageStyle(
+                    LMFeedImageStyle.Builder()
+                        .imageSrc(R.drawable.lm_feed_ic_not_found)
+                        .build()
+                )
+                .titleStyle(
+                    LMFeedTextStyle.Builder()
+                        .textColor(R.color.lm_feed_dark_grey)
+                        .textSize(R.dimen.lm_feed_text_medium)
+                        .typeface(Typeface.NORMAL)
+                        .fontResource(R.font.lm_feed_roboto_medium)
+                        .build()
+                )
+                .build()
+
         @ColorRes
         private var backgroundColor: Int? = null
 
@@ -80,6 +101,11 @@ class LMFeedActivityFeedFragmentViewStyle private constructor(
             this.activityViewStyle = activityViewStyle
         }
 
+        fun noActivityLayoutViewStyle(noActivityLayoutViewStyle: LMFeedNoEntityLayoutViewStyle) =
+            apply {
+                this.noActivityLayoutViewStyle = noActivityLayoutViewStyle
+            }
+
         fun backgroundColor(@ColorRes backgroundColor: Int?) = apply {
             this.backgroundColor = backgroundColor
         }
@@ -87,13 +113,15 @@ class LMFeedActivityFeedFragmentViewStyle private constructor(
         fun build() = LMFeedActivityFeedFragmentViewStyle(
             headerViewStyle,
             activityViewStyle,
-            backgroundColor
+            noActivityLayoutViewStyle,
+            backgroundColor,
         )
     }
 
     fun toBuilder(): Builder {
         return Builder().headerViewStyle(headerViewStyle)
             .activityViewStyle(activityViewStyle)
+            .noActivityLayoutViewStyle(noActivityLayoutViewStyle)
             .backgroundColor(backgroundColor)
     }
 }

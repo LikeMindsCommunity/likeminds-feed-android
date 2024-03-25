@@ -1,6 +1,7 @@
 package com.likeminds.feed.android.core.utils.analytics
 
 import android.util.Log
+import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
@@ -54,7 +55,6 @@ object LMFeedAnalytics {
     * */
     object Keys {
         const val POST_ID = "post_id"
-        const val USER_ID = "user_id"
         const val UUID = "uuid"
         const val COMMENT_ID = "comment_id"
         const val COMMENT_REPLY_ID = "comment_reply_id"
@@ -88,8 +88,14 @@ object LMFeedAnalytics {
             eventProperties: $eventProperties
         """.trimIndent()
         )
-        //todo add global callback
+
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.trackEvent(eventName, eventProperties)
     }
+
+    /*
+    * Analytics events
+    */
 
     /**
      * Triggers when the user opens feed fragment
@@ -103,9 +109,12 @@ object LMFeedAnalytics {
         )
     }
 
-    /*
-    * Analytics events
-    */
+    /**
+     * Triggers when the user clicks on New Post button
+     **/
+    fun sendPostCreationStartedEvent() {
+        track(Events.POST_CREATION_STARTED)
+    }
 
     /**
      * Triggers when the current user likes/unlikes a post

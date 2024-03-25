@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--TODO: set this background using styles -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,17 +23,23 @@
             app:layout_constraintBottom_toTopOf="@id/comment_composer"
             app:layout_constraintTop_toBottomOf="@id/header_view_post_detail">
 
-            <com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailListView
-                android:id="@+id/rv_post_details"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/lm_feed_white"
-                android:clipToPadding="false"
-                android:descendantFocusability="blocksDescendants"
-                android:overScrollMode="never"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:itemCount="1"
-                tools:listitem="@layout/lm_feed_item_post_single_image" />
+                android:layout_height="wrap_content">
+
+                <com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailListView
+                    android:id="@+id/rv_post_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/lm_feed_white"
+                    android:clipToPadding="false"
+                    android:descendantFocusability="blocksDescendants"
+                    android:overScrollMode="never"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/lm_feed_item_post_single_image" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

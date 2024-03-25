@@ -2,13 +2,14 @@ package com.likeminds.feed.android.core.ui.widgets.post.postmedia.style
 
 import androidx.annotation.*
 import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostMultipleMediaView
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 import com.zhpan.indicator.annotation.AIndicatorSlideMode
 import com.zhpan.indicator.annotation.AIndicatorStyle
 import com.zhpan.indicator.enums.IndicatorStyle
 
 /**
- * [LMFeedPostMultipleMediaViewStyle] helps you customize a button in the following way
+ * [LMFeedPostMultipleMediaViewStyle] helps you customize a [LMFeedPostMultipleMediaView] in the following way
  * @property indicatorActiveColor : [Int] should be in format of [ColorRes] to customize the color of the active indicator | Default value =  [R.color.majorelle_blue]
  * @property indicatorInActiveColor : [Int] this will help to customize the color of the inactive indicator | Default value =  [R.color.lm_feed_cloudy_blue]
  *

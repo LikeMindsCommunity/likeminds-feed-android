@@ -11,6 +11,8 @@ import com.likeminds.feed.android.core.databinding.LmFeedDialogFragmentAdminDele
 import com.likeminds.feed.android.core.delete.model.*
 import com.likeminds.feed.android.core.ui.widgets.alertdialog.view.LMFeedAlertDialogView
 import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 open class LMFeedAdminDeleteDialogFragment
     : DialogFragment(),
@@ -95,17 +97,19 @@ open class LMFeedAdminDeleteDialogFragment
     private fun initUI() {
         binding.alertDialogDelete.apply {
             if (deleteExtras.entityType == DELETE_TYPE_POST) {
-                //todo:
                 setAlertTitle(
                     getString(
                         R.string.lm_feed_delete_s_question,
-//                        deleteExtras.postAsVariable.pluralizeOrCapitalize(WordAction.ALL_SMALL_SINGULAR)
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
                     )
                 )
+
                 setAlertSubtitle(
                     getString(
                         R.string.lm_feed_delete_s_message,
-//                        deleteExtras.postAsVariable.pluralizeOrCapitalize(WordAction.ALL_SMALL_SINGULAR)
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
                     )
                 )
             } else {

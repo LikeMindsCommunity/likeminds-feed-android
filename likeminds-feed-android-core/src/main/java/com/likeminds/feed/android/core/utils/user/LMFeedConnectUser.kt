@@ -3,7 +3,10 @@ package com.likeminds.feed.android.core.utils.user
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.configuration.ConfigurationClient.Companion.POST_KEY
+import com.likeminds.likemindsfeed.configuration.model.ConfigurationType
 import com.likeminds.likemindsfeed.helper.model.RegisterDeviceRequest
 import com.likeminds.likemindsfeed.user.model.InitiateUserRequest
 import com.likeminds.likemindsfeed.user.model.InitiateUserResponse
@@ -19,6 +22,10 @@ class LMFeedConnectUser private constructor(
     val deviceId: String,
     val enablePushNotifications: Boolean
 ) {
+    companion object {
+
+    }
+
     class Builder {
         private var apiKey: String = ""
         private var userName: String = ""
@@ -107,6 +114,7 @@ class LMFeedConnectUser private constructor(
 
             if (initiateResponse.success) {
                 pushToken()
+                getCommunityConfiguration()
                 success?.let { it(initiateResponse.data) }
             } else {
                 error?.let { it(initiateResponse.errorMessage) }
@@ -114,6 +122,7 @@ class LMFeedConnectUser private constructor(
         }
     }
 
+    //gets user push token and registers the token in backend
     private fun pushToken() {
         if (enablePushNotifications) {
             try {
@@ -139,6 +148,7 @@ class LMFeedConnectUser private constructor(
         }
     }
 
+    //calls register device api to register user's push token
     private fun registerDevice(token: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val lmFeedClient = LMFeedClient.getInstance()
@@ -151,6 +161,35 @@ class LMFeedConnectUser private constructor(
 
             //call api
             lmFeedClient.registerDevice(request)
+        }
+    }
+
+    private fun getCommunityConfiguration() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val lmFeedClient = LMFeedClient.getInstance()
+
+            val response = lmFeedClient.getCommunityConfigurations()
+            if (response.success) {
+                val configurations = response.data?.configurations
+
+                val feedMetaData = configurations?.firstOrNull {
+                    it.type == ConfigurationType.FEED_METADATA
+                }
+
+                feedMetaData?.let {
+                    val value = it.value
+
+                    //check value has post key
+                    if (value.has("post")) {
+                        val variable = value.getString(POST_KEY)
+                        LMFeedCommunityUtil.setPostVariable(variable)
+                    } else {
+                        LMFeedCommunityUtil.setPostVariable(POST_KEY)
+                    }
+                }
+            } else {
+                Log.d(LOG_TAG, "community/configuration failed -> ${response.errorMessage}")
+            }
         }
     }
 }

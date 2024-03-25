@@ -31,11 +31,11 @@ class LMFeedReplyAdapter(
 
 interface LMFeedReplyAdapterListener {
 
-    fun onReplyContentSeeMoreClicked(position: Int, reply: LMFeedCommentViewData) {
+    fun onReplyContentSeeMoreClicked(position: Int, replyViewData: LMFeedCommentViewData) {
         //triggered when the user clicks on "See More" on comment content
     }
 
-    fun onReplyLiked(position: Int, reply: LMFeedCommentViewData) {
+    fun onReplyLiked(position: Int, replyViewData: LMFeedCommentViewData) {
         //triggered when the reply is liked
     }
 
@@ -46,19 +46,23 @@ interface LMFeedReplyAdapterListener {
         //triggered when the view more button in replies list is clicked
     }
 
-    fun onReplyLikesCountClicked(position: Int, reply: LMFeedCommentViewData) {
+    fun onReplyLikesCountClicked(position: Int, replyViewData: LMFeedCommentViewData) {
         //triggered when the user clicks on the reply's likes count
     }
 
     fun onReplyMenuIconClicked(
         position: Int,
         anchorView: View,
-        reply: LMFeedCommentViewData
+        replyViewData: LMFeedCommentViewData
     ) {
         //triggered when the menu item of any reply is clicked
     }
 
     fun onReplyContentLinkClicked(url: String) {
         //triggered when link in the reply content is clicked
+    }
+
+    fun onReplierHeaderClicked(position: Int, replyViewData: LMFeedCommentViewData) {
+        //triggered when the header of the replier is clicked
     }
 }

@@ -10,18 +10,15 @@ import androidx.appcompat.widget.AppCompatEditText
  * To customize this view use [LMFeedEditTextStyle]
  */
 class LMFeedEditText : AppCompatEditText {
-    constructor(context: Context) : super(context) {
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-    }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle
-    ) {
-    }
+    )
 
     private var showKeyboardDelayed = false
 

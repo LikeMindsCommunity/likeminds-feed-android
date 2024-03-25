@@ -162,6 +162,11 @@ class LMFeedItemCommentViewDataBinder(
                     comment
                 )
             }
+
+            commentView.setCommenterHeaderClickListener {
+                val comment = commentViewData ?: return@setCommenterHeaderClickListener
+                postDetailAdapterListener.onCommenterHeaderClicked(position, comment)
+            }
         }
     }
 

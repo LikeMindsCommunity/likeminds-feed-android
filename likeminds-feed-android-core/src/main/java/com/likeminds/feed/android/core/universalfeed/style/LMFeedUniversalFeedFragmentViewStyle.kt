@@ -41,10 +41,16 @@ class LMFeedUniversalFeedFragmentViewStyle private constructor(
                     .build()
             )
             .backgroundColor(R.color.lm_feed_white)
-            .searchIconStyle(
+            .userProfileStyle(
+                LMFeedImageStyle.Builder()
+                    .isCircle(true)
+                    .showGreyScale(false)
+                    .build()
+            )
+            .notificationIconStyle(
                 LMFeedIconStyle.Builder()
+                    .inActiveSrc(R.drawable.lm_feed_ic_notification_bell)
                     .iconTint(R.color.lm_feed_black)
-                    .inActiveSrc(R.drawable.lm_feed_ic_new_post_plus)
                     .iconPadding(
                         LMFeedPadding(
                             R.dimen.lm_feed_icon_padding,
@@ -53,6 +59,12 @@ class LMFeedUniversalFeedFragmentViewStyle private constructor(
                             R.dimen.lm_feed_icon_padding
                         )
                     )
+                    .build()
+            )
+            .notificationCountTextStyle(
+                LMFeedTextStyle.Builder()
+                    .textSize(R.dimen.lm_feed_notification_badge_text_size)
+                    .textColor(R.color.lm_feed_white)
                     .build()
             )
             .build()

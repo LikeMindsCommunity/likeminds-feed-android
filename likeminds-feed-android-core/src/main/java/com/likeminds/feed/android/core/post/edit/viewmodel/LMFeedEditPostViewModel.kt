@@ -1,12 +1,14 @@
 package com.likeminds.feed.android.core.post.edit.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
-import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.likemindsfeed.LMFeedClient
@@ -21,14 +23,24 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 class LMFeedEditPostViewModel : ViewModel() {
 
-    private val lmFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
-    private val _showTopicFilter = MutableLiveData<Boolean>()
-    val showTopicFilter: LiveData<Boolean> = _showTopicFilter
+    private val _showTopicFilter by lazy {
+        MutableLiveData<Boolean>()
+    }
+    val showTopicFilter: LiveData<Boolean> by lazy {
+        _showTopicFilter
+    }
 
+    private val _decodeUrlResponse by lazy {
+        MutableLiveData<LMFeedLinkOGTagsViewData>()
+    }
 
-    private val _decodeUrlResponse = MutableLiveData<LMFeedLinkOGTagsViewData>()
-    val decodeUrlResponse: LiveData<LMFeedLinkOGTagsViewData> = _decodeUrlResponse
+    val decodeUrlResponse: LiveData<LMFeedLinkOGTagsViewData> by lazy {
+        _decodeUrlResponse
+    }
 
     sealed class PostDataEvent {
         data class GetPost(val post: LMFeedPostViewData) : PostDataEvent()
@@ -36,8 +48,12 @@ class LMFeedEditPostViewModel : ViewModel() {
         data class EditPost(val post: LMFeedPostViewData) : PostDataEvent()
     }
 
-    private val postDataEventChannel = Channel<PostDataEvent>(Channel.BUFFERED)
-    val postDataEventFlow = postDataEventChannel.receiveAsFlow()
+    private val postDataEventChannel by lazy {
+        Channel<PostDataEvent>(Channel.BUFFERED)
+    }
+    val postDataEventFlow by lazy {
+        postDataEventChannel.receiveAsFlow()
+    }
 
     sealed class ErrorMessageEvent {
         data class GetPost(val errorMessage: String?) : ErrorMessageEvent()
@@ -49,8 +65,13 @@ class LMFeedEditPostViewModel : ViewModel() {
         data class DecodeUrl(val errorMessage: String?) : ErrorMessageEvent()
     }
 
-    private val errorEventChannel = Channel<ErrorMessageEvent>(Channel.BUFFERED)
-    val errorEventFlow = errorEventChannel.receiveAsFlow()
+    private val errorEventChannel by lazy {
+        Channel<ErrorMessageEvent>(Channel.BUFFERED)
+    }
+
+    val errorEventFlow by lazy {
+        errorEventChannel.receiveAsFlow()
+    }
 
     // to get the Post to be edited
     fun getPost(postId: String) {
@@ -69,6 +90,7 @@ class LMFeedEditPostViewModel : ViewModel() {
                 val post = data.post
                 val users = data.users
                 val topics = data.topics
+
                 postDataEventChannel.send(
                     PostDataEvent.GetPost(
                         LMFeedViewDataConvertor.convertPost(
@@ -85,17 +107,13 @@ class LMFeedEditPostViewModel : ViewModel() {
     }
 
     //calls to topics api and check whether to show topics view or not
-    fun getAllTopics(showEnabledTopicsOnly: Boolean) {
+    fun getAllTopics() {
         viewModelScope.launchIO {
-            val requestBuilder = GetTopicRequest.Builder()
+            val request = GetTopicRequest.Builder()
                 .page(1)
                 .pageSize(10)
-
-            if (showEnabledTopicsOnly) {
-                requestBuilder.isEnabled(true)
-            }
-
-            val request = requestBuilder.build()
+                .isEnabled(true)
+                .build()
 
             val response = lmFeedClient.getTopics(request)
 

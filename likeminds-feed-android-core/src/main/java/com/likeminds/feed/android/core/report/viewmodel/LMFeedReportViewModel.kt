@@ -10,16 +10,32 @@ import com.likeminds.likemindsfeed.moderation.model.*
 
 class LMFeedReportViewModel : ViewModel() {
 
-    private val lmFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
-    private val _listOfTagViewData = MutableLiveData<List<LMFeedReportTagViewData>>()
-    val listOfTagViewData: LiveData<List<LMFeedReportTagViewData>> = _listOfTagViewData
+    private val _listOfTagViewData by lazy {
+        MutableLiveData<List<LMFeedReportTagViewData>>()
+    }
+    val listOfTagViewData: LiveData<List<LMFeedReportTagViewData>> by lazy {
+        _listOfTagViewData
+    }
 
-    private val _errorMessage: MutableLiveData<String?> = MutableLiveData()
-    val errorMessage: LiveData<String?> = _errorMessage
+    private val _errorMessage: MutableLiveData<String?> by lazy {
+        MutableLiveData()
+    }
 
-    private val _postReportResponse = MutableLiveData<Boolean>()
-    val postReportResponse: LiveData<Boolean> = _postReportResponse
+    val errorMessage: LiveData<String?> by lazy {
+        _errorMessage
+    }
+
+    private val _postReportResponse by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    val postReportResponse: LiveData<Boolean> by lazy {
+        _postReportResponse
+    }
 
     companion object {
         const val REPORT_TAG_TYPE = 3

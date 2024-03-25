@@ -11,13 +11,25 @@ import com.likeminds.likemindsfeed.moderation.model.GetReportTagsResponse
 
 class LMFeedReasonChooseViewModel : ViewModel() {
 
-    private val lmFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
-    private val _listOfTagViewData = MutableLiveData<List<LMFeedReasonChooseViewData>>()
-    val listOfTagViewData: LiveData<List<LMFeedReasonChooseViewData>> = _listOfTagViewData
+    private val _listOfTagViewData by lazy {
+        MutableLiveData<List<LMFeedReasonChooseViewData>>()
+    }
 
-    private val _errorMessage: MutableLiveData<String?> = MutableLiveData()
-    val errorMessage: LiveData<String?> = _errorMessage
+    val listOfTagViewData: LiveData<List<LMFeedReasonChooseViewData>> by lazy {
+        _listOfTagViewData
+    }
+
+    private val _errorMessage: MutableLiveData<String?> by lazy {
+        MutableLiveData()
+    }
+
+    val errorMessage: LiveData<String?> by lazy {
+        _errorMessage
+    }
 
     companion object {
         const val REPORT_TAG_TYPE = 0

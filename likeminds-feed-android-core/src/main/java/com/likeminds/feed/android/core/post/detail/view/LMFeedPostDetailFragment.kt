@@ -3,14 +3,14 @@ package com.likeminds.feed.android.core.post.detail.view
 import android.app.Activity
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.*
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentPostDetailBinding
 import com.likeminds.feed.android.core.delete.model.*
 import com.likeminds.feed.android.core.delete.view.*
@@ -24,6 +24,7 @@ import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailActivity
 import com.likeminds.feed.android.core.post.detail.viewmodel.LMFeedPostDetailViewModel
 import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
+import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.report.model.*
 import com.likeminds.feed.android.core.report.view.*
 import com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.view.LMFeedCommentComposerView
@@ -33,9 +34,11 @@ import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeed
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.universalfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import kotlinx.coroutines.flow.onEach
 
@@ -66,8 +69,21 @@ open class LMFeedPostDetailFragment :
     private var editCommentId: String? = null
     private var parentId: String? = null
 
+    // [postPublisher] to publish changes in the post
+    private val postEvent by lazy {
+        LMFeedPostEvent.getPublisher()
+    }
+
     companion object {
         const val TAG = "LMFeedPostDetailFragment"
+
+        fun getInstance(postDetailExtras: LMFeedPostDetailExtras): LMFeedPostDetailFragment {
+            val postDetailFragment = LMFeedPostDetailFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(LM_FEED_POST_DETAIL_EXTRAS, postDetailExtras)
+            postDetailFragment.arguments = bundle
+            return postDetailFragment
+        }
     }
 
     override fun onCreateView(
@@ -110,7 +126,13 @@ open class LMFeedPostDetailFragment :
         headerViewPostDetail.apply {
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle)
 
-            setTitleText(getString(R.string.lm_feed_s_post))
+            setTitleText(
+                getString(
+                    R.string.lm_feed_s_post,
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            )
         }
     }
 
@@ -198,14 +220,21 @@ open class LMFeedPostDetailFragment :
         if (postDetailExtras.source == LMFeedAnalytics.Source.NOTIFICATION ||
             postDetailExtras.source == LMFeedAnalytics.Source.DEEP_LINK
         ) {
-            //todo: ask where should we implement this
-//            initiateViewModel.initiateUser(
-//                requireContext(),
-//                userPreferences.getApiKey(),
-//                userPreferences.getUserName(),
-//                userPreferences.getUserUniqueId(),
-//                userPreferences.getIsGuest()
-//            )
+            val userPreferences = LMFeedUserPreferences(requireContext())
+
+            LMFeedCore.initiateUser(
+                requireContext(),
+                userPreferences.getUserName(),
+                userPreferences.getUUID(),
+                userPreferences.getDeviceId(),
+                success = {
+                    postDetailViewModel.getPost(postDetailExtras.postId, 1)
+                },
+                error = {
+                    LMFeedProgressBarHelper.hideProgress(binding.progressBar)
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), it)
+                }
+            )
         } else {
             postDetailViewModel.getPost(postDetailExtras.postId, 1)
         }
@@ -272,6 +301,7 @@ open class LMFeedPostDetailFragment :
     }
 
     protected open fun onNavigationIconClick() {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     // adds the comment locally and calls api
@@ -334,8 +364,7 @@ open class LMFeedPostDetailFragment :
                 .build()
 
             // notifies the subscribers about the change in post data
-            //todo:
-//            postEvent.notify(Pair(post.id, post))
+            postEvent.notify(Pair(post.id, post))
 
             // updates comments count on header
             updateCommentsCount(post.footerViewData.commentsCount)
@@ -522,8 +551,7 @@ open class LMFeedPostDetailFragment :
             val post = pair.second
 
             // notifies the subscribers about the change in post data
-            //todo:
-//            postEvent.notify(Pair(post.id, post))
+            postEvent.notify(Pair(post.id, post))
 
             // update the comments count
             updateCommentsCount(post.footerViewData.commentsCount)
@@ -545,55 +573,56 @@ open class LMFeedPostDetailFragment :
 
         // observes deletePostResponse LiveData
         postDetailViewModel.deletePostResponse.observe(viewLifecycleOwner) {
-            //todo:
-
             // notifies the subscribers about the deletion of post
-//            postEvent.notify(Pair(postDetailExtras.postId, null))
+            postEvent.notify(Pair(postDetailExtras.postId, null))
 
             LMFeedViewUtils.showShortToast(
                 requireContext(),
                 getString(
                     R.string.lm_feed_s_deleted,
-                    //todo:
-
-//                    lmFeedHelperViewModel.getPostVariable()
-//                        .pluralizeOrCapitalize(WordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
                 )
             )
             requireActivity().finish()
         }
 
         //observes postSavedResponse LiveData
-        postDetailViewModel.postSavedResponse.observe(viewLifecycleOwner) { post ->
-            //todo: post variable
-            //show toast message
-            val toastMessage = if (post.footerViewData.isSaved) {
-                getString(R.string.lm_feed_s_saved)
+        postDetailViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
+            //create toast message
+            val toastMessage = if (postViewData.footerViewData.isSaved) {
+                getString(
+                    R.string.lm_feed_s_saved,
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
-                getString(R.string.lm_feed_s_unsaved)
+                getString(
+                    R.string.lm_feed_s_unsaved,
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             }
             LMFeedViewUtils.showShortToast(requireContext(), toastMessage)
         }
 
         //observes pinPostResponse LiveData
-        postDetailViewModel.postPinnedResponse.observe(viewLifecycleOwner) { post ->
-            //todo: post as variable
-//            val postAsVariable = lmFeedHelperViewModel.getPostVariable()
-            if (post.headerViewData.isPinned) {
-                LMFeedViewUtils.showShortToast(
-                    requireContext(), getString(
-                        R.string.lm_feed_s_pinned_to_top,
-//                        postAsVariable.pluralizeOrCapitalize(WordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-                    )
+        postDetailViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
+            //show toast message
+            val toastMessage = if (postViewData.headerViewData.isPinned) {
+                getString(
+                    R.string.lm_feed_s_pinned_to_top,
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
                 )
             } else {
-                LMFeedViewUtils.showShortToast(
-                    requireContext(), getString(
-                        R.string.lm_feed_s_unpinned,
-//                        postAsVariable.pluralizeOrCapitalize(WordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-                    )
+                getString(
+                    R.string.lm_feed_s_unpinned,
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
                 )
             }
+            LMFeedViewUtils.showShortToast(requireContext(), toastMessage)
         }
     }
 
@@ -643,9 +672,8 @@ open class LMFeedPostDetailFragment :
 
     // updates the post and add comments to adapter
     private fun updatePostAndAddComments(post: LMFeedPostViewData) {
-        //todo:
         // notifies the subscribers about the change in post data
-//        postEvent.notify(Pair(post.id, post))
+        postEvent.notify(Pair(post.id, post))
 
         binding.rvPostDetails.apply {
             // updates the post
@@ -977,8 +1005,7 @@ open class LMFeedPostDetailFragment :
                             .fromPostLiked(true)
                             .build()
 
-                        //todo:
-//                        postEvent.notify(Pair(updatedPost.id, updatedPost))
+                        postEvent.notify(Pair(updatedPost.id, updatedPost))
 
                         //update recycler view
                         updateItem(postDataPosition, updatedPost)
@@ -1003,8 +1030,7 @@ open class LMFeedPostDetailFragment :
                             .fromPostSaved(true)
                             .build()
 
-                        //todo:
-//                        postEvent.notify(Pair(updatedPost.id, updatedPost))
+                        postEvent.notify(Pair(updatedPost.id, updatedPost))
 
                         //update recycler view
                         updateItem(postDataPosition, updatedPost)
@@ -1067,6 +1093,7 @@ open class LMFeedPostDetailFragment :
             editCommentId = comment.id
             parentId = parentCommentId
             //todo: tagging
+
             // decodes the comment text and sets to the edit text
 //                MemberTaggingDecoder.decode(
 //                    etComment,
@@ -1116,15 +1143,13 @@ open class LMFeedPostDetailFragment :
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data?.getStringExtra(LMFeedReportFragment.LM_FEED_REPORT_RESULT)
 
-                //todo:
-                val entityType = "Post"
-//                val entityType = if (data == "Post") {
-//                    lmFeedHelperViewModel.getPostVariable()
-//                        .pluralizeOrCapitalize(WordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-//                } else {
-//                    data
-//                }
-//
+                val entityType = if (data == "Post") {
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    data
+                }
+
                 LMFeedReportSuccessDialogFragment(entityType ?: "").show(
                     childFragmentManager,
                     LMFeedReportSuccessDialogFragment.TAG
@@ -1177,7 +1202,16 @@ open class LMFeedPostDetailFragment :
     override fun onCommentContentLinkClicked(url: String) {
         super.onCommentContentLinkClicked(url)
 
-        //todo:
+        // creates a route and returns an intent to handle the link
+        val intent = LMFeedRoute.handleDeepLink(requireContext(), url)
+        if (intent != null) {
+            try {
+                // starts activity with the intent
+                ActivityCompat.startActivity(requireContext(), intent, null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun onPostCommentsCountClicked(position: Int, postViewData: LMFeedPostViewData) {
@@ -1189,9 +1223,7 @@ open class LMFeedPostDetailFragment :
     override fun onPostLikeClicked(position: Int, postViewData: LMFeedPostViewData) {
         super.onPostLikeClicked(position, postViewData)
 
-        //todo:
-
-//            postEvent.notify(Pair(newViewData.id, newViewData))
+        postEvent.notify(Pair(postViewData.id, postViewData))
 
         val userPreferences = LMFeedUserPreferences(requireContext())
         val loggedInUUID = userPreferences.getUUID()
@@ -1220,26 +1252,7 @@ open class LMFeedPostDetailFragment :
         super.onPostSaveClicked(position, postViewData)
 
         // notifies the subscribers about the change
-        //todo:
-//            postEvent.notify(Pair(newViewData.id, newViewData))
-
-        //create toast message
-//            val postAsVariable = lmFeedHelperViewModel.getPostVariable()
-        val toastMessage = if (postViewData.footerViewData.isSaved) {
-            getString(
-                R.string.lm_feed_s_saved,
-//                    postAsVariable.pluralizeOrCapitalize(WordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-            )
-        } else {
-            getString(
-                R.string.lm_feed_s_unsaved,
-//                    postAsVariable.pluralizeOrCapitalize(WordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-            )
-        }
-
-        //show toast
-        Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_SHORT).show()
-
+        postEvent.notify(Pair(postViewData.id, postViewData))
 
         //call api
         postDetailViewModel.savePost(postViewData)
@@ -1290,17 +1303,17 @@ open class LMFeedPostDetailFragment :
         LMFeedLikesActivity.start(requireContext(), likesScreenExtras)
     }
 
-    override fun onReplyLiked(position: Int, reply: LMFeedCommentViewData) {
-        super.onReplyLiked(position, reply)
+    override fun onReplyLiked(position: Int, replyViewData: LMFeedCommentViewData) {
+        super.onReplyLiked(position, replyViewData)
 
         binding.rvPostDetails.apply {
             // gets parentComment from adapter
-            val parentCommentId = reply.parentId ?: return
+            val parentCommentId = replyViewData.parentId ?: return
             val parentIndexAndComment = getIndexAndCommentFromAdapter(parentCommentId) ?: return
             val parentPosition = parentIndexAndComment.first
             val parentComment = parentIndexAndComment.second
 
-            parentComment.replies[position] = reply
+            parentComment.replies[position] = replyViewData
 
             //update comment view data
             val newViewData = parentComment.toBuilder()
@@ -1315,8 +1328,8 @@ open class LMFeedPostDetailFragment :
             //call api
             postDetailViewModel.likeComment(
                 newViewData.postId,
-                reply.id,
-                !reply.isLiked,
+                replyViewData.id,
+                !replyViewData.isLiked,
                 loggedInUUID
             )
 
@@ -1461,6 +1474,16 @@ open class LMFeedPostDetailFragment :
         }
     }
 
+    // launcher for [EditPostActivity]
+    private val editPostLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    refreshPostData()
+                }
+            }
+        }
+
     protected open fun onEditPostMenuClicked(
         position: Int,
         menuId: Int,
@@ -1470,7 +1493,7 @@ open class LMFeedPostDetailFragment :
             .postId(post.id)
             .build()
         val intent = LMFeedEditPostActivity.getIntent(requireContext(), editPostExtras)
-        startActivity(intent)
+        editPostLauncher.launch(intent)
     }
 
     protected open fun onDeletePostMenuClicked(
@@ -1481,8 +1504,6 @@ open class LMFeedPostDetailFragment :
         val deleteExtras = LMFeedDeleteExtras.Builder()
             .postId(post.id)
             .entityType(DELETE_TYPE_POST)
-            //todo:
-//            .postAsVariable(lmFeedHelperViewModel.getPostVariable())
             .build()
 
         val postCreatorUUID = post.headerViewData.user.sdkClientInfoViewData.uuid
@@ -1597,19 +1618,19 @@ open class LMFeedPostDetailFragment :
     override fun onReplyMenuIconClicked(
         position: Int,
         anchorView: View,
-        reply: LMFeedCommentViewData
+        replyViewData: LMFeedCommentViewData
     ) {
-        super.onReplyMenuIconClicked(position, anchorView, reply)
+        super.onReplyMenuIconClicked(position, anchorView, replyViewData)
 
         val popupMenu = LMFeedOverflowMenu(requireContext(), anchorView)
-        val menuItems = reply.menuItems
+        val menuItems = replyViewData.menuItems
         popupMenu.addMenuItems(menuItems)
 
         popupMenu.setMenuItemClickListener { menuId ->
             onReplyMenuItemClicked(
                 position,
                 menuId,
-                reply
+                replyViewData
             )
         }
 
@@ -1753,15 +1774,31 @@ open class LMFeedPostDetailFragment :
 
     override fun onPostShareClicked(position: Int, postViewData: LMFeedPostViewData) {
         super.onPostShareClicked(position, postViewData)
-        //todo: post as variable and take domain here
+        //todo: take domain here
         LMFeedShareUtils.sharePost(
             requireContext(),
             postViewData.id,
             "https://take-this-in-config.com",
-            ""
+            LMFeedCommunityUtil.getPostVariable()
         )
 
         LMFeedAnalytics.sendPostShared(postViewData)
+    }
+
+    override fun onCommenterHeaderClicked(position: Int, commentViewData: LMFeedCommentViewData) {
+        super.onCommenterHeaderClicked(position, commentViewData)
+
+        //trigger profile callback
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.openProfile(commentViewData.user)
+    }
+
+    override fun onReplierHeaderClicked(position: Int, replyViewData: LMFeedCommentViewData) {
+        super.onReplierHeaderClicked(position, replyViewData)
+
+        //trigger profile callback
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.openProfile(replyViewData.user)
     }
 
     override fun onDestroyView() {

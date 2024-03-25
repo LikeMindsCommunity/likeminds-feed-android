@@ -4,18 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedActivityActivityFeedBinding
 
 class LMFeedActivityFeedActivity : AppCompatActivity() {
 
     private lateinit var binding: LmFeedActivityActivityFeedBinding
-
-    //Navigation
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var navController: NavController
 
     companion object {
         @JvmStatic
@@ -36,14 +29,22 @@ class LMFeedActivityFeedActivity : AppCompatActivity() {
         binding = LmFeedActivityActivityFeedBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Navigation
-        navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-        navController.setGraph(R.navigation.lm_feed_nav_graph_activity_feed)
+        //inflates activity feed fragment
+        inflateActivityFeedFragment()
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp()
+    private fun inflateActivityFeedFragment() {
+        //gets activity feed fragment instance
+        val activityFeedFragment =
+            LMFeedActivityFeedFragment.getInstance()
+
+        //commits fragment replace transaction
+        supportFragmentManager.beginTransaction()
+            .replace(
+                binding.containerActivityFeed.id,
+                activityFeedFragment,
+                LMFeedActivityFeedFragment.TAG
+            )
+            .commit()
     }
 }

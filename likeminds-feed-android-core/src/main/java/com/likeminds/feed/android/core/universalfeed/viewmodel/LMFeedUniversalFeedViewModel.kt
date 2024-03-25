@@ -11,6 +11,8 @@ import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
+import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
+import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.post.model.*
 import com.likeminds.likemindsfeed.topic.model.GetTopicRequest
@@ -23,28 +25,86 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 class LMFeedUniversalFeedViewModel : ViewModel() {
 
-    private val lmFeedClient: LMFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient: LMFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
-    private val _universalFeedResponse = MutableLiveData<Pair<Int, List<LMFeedPostViewData>>>()
-    val universalFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> =
+    private val _universalFeedResponse by lazy {
+        MutableLiveData<Pair<Int, List<LMFeedPostViewData>>>()
+    }
+
+    val universalFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
         _universalFeedResponse
+    }
 
-    private val _postSavedResponse = MutableLiveData<LMFeedPostViewData>()
-    val postSavedResponse: LiveData<LMFeedPostViewData> = _postSavedResponse
 
-    private val _postPinnedResponse = MutableLiveData<LMFeedPostViewData>()
-    val postPinnedResponse: LiveData<LMFeedPostViewData> = _postPinnedResponse
+    private val _postSavedResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
 
-    private val _deletePostResponse = MutableLiveData<String>()
-    val deletePostResponse: LiveData<String> = _deletePostResponse
+    val postSavedResponse: LiveData<LMFeedPostViewData> by lazy {
+        _postSavedResponse
+    }
 
-    private val _showTopicFilter = MutableLiveData<Boolean>()
-    val showTopicFilter: LiveData<Boolean> = _showTopicFilter
+    private val _postPinnedResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
 
-    private val errorMessageChannel = Channel<ErrorMessageEvent>(Channel.BUFFERED)
-    val errorMessageEventFlow = errorMessageChannel.receiveAsFlow()
+    val postPinnedResponse: LiveData<LMFeedPostViewData> by lazy {
+        _postPinnedResponse
+    }
+
+    private val _deletePostResponse by lazy {
+        MutableLiveData<String>()
+    }
+
+    val deletePostResponse: LiveData<String> by lazy {
+        _deletePostResponse
+    }
+
+    private val _showTopicFilter by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    val showTopicFilter: LiveData<Boolean> by lazy {
+        _showTopicFilter
+    }
+
+    private val _hasCreatePostRights by lazy {
+        MutableLiveData(true)
+    }
+
+    val hasCreatePostRights: LiveData<Boolean> by lazy {
+        _hasCreatePostRights
+    }
+
+    private val _unreadNotificationCount by lazy {
+        MutableLiveData<Int>()
+    }
+
+    val unreadNotificationCount: LiveData<Int> by lazy {
+        _unreadNotificationCount
+    }
+
+    private val _userResponse by lazy {
+        MutableLiveData<LMFeedUserViewData>()
+    }
+
+    val userResponse: LiveData<LMFeedUserViewData> by lazy {
+        _userResponse
+    }
+
+    private val errorMessageChannel by lazy {
+        Channel<ErrorMessageEvent>(Channel.BUFFERED)
+    }
+
+    val errorMessageEventFlow by lazy {
+        errorMessageChannel.receiveAsFlow()
+    }
 
     sealed class ErrorMessageEvent {
+        data class UniversalFeed(val errorMessage: String?) : ErrorMessageEvent()
+
         data class LikePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
 
         data class SavePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
@@ -54,6 +114,8 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
         data class PinPost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
 
         data class GetTopic(val errorMessage: String?) : ErrorMessageEvent()
+
+        data class GetUnreadNotificationCount(val errorMessage: String?) : ErrorMessageEvent()
     }
 
     companion object {
@@ -85,7 +147,7 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
                 _universalFeedResponse.postValue(Pair(page, listOfPostViewData))
             } else {
                 //for error
-//                errorMessageChannel.send(ErrorMessageEvent.UniversalFeed(response.errorMessage))
+                errorMessageChannel.send(ErrorMessageEvent.UniversalFeed(response.errorMessage))
             }
         }
     }
@@ -227,6 +289,58 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
             } else {
                 _showTopicFilter.postValue(false)
                 errorMessageChannel.send(ErrorMessageEvent.GetTopic(response.errorMessage))
+            }
+        }
+    }
+
+    //call member state api
+    fun getMemberState() {
+        viewModelScope.launchIO {
+            //get member state response
+            val memberStateResponse = lmFeedClient.getMemberState().data
+
+            val memberState = memberStateResponse?.state ?: return@launchIO
+
+            //updates user's create posts right
+            _hasCreatePostRights.postValue(
+                LMFeedMemberRightsUtil.hasCreatePostsRight(
+                    memberState,
+                    memberStateResponse.memberRights
+                )
+            )
+        }
+    }
+
+    //get unread notification count
+    fun getUnreadNotificationCount() {
+        viewModelScope.launchIO {
+            //call unread notification count api
+            val response = lmFeedClient.getUnreadNotificationCount()
+
+            if (response.success) {
+                val data = response.data ?: return@launchIO
+                val count = data.count
+
+                _unreadNotificationCount.postValue(count)
+            } else {
+                //for error
+                errorMessageChannel.send(ErrorMessageEvent.GetUnreadNotificationCount(response.errorMessage))
+            }
+        }
+    }
+
+    //gets logged in user
+    fun getLoggedInUser() {
+        viewModelScope.launchIO {
+            val response = lmFeedClient.getLoggedInUserWithRights()
+
+            if (response.success) {
+                val user = response.data?.user ?: return@launchIO
+
+                val userViewData = LMFeedViewDataConvertor.convertUser(user)
+
+                //post the user response in LiveData
+                _userResponse.postValue(userViewData)
             }
         }
     }

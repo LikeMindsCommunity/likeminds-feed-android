@@ -9,8 +9,7 @@ class LMFeedDeleteExtras private constructor(
     val entityType: Int,
     val postId: String,
     val commentId: String?,
-    val parentCommentId: String?,
-    val postAsVariable: String
+    val parentCommentId: String?
 ) : Parcelable {
 
     class Builder {
@@ -18,23 +17,28 @@ class LMFeedDeleteExtras private constructor(
         private var postId: String = ""
         private var commentId: String? = null
         private var parentCommentId: String? = null
-        private var postAsVariable: String = ""
 
-        fun entityType(@LMFeedDeleteType entityType: Int) = apply { this.entityType = entityType }
-        fun postId(postId: String) = apply { this.postId = postId }
+        fun entityType(@LMFeedDeleteType entityType: Int) = apply {
+            this.entityType = entityType
+        }
 
-        fun commentId(commentId: String?) = apply { this.commentId = commentId }
-        fun parentCommentId(parentCommentId: String?) =
-            apply { this.parentCommentId = parentCommentId }
+        fun postId(postId: String) = apply {
+            this.postId = postId
+        }
 
-        fun postAsVariable(postAsVariable: String) = apply { this.postAsVariable = postAsVariable }
+        fun commentId(commentId: String?) = apply {
+            this.commentId = commentId
+        }
+
+        fun parentCommentId(parentCommentId: String?) = apply {
+            this.parentCommentId = parentCommentId
+        }
 
         fun build() = LMFeedDeleteExtras(
             entityType,
             postId,
             commentId,
-            parentCommentId,
-            postAsVariable
+            parentCommentId
         )
     }
 
@@ -43,6 +47,5 @@ class LMFeedDeleteExtras private constructor(
             .postId(postId)
             .commentId(commentId)
             .parentCommentId(parentCommentId)
-            .postAsVariable(postAsVariable)
     }
 }

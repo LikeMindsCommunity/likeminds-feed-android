@@ -11,18 +11,16 @@ import com.likeminds.feed.android.core.utils.LMFeedImageBindingUtil
  * To customize this view use [LMFeedImageStyle]
  */
 class LMFeedImageView : AppCompatImageView {
-    constructor(context: Context) : super(context) {
-    }
 
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-    }
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle
-    ) {
-    }
+    )
 
     //updates the image view with the provided [imageSrc] and uses the provided [imageViewStyle] to customize it
     fun setImage(imageSrc: Any?, imageViewStyle: LMFeedImageStyle) {

@@ -77,10 +77,10 @@ class LMFeedItemActivityFeedViewDataBinder(
 
             activityView.apply {
                 setActivityContent(data.activityText)
-                setTimestamp(data.updatedAt)
                 setActivityRead(data.isRead)
                 setUserImage(data.activityByUser)
                 setPostTypeBadge(data.activityEntityData?.attachments?.firstOrNull()?.attachmentType)
+                setTimestamp(data.updatedAt)
             }
         }
     }

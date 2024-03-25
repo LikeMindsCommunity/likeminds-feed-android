@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/layout_single_image_post"
+            layout="@layout/lm_feed_item_create_post_single_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedButton
+            android:id="@+id/btn_add_more_media"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/lm_feed_standard_margin"
+            android:layout_marginBottom="@dimen/lm_feed_standard_margin"
+            android:background="@drawable/lm_feed_background_round_8dp"
+            android:drawableStart="@drawable/lm_feed_ic_plus"
+            android:foreground="?selectableItemBackground"
+            android:paddingHorizontal="@dimen/lm_feed_create_post_add_more_padding"
+            android:text="@string/lm_feed_add_more"
+            android:textAllCaps="false"
+            android:textSize="@dimen/lm_feed_text_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_single_image_post"
+            app:lm_feed_font_type="medium"
+            tools:fontFamily="@font/roboto_medium"
+            tools:ignore="UnusedAttribute"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

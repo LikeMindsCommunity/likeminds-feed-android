@@ -329,6 +329,7 @@ class LMFeedCommentView : ConstraintLayout {
             if (likesCount.isEmpty()) {
                 hide()
             } else {
+                show()
                 text = likesCount
             }
         }
@@ -344,6 +345,7 @@ class LMFeedCommentView : ConstraintLayout {
             if (replyText.isEmpty()) {
                 hide()
             } else {
+                show()
                 text = replyText
             }
         }
@@ -418,6 +420,21 @@ class LMFeedCommentView : ConstraintLayout {
      */
     fun setMenuIconClickListener(listener: LMFeedOnClickListener) {
         binding.ivCommentMenu.setOnClickListener {
+            listener.onClick()
+        }
+    }
+
+    /**
+     * Sets click listener on the commenter header
+     *
+     * @param listener [LMFeedOnClickListener] interface to have click listener
+     */
+    fun setCommenterHeaderClickListener(listener: LMFeedOnClickListener) {
+        binding.ivCommenterImage.setOnClickListener {
+            listener.onClick()
+        }
+
+        binding.tvCommenterName.setOnClickListener {
             listener.onClick()
         }
     }

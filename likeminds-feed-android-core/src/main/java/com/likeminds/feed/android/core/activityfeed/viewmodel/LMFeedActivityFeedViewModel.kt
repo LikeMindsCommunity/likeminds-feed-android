@@ -12,17 +12,29 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 class LMFeedActivityFeedViewModel : ViewModel() {
 
-    private val lmFeedClient: LMFeedClient = LMFeedClient.getInstance()
+    private val lmFeedClient: LMFeedClient by lazy {
+        LMFeedClient.getInstance()
+    }
 
-    private val _activityFeedResponse = MutableLiveData<Pair<Int, List<LMFeedActivityViewData>>>()
-    val activityFeedResponse: LiveData<Pair<Int, List<LMFeedActivityViewData>>> =
+    private val _activityFeedResponse by lazy {
+        MutableLiveData<Pair<Int, List<LMFeedActivityViewData>>>()
+    }
+
+    val activityFeedResponse: LiveData<Pair<Int, List<LMFeedActivityViewData>>> by lazy {
         _activityFeedResponse
+    }
 
-    private val errorMessageChannel = Channel<ErrorMessageEvent>(Channel.BUFFERED)
-    val errorMessageEventFlow = errorMessageChannel.receiveAsFlow()
+    private val errorMessageChannel by lazy {
+        Channel<ErrorMessageEvent>(Channel.BUFFERED)
+    }
+
+    val errorMessageEventFlow by lazy {
+        errorMessageChannel.receiveAsFlow()
+    }
 
     sealed class ErrorMessageEvent {
         data class GetActivityFeed(val errorMessage: String?) : ErrorMessageEvent()
+
         data class MarkReadNotification(val errorMessage: String?) : ErrorMessageEvent()
     }
 

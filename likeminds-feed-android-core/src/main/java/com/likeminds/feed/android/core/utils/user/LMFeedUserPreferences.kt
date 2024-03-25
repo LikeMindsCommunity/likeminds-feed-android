@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Settings
 import com.likeminds.feed.android.core.utils.sharedpreferences.LMFeedBasePreferences
+import javax.inject.Singleton
 
+@Singleton
 class LMFeedUserPreferences(
     private val context: Context
 ) : LMFeedBasePreferences(LM_FEED_USER_PREFS, context) {
@@ -14,8 +16,6 @@ class LMFeedUserPreferences(
         const val LM_FEED_USER_NAME = "LM_FEED_USER_NAME"
         const val LM_FEED_UUID = "LM_FEED_UUID"
         const val LM_FEED_API_KEY = "LM_FEED_API_KEY"
-
-
     }
 
     fun getApiKey(): String {

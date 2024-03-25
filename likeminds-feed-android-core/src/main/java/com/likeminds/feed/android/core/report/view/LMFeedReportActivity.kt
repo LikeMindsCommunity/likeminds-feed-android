@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedActivityReportBinding
@@ -16,10 +15,6 @@ class LMFeedReportActivity : AppCompatActivity() {
     private lateinit var binding: LmFeedActivityReportBinding
 
     private lateinit var reportExtras: LMFeedReportExtras
-
-    //Navigation
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var navController: NavController
 
     companion object {
         const val LM_FEED_REPORT_EXTRAS = "LM_FEED_REPORT_EXTRAS"
@@ -50,27 +45,43 @@ class LMFeedReportActivity : AppCompatActivity() {
         binding = LmFeedActivityReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //parse extras
+        assignExtras()
+
+        //inflates report fragment
+        inflateReportFragment()
+    }
+
+    private fun assignExtras() {
+        //get bundle
         val bundle = intent.getBundleExtra(LM_FEED_REPORT_BUNDLE)
 
+        //assign to global variable
         if (bundle != null) {
             reportExtras = LMFeedExtrasUtil.getParcelable(
                 bundle,
                 LM_FEED_REPORT_EXTRAS,
                 LMFeedReportExtras::class.java
             ) ?: throw emptyExtrasException(TAG)
-
-            val args = Bundle().apply {
-                putParcelable(LM_FEED_REPORT_EXTRAS, reportExtras)
-            }
-
-            //Navigation
-            navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-            navController = navHostFragment.navController
-            navController.setGraph(R.navigation.lm_feed_nav_graph_report, args)
         } else {
+            //close activity
             redirectActivity()
         }
+    }
+
+    private fun inflateReportFragment() {
+        //gets report fragment instance
+        val reportFragment =
+            LMFeedReportFragment.getInstance(reportExtras = reportExtras)
+
+        //commits fragment replace transaction
+        supportFragmentManager.beginTransaction()
+            .replace(
+                binding.containerReport.id,
+                reportFragment,
+                TAG
+            )
+            .commit()
     }
 
     private fun redirectActivity() {
@@ -78,9 +89,5 @@ class LMFeedReportActivity : AppCompatActivity() {
         supportFragmentManager.popBackStack()
         onBackPressedDispatcher.onBackPressed()
         overridePendingTransition(R.anim.lm_feed_slide_from_left, R.anim.lm_feed_slide_to_right)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp()
     }
 }

@@ -4,8 +4,7 @@ import android.graphics.Typeface
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
+import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
@@ -31,12 +30,18 @@ class LMFeedHeaderViewStyle private constructor(
     @DimenRes val elevation: Int,
     //submit text style
     val submitTextStyle: LMFeedTextStyle?,
-    //color of the active submit button
+    //submit button's active color
     @ColorRes val activeSubmitColor: Int?,
     //navigation icon style
     val navigationIconStyle: LMFeedIconStyle?,
     //search icon style
-    val searchIconStyle: LMFeedIconStyle?
+    val searchIconStyle: LMFeedIconStyle?,
+    //profile image style in header
+    val userProfileStyle: LMFeedImageStyle?,
+    //notification icon style
+    val notificationIconStyle: LMFeedIconStyle?,
+    //notification count style
+    val notificationCountTextStyle: LMFeedTextStyle?,
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -61,6 +66,12 @@ class LMFeedHeaderViewStyle private constructor(
         private var navigationIconStyle: LMFeedIconStyle? = null
 
         private var searchIconStyle: LMFeedIconStyle? = null
+
+        private var userProfileStyle: LMFeedImageStyle? = null
+
+        private var notificationIconStyle: LMFeedIconStyle? = null
+
+        private var notificationCountTextStyle: LMFeedTextStyle? = null
 
         fun titleTextStyle(titleTextStyle: LMFeedTextStyle) = apply {
             this.titleTextStyle = titleTextStyle
@@ -94,6 +105,18 @@ class LMFeedHeaderViewStyle private constructor(
             this.searchIconStyle = searchIconStyle
         }
 
+        fun userProfileStyle(userProfileStyle: LMFeedImageStyle?) = apply {
+            this.userProfileStyle = userProfileStyle
+        }
+
+        fun notificationIconStyle(notificationIconStyle: LMFeedIconStyle?) = apply {
+            this.notificationIconStyle = notificationIconStyle
+        }
+
+        fun notificationCountTextStyle(notificationCountTextStyle: LMFeedTextStyle?) = apply {
+            this.notificationCountTextStyle = notificationCountTextStyle
+        }
+
         fun build() = LMFeedHeaderViewStyle(
             titleTextStyle,
             subtitleTextStyle,
@@ -102,7 +125,10 @@ class LMFeedHeaderViewStyle private constructor(
             submitTextStyle,
             activeSubmitColor,
             navigationIconStyle,
-            searchIconStyle
+            searchIconStyle,
+            userProfileStyle,
+            notificationIconStyle,
+            notificationCountTextStyle
         )
     }
 
@@ -115,5 +141,8 @@ class LMFeedHeaderViewStyle private constructor(
             .activeSubmitColor(activeSubmitColor)
             .navigationIconStyle(navigationIconStyle)
             .searchIconStyle(searchIconStyle)
+            .userProfileStyle(userProfileStyle)
+            .notificationIconStyle(notificationIconStyle)
+            .notificationCountTextStyle(notificationCountTextStyle)
     }
 }

@@ -29,4 +29,5 @@
     <color name="lm_feed_black_87">#de000000</color>
     <color name="lm_feed_transparent">#00000000</color>
     <color name="lm_feed_black_38">#61000000</color>
+    <color name="lm_feed_red_event">#FB1609</color>
 </resources>

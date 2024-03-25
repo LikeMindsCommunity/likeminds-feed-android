@@ -8,5 +8,4 @@ class LMFeedChip @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : Chip(context, attrs, defStyleAttr) {
-}
+) : Chip(context, attrs, defStyleAttr)

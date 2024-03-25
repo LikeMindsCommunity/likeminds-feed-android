@@ -11,6 +11,8 @@ import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.ui.widgets.alertdialog.view.LMFeedAlertDialogView
 import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 open class LMFeedSelfDeleteDialogFragment :
     DialogFragment() {
@@ -94,18 +96,18 @@ open class LMFeedSelfDeleteDialogFragment :
             setPositiveButtonEnabled(true)
 
             if (deletedExtras.entityType == DELETE_TYPE_POST) {
-                //todo:
-//                val postAsVariable = deleteExtras.postAsVariable
                 setAlertTitle(
                     getString(
                         R.string.lm_feed_delete_s_question,
-//                    postAsVariable.pluralizeOrCapitalize(WordAction.ALL_SMALL_SINGULAR)
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
                     )
                 )
                 setAlertSubtitle(
                     getString(
                         R.string.lm_feed_delete_s_message,
-//                        postAsVariable.pluralizeOrCapitalize(WordAction.ALL_SMALL_SINGULAR)
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
                     )
                 )
             } else {

@@ -5,7 +5,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_replying_to"
@@ -48,7 +48,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:background="@color/lm_feed_white"
-            tools:elevation="4dp"
             tools:ellipsize="end"
             tools:hint="@string/lm_feed_write_a_comment"
             tools:maxHeight="100dp"
@@ -69,7 +68,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:background="@color/lm_feed_white"
-            tools:elevation="4dp"
             tools:minHeight="48dp"
             tools:textColor="@color/lm_feed_grey_brown_50"
             tools:textSize="13sp"
@@ -85,7 +83,6 @@
             app:layout_constraintBottom_toBottomOf="@id/et_comment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/et_comment"
-            tools:elevation="4dp"
             tools:ignore="ContentDescription,UnusedAttribute,UseAppTint"
             tools:srcCompat="@drawable/lm_feed_ic_comment_send_disable"
             tools:tint="@color/lm_feed_majorelle_blue"
