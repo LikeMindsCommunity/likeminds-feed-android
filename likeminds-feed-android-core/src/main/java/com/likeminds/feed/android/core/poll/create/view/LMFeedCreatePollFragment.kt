@@ -325,8 +325,6 @@ open class LMFeedCreatePollFragment : Fragment(), LMFeedCreatePollOptionAdapterL
             else -> getSelectedPollMultiSelectNumber() - 1
         }
 
-        Log.d("PUI", "index to Select $indexToSelect")
-
         poll?.let { poll ->
             val number = poll.multipleSelectNumber
             indexToSelect = number - 1
@@ -602,7 +600,6 @@ open class LMFeedCreatePollFragment : Fragment(), LMFeedCreatePollOptionAdapterL
 
     //get selected poll multi select number
     private fun getSelectedPollMultiSelectNumber(): Int {
-        Log.d("PUI", "${binding.spinnerMultipleSelectNumber.selectedItemPosition}")
         return binding.spinnerMultipleSelectNumber.selectedItemPosition + 1
     }
 

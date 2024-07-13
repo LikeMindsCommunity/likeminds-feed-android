@@ -15,6 +15,7 @@ import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
+import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
 
 class LMFeedPostFooterView : ConstraintLayout {
 
@@ -77,7 +78,8 @@ class LMFeedPostFooterView : ConstraintLayout {
 
     private fun configureShareIcon(shareIconStyle: LMFeedIconStyle?) {
         // if the client has not set the domain then hide the share icon and log a warning
-        if (LMFeedCoreApplication.domain == null) {
+        val userMeta = LMFeedUserMetaData.getInstance()
+        if (userMeta.domain == null) {
             binding.ivShare.hide()
 
             Log.w(

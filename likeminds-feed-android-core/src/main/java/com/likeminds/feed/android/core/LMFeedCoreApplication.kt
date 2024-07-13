@@ -10,10 +10,15 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedAWSKeys
-import com.likeminds.likemindsfeed.LMCallback
+import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.LMFeedSDKCallback
+import com.likeminds.likemindsfeed.user.model.InitiateUserRequest
+import kotlinx.coroutines.runBlocking
 
-class LMFeedCoreApplication : LMCallback {
+class LMFeedCoreApplication : LMFeedSDKCallback {
+
+    private lateinit var mClient: LMFeedClient
 
     companion object {
         const val LOG_TAG = "LikeMindsFeedCore"
@@ -22,8 +27,6 @@ class LMFeedCoreApplication : LMCallback {
         private lateinit var transferUtility: TransferUtility
         private var credentialsProvider: CognitoCachingCredentialsProvider? = null
         private var s3Client: AmazonS3Client? = null
-
-        var domain: String? = null
 
         /**
          * @return Singleton Instance of Core Application class
@@ -89,18 +92,49 @@ class LMFeedCoreApplication : LMCallback {
     fun initCoreApplication(
         application: Application,
         lmFeedCoreCallback: LMFeedCoreCallback?,
-        domain: String? = null
+        domain: String? = null,
+        enablePushNotifications: Boolean = false,
+        deviceId: String? = null
     ) {
-        LMFeedClient.Builder(application)
+        mClient = LMFeedClient.Builder(application)
             .lmCallback(this)
             .build()
-
-        LMFeedCoreApplication.domain = domain
         LMFeedCoreApplication.lmFeedCoreCallback = lmFeedCoreCallback
+
+        val userMetaData = LMFeedUserMetaData.getInstance()
+        userMetaData.init(domain, enablePushNotifications, deviceId)
     }
 
-    override fun login() {
-        super.login()
-        lmFeedCoreCallback?.login()
+    override fun onAccessTokenExpiredAndRefreshed(accessToken: String, refreshToken: String) {
+        lmFeedCoreCallback?.onAccessTokenExpiredAndRefreshed(accessToken, refreshToken)
+    }
+
+    override fun onRefreshTokenExpired(): Pair<String?, String?> {
+        val apiKey = mClient.getAPIKey().data
+        return if (apiKey != null) {
+            runBlocking {
+                val user = mClient.getLoggedInUserWithRights().data?.user
+                if (user != null) {
+                    val initiateUserRequest = InitiateUserRequest.Builder()
+                        .apiKey(apiKey)
+                        .userName(user.name)
+                        .uuid(user.sdkClientInfo.uuid)
+                        .build()
+                    val response = mClient.initiateUser(initiateUserRequest)
+
+                    if (response.success) {
+                        val accessToken = response.data?.accessToken ?: ""
+                        val refreshToken = response.data?.refreshToken ?: ""
+                        Pair(accessToken, refreshToken)
+                    } else {
+                        Pair("", "")
+                    }
+                } else {
+                    Pair("", "")
+                }
+            }
+        } else {
+            lmFeedCoreCallback?.onRefreshTokenExpired() ?: Pair(null, null)
+        }
     }
 }

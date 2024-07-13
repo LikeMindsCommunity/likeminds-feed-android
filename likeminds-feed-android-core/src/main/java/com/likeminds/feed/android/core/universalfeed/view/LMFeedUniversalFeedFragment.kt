@@ -68,8 +68,7 @@ import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWorker
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
-import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
-import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
+import com.likeminds.feed.android.core.utils.user.*
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -744,10 +743,11 @@ open class LMFeedUniversalFeedFragment :
     }
 
     override fun onPostShareClicked(position: Int, postViewData: LMFeedPostViewData) {
+        val userMeta = LMFeedUserMetaData.getInstance()
         LMFeedShareUtils.sharePost(
             requireContext(),
             postViewData.id,
-            LMFeedCoreApplication.domain ?: "",
+            userMeta.domain ?: "",
             LMFeedCommunityUtil.getPostVariable()
         )
 

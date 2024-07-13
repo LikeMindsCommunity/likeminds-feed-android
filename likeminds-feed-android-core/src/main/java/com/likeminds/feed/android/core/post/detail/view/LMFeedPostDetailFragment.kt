@@ -47,6 +47,7 @@ import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.membertagging.MemberTaggingUtil
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
+import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
 import com.likeminds.usertagging.UserTagging
@@ -254,15 +255,10 @@ open class LMFeedPostDetailFragment :
         if (postDetailExtras.source == LMFeedAnalytics.Source.NOTIFICATION ||
             postDetailExtras.source == LMFeedAnalytics.Source.DEEP_LINK
         ) {
-            val userPreferences = LMFeedUserPreferences(requireContext())
-
-            LMFeedCore.initiateUser(
-                requireContext(),
-                userPreferences.getApiKey(),
-                userPreferences.getUserName(),
-                userPreferences.getUUID(),
-                userPreferences.getDeviceId(),
-                userPreferences.getPushNotificationsEnabled(),
+            LMFeedCore.showFeed(
+                context = requireContext(),
+                accessToken = null,
+                refreshToken = null,
                 success = {
                     postDetailViewModel.getPost(postDetailExtras.postId, 1)
                 },
@@ -1941,10 +1937,11 @@ open class LMFeedPostDetailFragment :
     //callback when the post share button is clicked
     override fun onPostShareClicked(position: Int, postViewData: LMFeedPostViewData) {
         super.onPostShareClicked(position, postViewData)
+        val userMeta = LMFeedUserMetaData.getInstance()
         LMFeedShareUtils.sharePost(
             requireContext(),
             postViewData.id,
-            LMFeedCoreApplication.domain ?: "",
+            userMeta.domain ?: "",
             LMFeedCommunityUtil.getPostVariable()
         )
 
