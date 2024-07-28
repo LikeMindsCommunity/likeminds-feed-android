@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="rv_selected_topics, tv_clear" />
 
-        <com.likeminds.feed.android.core.universalfeed.view.LMFeedUniversalSelectedTopicListView
+        <com.likeminds.feed.android.core.socialfeed.view.LMFeedUniversalSelectedTopicListView
             android:id="@+id/rv_selected_topics"
             android:layout_width="@dimen/lm_feed_zero_dp"
             android:layout_height="@dimen/lm_feed_zero_dp"

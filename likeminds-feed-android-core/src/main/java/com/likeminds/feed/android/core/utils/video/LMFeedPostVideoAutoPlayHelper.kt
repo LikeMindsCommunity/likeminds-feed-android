@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.likeminds.feed.android.core.databinding.*
 import com.likeminds.feed.android.core.post.detail.adapter.LMFeedPostDetailAdapter
 import com.likeminds.feed.android.core.ui.base.views.LMFeedVideoView
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapter
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapter
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_MULTIPLE_MEDIA

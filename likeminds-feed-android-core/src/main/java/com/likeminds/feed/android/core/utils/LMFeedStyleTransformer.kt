@@ -14,7 +14,7 @@ import com.likeminds.feed.android.core.report.style.LMFeedReportFragmentViewStyl
 import com.likeminds.feed.android.core.topicselection.style.LMFeedTopicSelectionFragmentViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedAddPollOptionBottomSheetFragmentStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedAnonymousPollDialogFragmentStyle
-import com.likeminds.feed.android.core.universalfeed.style.LMFeedUniversalFeedFragmentViewStyle
+import com.likeminds.feed.android.core.socialfeed.style.LMFeedUniversalFeedFragmentViewStyle
 
 object LMFeedStyleTransformer {
 

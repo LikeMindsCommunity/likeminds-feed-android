@@ -47,9 +47,9 @@ import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostImageMediaViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedMediaViewData
-import com.likeminds.feed.android.core.universalfeed.util.LMFeedPostBinderUtils
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
+import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getUrlIfExist
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize

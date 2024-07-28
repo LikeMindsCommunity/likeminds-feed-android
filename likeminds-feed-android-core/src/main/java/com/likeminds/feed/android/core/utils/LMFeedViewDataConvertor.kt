@@ -14,7 +14,7 @@ import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountView
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportTagViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
-import com.likeminds.feed.android.core.universalfeed.model.*
+import com.likeminds.feed.android.core.socialfeed.model.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault

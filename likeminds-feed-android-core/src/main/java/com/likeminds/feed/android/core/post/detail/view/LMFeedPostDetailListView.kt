@@ -2,12 +2,11 @@ package com.likeminds.feed.android.core.post.detail.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.post.detail.adapter.*
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType

@@ -5,8 +5,8 @@ import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedIte
 import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedItemCommentsCountViewDataBinder
 import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedItemNoCommentsFoundViewDataBinder
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
-import com.likeminds.feed.android.core.universalfeed.adapter.databinders.*
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.databinders.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getItemInList
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseRecyclerAdapter
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
