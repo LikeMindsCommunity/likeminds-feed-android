@@ -9,7 +9,7 @@ import com.likeminds.feed.android.core.databinding.LmFeedPostMultipleMediaViewBi
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostMultipleMediaViewStyle
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedMultipleMediaPostAdapter
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
 import com.likeminds.feed.android.core.utils.base.model.ITEM_MULTIPLE_MEDIA_IMAGE
 import com.likeminds.feed.android.core.utils.base.model.ITEM_MULTIPLE_MEDIA_VIDEO
 
@@ -83,7 +83,7 @@ class LMFeedPostMultipleMediaView : ConstraintLayout {
     //sets the view pager to the multiple media type post with the provided listeners and attachments
     fun setViewPager(
         parentPosition: Int,
-        listener: LMFeedUniversalFeedAdapterListener,
+        listener: LMFeedSocialFeedAdapterListener,
         attachments: List<LMFeedAttachmentViewData>,
         isMediaRemovable: Boolean = false
     ) {

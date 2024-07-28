@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapter
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapter
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
@@ -14,9 +14,9 @@ import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoAutoPlayHelper
 
 /**
- * Represents a recycler view with list of posts in the universal feed fragment
+ * Represents a recycler view with list of posts in the social feed fragment
  */
-class LMFeedUniversalFeedListView @JvmOverloads constructor(
+class LMFeedSocialFeedListView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -25,11 +25,11 @@ class LMFeedUniversalFeedListView @JvmOverloads constructor(
     val linearLayoutManager: LinearLayoutManager
     private val dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
-    private lateinit var universalFeedAdapter: LMFeedUniversalFeedAdapter
+    private lateinit var socialFeedAdapter: LMFeedSocialFeedAdapter
     private var postVideoAutoPlayHelper: LMFeedPostVideoAutoPlayHelper? = null
     private lateinit var paginationScrollListener: LMFeedEndlessRecyclerViewScrollListener
 
-    val itemCount: Int get() = universalFeedAdapter.itemCount
+    val itemCount: Int get() = socialFeedAdapter.itemCount
 
     init {
         setHasFixedSize(true)
@@ -80,14 +80,14 @@ class LMFeedUniversalFeedListView @JvmOverloads constructor(
         }
     }
 
-    //sets the adapter with the provided [listener] to the universal feed recycler view
-    fun setAdapter(universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener) {
+    //sets the adapter with the provided [listener] to the social feed recycler view
+    fun setAdapter(socialFeedAdapterListener: LMFeedSocialFeedAdapterListener) {
         //setting adapter
-        universalFeedAdapter = LMFeedUniversalFeedAdapter(universalFeedAdapterListener)
-        adapter = universalFeedAdapter
+        socialFeedAdapter = LMFeedSocialFeedAdapter(socialFeedAdapterListener)
+        adapter = socialFeedAdapter
     }
 
-    //sets the pagination scroll listener to the universal feed recycler view
+    //sets the pagination scroll listener to the social feed recycler view
     fun setPaginationScrollListener(scrollListener: LMFeedEndlessRecyclerViewScrollListener) {
         paginationScrollListener = scrollListener
         addOnScrollListener(scrollListener)
@@ -100,29 +100,29 @@ class LMFeedUniversalFeedListView @JvmOverloads constructor(
         }
     }
 
-    //returns the list of all the posts in the universal feed adapter
+    //returns the list of all the posts in the social feed adapter
     fun allPosts(): List<LMFeedBaseViewType> {
-        return universalFeedAdapter.items()
+        return socialFeedAdapter.items()
     }
 
-    //replaces the [posts] in the universal feed adapter with the provided posts
+    //replaces the [posts] in the social feed adapter with the provided posts
     fun replacePosts(posts: List<LMFeedPostViewData>) {
-        universalFeedAdapter.replace(posts)
+        socialFeedAdapter.replace(posts)
     }
 
-    //adds the provided [posts] in the universal feed adapter
+    //adds the provided [posts] in the social feed adapter
     fun addPosts(posts: List<LMFeedPostViewData>) {
-        universalFeedAdapter.addAll(posts)
+        socialFeedAdapter.addAll(posts)
     }
 
-    //removes the post at the provided [index] in the universal feed adapter
+    //removes the post at the provided [index] in the social feed adapter
     fun removePostAtIndex(index: Int) {
-        universalFeedAdapter.removeIndex(index)
+        socialFeedAdapter.removeIndex(index)
     }
 
-    //clears all the posts in the universal feed adapter and notifies the recycler view
+    //clears all the posts in the social feed adapter and notifies the recycler view
     fun clearPostsAndNotify() {
-        universalFeedAdapter.clearAndNotify()
+        socialFeedAdapter.clearAndNotify()
     }
 
     /**
@@ -131,7 +131,7 @@ class LMFeedUniversalFeedListView @JvmOverloads constructor(
 
     //get index and post from the adapter using postId
     fun getIndexAndPostFromAdapter(postId: String): Pair<Int, LMFeedPostViewData>? {
-        val index = universalFeedAdapter.items().indexOfFirst {
+        val index = socialFeedAdapter.items().indexOfFirst {
             (it is LMFeedPostViewData) && (it.id == postId)
         }
 
@@ -146,17 +146,17 @@ class LMFeedUniversalFeedListView @JvmOverloads constructor(
 
     //get post from the adapter using index
     private fun getPostFromAdapter(position: Int): LMFeedPostViewData? {
-        return universalFeedAdapter.items()[position] as? LMFeedPostViewData
+        return socialFeedAdapter.items()[position] as? LMFeedPostViewData
     }
 
     //updates the post item at the provided position without notifying the recycler view
     fun updatePostWithoutNotifying(position: Int, postItem: LMFeedPostViewData) {
-        universalFeedAdapter.updateWithoutNotifyingRV(position, postItem)
+        socialFeedAdapter.updateWithoutNotifyingRV(position, postItem)
     }
 
     //returns the post item at the provided index
     fun updatePostItem(position: Int, updatedPostItem: LMFeedPostViewData) {
-        universalFeedAdapter.update(position, updatedPostItem)
+        socialFeedAdapter.update(position, updatedPostItem)
     }
 
     /**

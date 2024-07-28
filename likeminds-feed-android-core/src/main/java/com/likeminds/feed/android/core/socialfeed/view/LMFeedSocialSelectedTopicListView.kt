@@ -4,11 +4,11 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalSelectedTopicAdapter
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalSelectedTopicAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapter
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 
-class LMFeedUniversalSelectedTopicListView @JvmOverloads constructor(
+class LMFeedSocialSelectedTopicListView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -16,7 +16,7 @@ class LMFeedUniversalSelectedTopicListView @JvmOverloads constructor(
 
     val linearLayoutManager: LinearLayoutManager
 
-    private lateinit var selectedTopicAdapter: LMFeedUniversalSelectedTopicAdapter
+    private lateinit var selectedTopicAdapter: LMFeedSocialSelectedTopicAdapter
 
     init {
         setHasFixedSize(true)
@@ -33,8 +33,8 @@ class LMFeedUniversalSelectedTopicListView @JvmOverloads constructor(
     }
 
     //sets the adapter with the provided [listener] to the selected topic recycler view
-    fun setAdapter(listener: LMFeedUniversalSelectedTopicAdapterListener) {
-        selectedTopicAdapter = LMFeedUniversalSelectedTopicAdapter(listener)
+    fun setAdapter(listener: LMFeedSocialSelectedTopicAdapterListener) {
+        selectedTopicAdapter = LMFeedSocialSelectedTopicAdapter(listener)
         adapter = selectedTopicAdapter
     }
 

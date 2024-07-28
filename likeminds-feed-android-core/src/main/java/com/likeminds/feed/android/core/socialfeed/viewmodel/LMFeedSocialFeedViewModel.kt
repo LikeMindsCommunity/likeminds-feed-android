@@ -29,18 +29,18 @@ import com.likeminds.usertagging.util.UserTaggingDecoder
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
-class LMFeedUniversalFeedViewModel : ViewModel() {
+class LMFeedSocialFeedViewModel : ViewModel() {
 
     private val lmFeedClient: LMFeedClient by lazy {
         LMFeedClient.getInstance()
     }
 
-    private val _universalFeedResponse by lazy {
+    private val _socialFeedResponse by lazy {
         MutableLiveData<Pair<Int, List<LMFeedPostViewData>>>()
     }
 
-    val universalFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
-        _universalFeedResponse
+    val socialFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
+        _socialFeedResponse
     }
 
 
@@ -117,7 +117,7 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
     }
 
     sealed class ErrorMessageEvent {
-        data class UniversalFeed(val errorMessage: String?) : ErrorMessageEvent()
+        data class SocialFeed(val errorMessage: String?) : ErrorMessageEvent()
 
         data class LikePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
 
@@ -231,7 +231,7 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
                 .topicIds(topicsIds)
                 .build()
 
-            //call universal feed api
+            //call get feed api
             val response = lmFeedClient.getFeed(request)
 
             if (response.success) {
@@ -243,7 +243,7 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
 
                 //convert to view data
                 val listOfPostViewData =
-                    LMFeedViewDataConvertor.convertUniversalFeedPosts(
+                    LMFeedViewDataConvertor.convertGetFeedPosts(
                         posts,
                         usersMap,
                         topicsMap,
@@ -251,10 +251,10 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
                     )
 
                 //send it to ui
-                _universalFeedResponse.postValue(Pair(page, listOfPostViewData))
+                _socialFeedResponse.postValue(Pair(page, listOfPostViewData))
             } else {
                 //for error
-                errorMessageChannel.send(ErrorMessageEvent.UniversalFeed(response.errorMessage))
+                errorMessageChannel.send(ErrorMessageEvent.SocialFeed(response.errorMessage))
             }
         }
     }

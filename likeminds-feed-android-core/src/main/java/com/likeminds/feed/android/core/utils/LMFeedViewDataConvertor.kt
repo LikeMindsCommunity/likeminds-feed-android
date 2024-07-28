@@ -131,8 +131,8 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
-    // converts response of the universal feed post to list of LMFeedPostViewData
-    fun convertUniversalFeedPosts(
+    // converts response of the get feed post to list of LMFeedPostViewData
+    fun convertGetFeedPosts(
         posts: List<Post>,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,

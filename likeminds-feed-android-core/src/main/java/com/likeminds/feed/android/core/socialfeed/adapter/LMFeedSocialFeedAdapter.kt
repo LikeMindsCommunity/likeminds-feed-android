@@ -8,8 +8,8 @@ import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getItemInList
 import com.likeminds.feed.android.core.utils.base.*
 
-class LMFeedUniversalFeedAdapter(
-    private val universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
+class LMFeedSocialFeedAdapter(
+    private val socialFeedAdapterListener: LMFeedSocialFeedAdapterListener,
 ) : LMFeedBaseRecyclerAdapter<LMFeedBaseViewType>() {
 
     init {
@@ -20,31 +20,31 @@ class LMFeedUniversalFeedAdapter(
         val viewDataBinders = ArrayList<LMFeedViewDataBinder<*, *>>(7)
 
         val itemPostTextOnlyBinder =
-            LMFeedItemPostTextOnlyViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostTextOnlyViewDataBinder(socialFeedAdapterListener)
         viewDataBinders.add(itemPostTextOnlyBinder)
 
         val itemPostSingleImageViewDataBinder =
-            LMFeedItemPostSingleImageViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostSingleImageViewDataBinder(socialFeedAdapterListener)
         viewDataBinders.add(itemPostSingleImageViewDataBinder)
 
         val itemPostSingleVideoViewDataBinder =
-            LMFeedItemPostSingleVideoViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostSingleVideoViewDataBinder(socialFeedAdapterListener)
         viewDataBinders.add(itemPostSingleVideoViewDataBinder)
 
         val itemPostLinkViewDataBinder =
-            LMFeedItemPostLinkViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostLinkViewDataBinder(socialFeedAdapterListener)
         viewDataBinders.add(itemPostLinkViewDataBinder)
 
         val itemPostDocumentsViewDataBinder =
-            LMFeedItemPostDocumentsViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostDocumentsViewDataBinder(socialFeedAdapterListener)
         viewDataBinders.add(itemPostDocumentsViewDataBinder)
 
         val itemPostMultipleMediaViewDataBinder =
-            LMFeedItemPostMultipleMediaViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostMultipleMediaViewDataBinder(socialFeedAdapterListener)
         viewDataBinders.add(itemPostMultipleMediaViewDataBinder)
 
         val itemPostPollViewDataBinder =
-            LMFeedItemPostPollViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostPollViewDataBinder(socialFeedAdapterListener)
         viewDataBinders.add(itemPostPollViewDataBinder)
 
         return viewDataBinders
@@ -65,7 +65,7 @@ class LMFeedUniversalFeedAdapter(
     }
 }
 
-interface LMFeedUniversalFeedAdapterListener {
+interface LMFeedSocialFeedAdapterListener {
 
     fun onPostContentClicked(position: Int, postViewData: LMFeedPostViewData) {
         //triggered when the user clicks on post content

@@ -10,15 +10,15 @@ import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 
 /**
- * [LMFeedUniversalFeedFragmentViewStyle] helps you to customize the universal feed fragment [LMFeedUniversalFeedFragment]
+ * [LMFeedSocialFeedFragmentViewStyle] helps you to customize the social feed fragment [LMFeedSocialFeedFragment]
  *
- * @property headerViewStyle : [LMFeedHeaderViewStyle] this will help you to customize the header view in the universal feed fragment
- * @property createNewPostButtonViewStyle : [LMFeedFABStyle] this will help you to customize the create new post fab in the universal feed fragment
- * @property noPostLayoutViewStyle: [LMFeedNoEntityLayoutViewStyle] this will help you to customize the no post layout in the universal feed fragment
- * @property postingViewStyle: [LMFeedPostingViewStyle] this will help you to customize the posting progress view in the universal feed fragment
- * @property topicSelectorBarStyle: [LMFeedUniversalTopicSelectorBarViewStyle] this will help you to customize the topic selector bar in the universal feed fragment
+ * @property headerViewStyle : [LMFeedHeaderViewStyle] this will help you to customize the header view in the social feed fragment
+ * @property createNewPostButtonViewStyle : [LMFeedFABStyle] this will help you to customize the create new post fab in the social feed fragment
+ * @property noPostLayoutViewStyle: [LMFeedNoEntityLayoutViewStyle] this will help you to customize the no post layout in the social feed fragment
+ * @property postingViewStyle: [LMFeedPostingViewStyle] this will help you to customize the posting progress view in the social feed fragment
+ * @property topicSelectorBarStyle: [LMFeedSocialTopicSelectorBarViewStyle] this will help you to customize the topic selector bar in the social feed fragment
  * */
-class LMFeedUniversalFeedFragmentViewStyle private constructor(
+class LMFeedSocialFeedFragmentViewStyle private constructor(
     //header
     val headerViewStyle: LMFeedHeaderViewStyle,
     //create post button
@@ -28,7 +28,7 @@ class LMFeedUniversalFeedFragmentViewStyle private constructor(
     //posting view
     val postingViewStyle: LMFeedPostingViewStyle,
     //topic selector bar view
-    val topicSelectorBarStyle: LMFeedUniversalTopicSelectorBarViewStyle
+    val topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -120,8 +120,8 @@ class LMFeedUniversalFeedFragmentViewStyle private constructor(
         private var postingViewStyle: LMFeedPostingViewStyle = LMFeedPostingViewStyle.Builder()
             .build()
 
-        private var topicSelectorBarStyle: LMFeedUniversalTopicSelectorBarViewStyle =
-            LMFeedUniversalTopicSelectorBarViewStyle.Builder()
+        private var topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle =
+            LMFeedSocialTopicSelectorBarViewStyle.Builder()
                 .backgroundColor(R.color.lm_feed_white)
                 .build()
 
@@ -141,12 +141,12 @@ class LMFeedUniversalFeedFragmentViewStyle private constructor(
             this.postingViewStyle = postingViewStyle
         }
 
-        fun topicSelectorBarStyle(topicSelectorBarStyle: LMFeedUniversalTopicSelectorBarViewStyle) =
+        fun topicSelectorBarStyle(topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle) =
             apply {
                 this.topicSelectorBarStyle = topicSelectorBarStyle
             }
 
-        fun build() = LMFeedUniversalFeedFragmentViewStyle(
+        fun build() = LMFeedSocialFeedFragmentViewStyle(
             headerViewStyle,
             createNewPostButtonViewStyle,
             noPostLayoutViewStyle,

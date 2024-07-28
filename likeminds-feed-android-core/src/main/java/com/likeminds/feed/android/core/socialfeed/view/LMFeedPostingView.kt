@@ -113,7 +113,7 @@ class LMFeedPostingView : ConstraintLayout {
             if (uri != null) {
                 show()
                 val thumbnailStyle =
-                    LMFeedStyleTransformer.universalFeedFragmentViewStyle.postingViewStyle.attachmentThumbnailImageStyle
+                    LMFeedStyleTransformer.socialFeedFragmentViewStyle.postingViewStyle.attachmentThumbnailImageStyle
                 LMFeedImageBindingUtil.loadImage(
                     view = this,
                     file = uri,

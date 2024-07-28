@@ -45,7 +45,7 @@ import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderVi
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils.customizePostTopicsGroup
@@ -75,7 +75,7 @@ import kotlinx.coroutines.flow.*
 
 open class LMFeedEditPostFragment :
     Fragment(),
-    LMFeedUniversalFeedAdapterListener {
+    LMFeedSocialFeedAdapterListener {
 
     private lateinit var binding: LmFeedFragmentEditPostBinding
 

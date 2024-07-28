@@ -8,7 +8,7 @@ import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
- * [LMFeedUniversalTopicSelectorBarViewStyle] helps you to customize the likes fragment [LMFeedUniversalTopicSelectorBarView]
+ * [LMFeedSocialTopicSelectorBarViewStyle] helps you to customize the likes fragment [LMFeedSocialTopicSelectorBarView]
  *
  * @property allTopicsSelectorStyle : [LMFeedTextStyle] this will help you to customize the all topics selector text of the topic selector bar
  * @property clearTopicFilterStyle : [LMFeedTextStyle] this will help you to customize the clear topic filter text of the topic selector bar
@@ -17,7 +17,7 @@ import com.likeminds.feed.android.core.utils.LMFeedViewStyle
  * @property backgroundColor: [Int] should be in format of [ColorRes] this will help you to customize the background color of the topic selector bar | Default value = [null]
  * @property elevation: [Int] should be in format of [DimenRes] to add custom elevation of the topic selector bar | Default value =  [null]
  * */
-class LMFeedUniversalTopicSelectorBarViewStyle private constructor(
+class LMFeedSocialTopicSelectorBarViewStyle private constructor(
     //all topics selector style
     val allTopicsSelectorStyle: LMFeedTextStyle,
     //clear topic filter view style
@@ -83,7 +83,7 @@ class LMFeedUniversalTopicSelectorBarViewStyle private constructor(
             this.elevation = elevation
         }
 
-        fun build() = LMFeedUniversalTopicSelectorBarViewStyle(
+        fun build() = LMFeedSocialTopicSelectorBarViewStyle(
             allTopicsSelectorStyle,
             clearTopicFilterStyle,
             selectedTopicTextStyle,

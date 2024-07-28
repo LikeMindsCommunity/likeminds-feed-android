@@ -6,16 +6,16 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.likeminds.feed.android.core.databinding.LmFeedUniversalTopicSelectorBarBinding
+import com.likeminds.feed.android.core.databinding.LmFeedSocialTopicSelectorBarBinding
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalSelectedTopicAdapterListener
-import com.likeminds.feed.android.core.socialfeed.style.LMFeedUniversalTopicSelectorBarViewStyle
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
+import com.likeminds.feed.android.core.socialfeed.style.LMFeedSocialTopicSelectorBarViewStyle
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
 
-class LMFeedUniversalTopicSelectorBarView : ConstraintLayout {
+class LMFeedSocialTopicSelectorBarView : ConstraintLayout {
 
     constructor(context: Context) : super(context)
 
@@ -30,11 +30,11 @@ class LMFeedUniversalTopicSelectorBarView : ConstraintLayout {
     private val inflater =
         (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
 
-    private val binding: LmFeedUniversalTopicSelectorBarBinding =
-        LmFeedUniversalTopicSelectorBarBinding.inflate(inflater, this, true)
+    private val binding: LmFeedSocialTopicSelectorBarBinding =
+        LmFeedSocialTopicSelectorBarBinding.inflate(inflater, this, true)
 
     //sets the provided [topicSelectorBarStyle] to the topic selector bar
-    fun setStyle(topicSelectorBarStyle: LMFeedUniversalTopicSelectorBarViewStyle) {
+    fun setStyle(topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle) {
         topicSelectorBarStyle.apply {
 
             //sets background color
@@ -44,7 +44,7 @@ class LMFeedUniversalTopicSelectorBarView : ConstraintLayout {
 
             //sets the elevation of the header view
             elevation?.let {
-                this@LMFeedUniversalTopicSelectorBarView.elevation = resources.getDimension(it)
+                this@LMFeedSocialTopicSelectorBarView.elevation = resources.getDimension(it)
             }
 
             //configures all the views in the topic selector bar
@@ -124,7 +124,7 @@ class LMFeedUniversalTopicSelectorBarView : ConstraintLayout {
      */
 
     //exposed function to set the adapter with the provided [listener] to the selected topic recycler view
-    fun setSelectedTopicAdapter(listener: LMFeedUniversalSelectedTopicAdapterListener) {
+    fun setSelectedTopicAdapter(listener: LMFeedSocialSelectedTopicAdapterListener) {
         binding.rvSelectedTopics.setAdapter(listener)
     }
 

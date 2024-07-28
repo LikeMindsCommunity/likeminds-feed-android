@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostPollBinding
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollOptionViewData
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
@@ -13,7 +13,7 @@ import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_POLL
 
 class LMFeedItemPostPollViewDataBinder(
-    private val universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
+    private val socialFeedAdapterListener: LMFeedSocialFeedAdapterListener,
 ) : LMFeedViewDataBinder<LmFeedItemPostPollBinding, LMFeedPostViewData>(),
     LMFeedPollOptionsAdapterListener {
 
@@ -72,7 +72,7 @@ class LMFeedItemPostPollViewDataBinder(
                 data,
                 position,
                 postTopicsGroup,
-                universalFeedAdapterListener,
+                socialFeedAdapterListener,
                 returnBinder = {
                     return@setPostBindData
                 }, executeBinder = {
@@ -92,7 +92,7 @@ class LMFeedItemPostPollViewDataBinder(
         binding.apply {
             postHeader.setMenuIconClickListener {
                 val post = postViewData ?: return@setMenuIconClickListener
-                universalFeedAdapterListener.onPostMenuIconClicked(
+                socialFeedAdapterListener.onPostMenuIconClicked(
                     position,
                     postHeader.headerMenu,
                     post
@@ -101,54 +101,54 @@ class LMFeedItemPostPollViewDataBinder(
 
             postHeader.setAuthorFrameClickListener {
                 val post = this.postViewData ?: return@setAuthorFrameClickListener
-                universalFeedAdapterListener.onPostAuthorHeaderClicked(position, post)
+                socialFeedAdapterListener.onPostAuthorHeaderClicked(position, post)
             }
 
             postPollView.setPollTitleClicked {
                 val post = this.postViewData ?: return@setPollTitleClicked
-                universalFeedAdapterListener.onPostPollTitleClicked(position, post)
+                socialFeedAdapterListener.onPostPollTitleClicked(position, post)
             }
 
             postPollView.setEditPollClicked {
                 val post = this.postViewData ?: return@setEditPollClicked
-                universalFeedAdapterListener.onPostEditPollClicked(position, post)
+                socialFeedAdapterListener.onPostEditPollClicked(position, post)
             }
 
             postPollView.setClearPollClicked {
                 val post = this.postViewData ?: return@setClearPollClicked
-                universalFeedAdapterListener.onPostClearPollClicked(position, post)
+                socialFeedAdapterListener.onPostClearPollClicked(position, post)
             }
 
             postPollView.setAddPollOptionClicked {
                 val post = this.postViewData ?: return@setAddPollOptionClicked
-                universalFeedAdapterListener.onPostAddPollOptionClicked(position, post)
+                socialFeedAdapterListener.onPostAddPollOptionClicked(position, post)
             }
 
             postPollView.setSubmitPollVoteClicked {
                 val post = this.postViewData ?: return@setSubmitPollVoteClicked
-                universalFeedAdapterListener.onPostSubmitPollVoteClicked(position, post)
+                socialFeedAdapterListener.onPostSubmitPollVoteClicked(position, post)
             }
 
             postPollView.setMemberVotedCountClicked {
                 val post = this.postViewData ?: return@setMemberVotedCountClicked
-                universalFeedAdapterListener.onPostMemberVotedCountClicked(position, post)
+                socialFeedAdapterListener.onPostMemberVotedCountClicked(position, post)
             }
 
             postPollView.setEditPollVoteClicked {
                 val post = this.postViewData ?: return@setEditPollVoteClicked
-                universalFeedAdapterListener.onPostEditPollVoteClicked(position, post)
+                socialFeedAdapterListener.onPostEditPollVoteClicked(position, post)
             }
 
             postFooter.setLikeIconClickListener {
                 val post = this.postViewData ?: return@setLikeIconClickListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
-                universalFeedAdapterListener.onPostLikeClicked(position, updatedPost)
+                socialFeedAdapterListener.onPostLikeClicked(position, updatedPost)
             }
 
             postFooter.setLikesCountClickListener {
                 val post = this.postViewData ?: return@setLikesCountClickListener
                 if (post.footerViewData.likesCount > 0) {
-                    universalFeedAdapterListener.onPostLikesCountClicked(position, post)
+                    socialFeedAdapterListener.onPostLikesCountClicked(position, post)
                 } else {
                     return@setLikesCountClickListener
                 }
@@ -156,18 +156,18 @@ class LMFeedItemPostPollViewDataBinder(
 
             postFooter.setCommentsCountClickListener {
                 val post = this.postViewData ?: return@setCommentsCountClickListener
-                universalFeedAdapterListener.onPostCommentsCountClicked(position, post)
+                socialFeedAdapterListener.onPostCommentsCountClicked(position, post)
             }
 
             postFooter.setSaveIconListener {
                 val post = this.postViewData ?: return@setSaveIconListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
-                universalFeedAdapterListener.onPostSaveClicked(position, updatedPost)
+                socialFeedAdapterListener.onPostSaveClicked(position, updatedPost)
             }
 
             postFooter.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
-                universalFeedAdapterListener.onPostShareClicked(position, post)
+                socialFeedAdapterListener.onPostShareClicked(position, post)
             }
         }
     }
@@ -183,7 +183,7 @@ class LMFeedItemPostPollViewDataBinder(
             pollOptionViewData
         )
 
-        universalFeedAdapterListener.onPollOptionClicked(
+        socialFeedAdapterListener.onPollOptionClicked(
             pollPosition,
             pollOptionPosition,
             pollOptionViewData
@@ -201,7 +201,7 @@ class LMFeedItemPostPollViewDataBinder(
             pollOptionViewData
         )
 
-        universalFeedAdapterListener.onPollOptionVoteCountClicked(
+        socialFeedAdapterListener.onPollOptionVoteCountClicked(
             pollPosition,
             pollOptionPosition,
             pollOptionViewData

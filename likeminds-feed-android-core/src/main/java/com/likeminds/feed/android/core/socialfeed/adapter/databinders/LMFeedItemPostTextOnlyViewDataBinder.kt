@@ -3,14 +3,14 @@ package com.likeminds.feed.android.core.socialfeed.adapter.databinders
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostTextOnlyBinding
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_TEXT_ONLY
 
 class LMFeedItemPostTextOnlyViewDataBinder(
-    private val universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener
+    private val socialFeedAdapterListener: LMFeedSocialFeedAdapterListener
 ) : LMFeedViewDataBinder<LmFeedItemPostTextOnlyBinding, LMFeedPostViewData>() {
 
     override val viewType: Int
@@ -60,7 +60,7 @@ class LMFeedItemPostTextOnlyViewDataBinder(
                 data,
                 position,
                 postTopicsGroup,
-                universalFeedAdapterListener,
+                socialFeedAdapterListener,
                 returnBinder = {
                     return@setPostBindData
                 }, executeBinder = {}
@@ -72,7 +72,7 @@ class LMFeedItemPostTextOnlyViewDataBinder(
         binding.apply {
             postHeader.setMenuIconClickListener {
                 val post = postViewData ?: return@setMenuIconClickListener
-                universalFeedAdapterListener.onPostMenuIconClicked(
+                socialFeedAdapterListener.onPostMenuIconClicked(
                     position,
                     postHeader.headerMenu,
                     post
@@ -81,19 +81,19 @@ class LMFeedItemPostTextOnlyViewDataBinder(
 
             postHeader.setAuthorFrameClickListener {
                 val post = this.postViewData ?: return@setAuthorFrameClickListener
-                universalFeedAdapterListener.onPostAuthorHeaderClicked(position, post)
+                socialFeedAdapterListener.onPostAuthorHeaderClicked(position, post)
             }
 
             postFooter.setLikeIconClickListener {
                 val post = this.postViewData ?: return@setLikeIconClickListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
-                universalFeedAdapterListener.onPostLikeClicked(position, updatedPost)
+                socialFeedAdapterListener.onPostLikeClicked(position, updatedPost)
             }
 
             postFooter.setLikesCountClickListener {
                 val post = this.postViewData ?: return@setLikesCountClickListener
                 if (post.footerViewData.likesCount > 0) {
-                    universalFeedAdapterListener.onPostLikesCountClicked(position, post)
+                    socialFeedAdapterListener.onPostLikesCountClicked(position, post)
                 } else {
                     return@setLikesCountClickListener
                 }
@@ -101,18 +101,18 @@ class LMFeedItemPostTextOnlyViewDataBinder(
 
             postFooter.setCommentsCountClickListener {
                 val post = this.postViewData ?: return@setCommentsCountClickListener
-                universalFeedAdapterListener.onPostCommentsCountClicked(position, post)
+                socialFeedAdapterListener.onPostCommentsCountClicked(position, post)
             }
 
             postFooter.setSaveIconListener {
                 val post = this.postViewData ?: return@setSaveIconListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
-                universalFeedAdapterListener.onPostSaveClicked(position, updatedPost)
+                socialFeedAdapterListener.onPostSaveClicked(position, updatedPost)
             }
 
             postFooter.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
-                universalFeedAdapterListener.onPostShareClicked(position, post)
+                socialFeedAdapterListener.onPostShareClicked(position, post)
             }
         }
     }

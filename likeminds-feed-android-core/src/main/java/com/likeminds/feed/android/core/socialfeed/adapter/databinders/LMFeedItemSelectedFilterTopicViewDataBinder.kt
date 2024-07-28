@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import com.likeminds.feed.android.core.databinding.LmFeedItemSelectedFilterTopicBinding
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalSelectedTopicAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_TOPIC
 
 class LMFeedItemSelectedFilterTopicViewDataBinder(
-    private val listener: LMFeedUniversalSelectedTopicAdapterListener
+    private val listener: LMFeedSocialSelectedTopicAdapterListener
 ) : LMFeedViewDataBinder<LmFeedItemSelectedFilterTopicBinding, LMFeedTopicViewData>() {
 
     override val viewType: Int
@@ -29,7 +29,7 @@ class LMFeedItemSelectedFilterTopicViewDataBinder(
 
             //set styles
             val topicSelectorBarStyle =
-                LMFeedStyleTransformer.universalFeedFragmentViewStyle.topicSelectorBarStyle
+                LMFeedStyleTransformer.socialFeedFragmentViewStyle.topicSelectorBarStyle
 
             tvTopicName.setStyle(topicSelectorBarStyle.selectedTopicTextStyle)
             ivCross.setStyle(topicSelectorBarStyle.removeSelectedTopicIconStyle)

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedDocumentsAdapter
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedUniversalFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
@@ -50,7 +50,7 @@ class LMFeedDocumentListView @JvmOverloads constructor(
         parentPosition: Int,
         mediaViewData: LMFeedMediaViewData,
         tvShowMore: LMFeedTextView,
-        listener: LMFeedUniversalFeedAdapterListener,
+        listener: LMFeedSocialFeedAdapterListener,
         isMediaRemovable: Boolean
     ) {
         documentsAdapter = LMFeedDocumentsAdapter(parentPosition, listener, isMediaRemovable)

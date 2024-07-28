@@ -72,7 +72,7 @@ object LMFeedAnalytics {
     object Source {
         const val DEEP_LINK = "deep_link"
         const val NOTIFICATION = "notification"
-        const val UNIVERSAL_FEED = "universal_feed"
+        const val SOCIAL_FEED = "social_feed"
         const val POST_DETAIL = "post_detail"
     }
 
@@ -104,7 +104,7 @@ object LMFeedAnalytics {
         track(
             Events.FEED_OPENED,
             mapOf(
-                "feed_type" to "universal_feed"
+                "feed_type" to "social_feed"
             )
         )
     }

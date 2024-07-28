@@ -65,11 +65,11 @@
     <!-- Dot view-->
     <dimen name="lm_feed_dot_view_size">4dp</dimen>
 
-    <!--    Universal Feed Screen-->
+    <!--    Social Feed Screen-->
     <dimen name="lm_feed_create_new_post_text_size">15sp</dimen>
     <dimen name="lm_feed_create_new_post_padding">20dp</dimen>
     <dimen name="lm_feed_icon_padding">4dp</dimen>
-    <dimen name="lm_feed_universal_feed_header_icon_size">36dp</dimen>
+    <dimen name="lm_feed_social_feed_header_icon_size">36dp</dimen>
     <dimen name="lm_feed_create_new_post_icon_size">30dp</dimen>
     <dimen name="lm_feed_notification_badge_text_size">10sp</dimen>
     <dimen name="lm_feed_notification_icon_padding">6dp</dimen>
