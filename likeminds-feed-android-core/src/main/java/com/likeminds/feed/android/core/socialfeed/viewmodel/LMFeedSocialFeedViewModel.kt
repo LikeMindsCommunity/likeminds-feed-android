@@ -43,7 +43,6 @@ class LMFeedSocialFeedViewModel : ViewModel() {
         _socialFeedResponse
     }
 
-
     private val _postSavedResponse by lazy {
         MutableLiveData<LMFeedPostViewData>()
     }
