@@ -1,37 +1,22 @@
-package com.likeminds.feedsocial
+package com.likeminds.feedvideo
 
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.LMFeedCore
 import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedFragment
-import com.likeminds.feedsocial.LMSocialFeed.Companion.LM_SOCIAL_FEED_TAG
-import com.likeminds.feedsocial.auth.util.LMSocialFeedAuthPreferences
+import com.likeminds.feedvideo.LMVideoFeed.Companion.LM_VIDEO_FEED_TAG
+import com.likeminds.feedvideo.auth.util.LMVideoFeedAuthPreferences
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var lmSocialFeedAuthPreferences: LMSocialFeedAuthPreferences
+    private lateinit var lmVideoFeedAuthPreferences: LMVideoFeedAuthPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        lmSocialFeedAuthPreferences = LMSocialFeedAuthPreferences(this)
-
-        //without API Key Security
-//        LMFeedCore.showFeed(
-//            this,
-//            apiKey = authPreferences.getApiKey(),
-//            uuid = authPreferences.getUserId(),
-//            userName = authPreferences.getUserName(),
-//            success = {
-//                replaceFragment()
-//            },
-//            error = {
-//                Log.e("Example", "$it")
-//            }
-//        )
+        lmVideoFeedAuthPreferences = LMVideoFeedAuthPreferences(this)
 
         //with API Key Security
         callInitiateUser { accessToken, refreshToken ->
@@ -43,7 +28,7 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment()
                 },
                 error = {
-                    Log.e(LM_SOCIAL_FEED_TAG, "$it")
+                    Log.e(LM_VIDEO_FEED_TAG, "$it")
                 }
             )
         }
@@ -62,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val task = GetTokensTask()
             val tokens = task.getTokens(applicationContext, false)
-            Log.d(LM_SOCIAL_FEED_TAG, "tokens: $tokens")
+            Log.d(LM_VIDEO_FEED_TAG, "tokens: $tokens")
             callback(tokens.first, tokens.second)
         }
     }

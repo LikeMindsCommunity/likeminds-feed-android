@@ -1,0 +1,15 @@
+dependencies {
+    implementation feed_deps.android_core.core
+    implementation feed_deps.android_core.appcompat
+    implementation feed_deps.ui.material_design
+    implementation feed_deps.ui.constraint_layout
+
+    implementation platform(feed_deps.firebase.bom)
+    implementation feed_deps.firebase.messaging
+
+    testImplementation feed_deps.testing.junit
+    androidTestImplementation feed_deps.testing.android_junit
+    androidTestImplementation feed_deps.testing.espresso_core
+
+    implementation project(":likeminds-feed-android-core")
+}

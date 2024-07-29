@@ -1,14 +1,14 @@
-package com.likeminds.feedsocial.auth.util
+package com.likeminds.feedvideo.auth.util
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.provider.Settings
 
-class AuthPreferences(context: Context) {
+class LMVideoFeedAuthPreferences(context: Context) {
 
     companion object {
-        const val AUTH_PREFS = "auth_prefs"
+        const val VIDEO_FEED_AUTH_PREFS = "video_feed_auth_prefs"
         const val API_KEY = "api_key"
         const val USER_NAME = "user_name"
         const val USER_ID = "user_id"
@@ -16,7 +16,7 @@ class AuthPreferences(context: Context) {
     }
 
     private val preferences: SharedPreferences =
-        context.getSharedPreferences(AUTH_PREFS, Context.MODE_PRIVATE)
+        context.getSharedPreferences(VIDEO_FEED_AUTH_PREFS, Context.MODE_PRIVATE)
 
     @SuppressLint("HardwareIds")
     private val deviceId =

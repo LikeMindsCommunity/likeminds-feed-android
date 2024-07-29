@@ -9,10 +9,10 @@ import com.likeminds.feed.android.core.LMFeedCoreCallback
 import kotlinx.coroutines.runBlocking
 
 
-class LMFeedExample : Application(), LMFeedCoreCallback {
+class LMSocialFeed : Application(), LMFeedCoreCallback {
 
     companion object {
-        const val LM_FEED_EXAMPLE_TAG = "LMFeedExample"
+        const val LM_SOCIAL_FEED_TAG = "LMSocialFeed"
     }
 
     @SuppressLint("HardwareIds")
@@ -31,7 +31,7 @@ class LMFeedExample : Application(), LMFeedCoreCallback {
 
     override fun onAccessTokenExpiredAndRefreshed(accessToken: String, refreshToken: String) {
         Log.d(
-            LM_FEED_EXAMPLE_TAG, """
+            LM_SOCIAL_FEED_TAG, """
             Example Layer Callback -> onAccessTokenExpiredAndRefreshed
             accessToken: $accessToken
             refreshToken: $refreshToken
@@ -42,14 +42,14 @@ class LMFeedExample : Application(), LMFeedCoreCallback {
     override fun onRefreshTokenExpired(): Pair<String?, String?> {
         return runBlocking {
             Log.d(
-                LM_FEED_EXAMPLE_TAG, """
+                LM_SOCIAL_FEED_TAG, """
                 Example Layer Callback -> onRefreshTokenExpired
             """.trimIndent()
             )
 
             val task = GetTokensTask()
             val tokens = task.getTokens(applicationContext, false)
-            Log.d(LM_FEED_EXAMPLE_TAG, "tokens: $tokens")
+            Log.d(LM_SOCIAL_FEED_TAG, "tokens: $tokens")
             tokens
         }
     }

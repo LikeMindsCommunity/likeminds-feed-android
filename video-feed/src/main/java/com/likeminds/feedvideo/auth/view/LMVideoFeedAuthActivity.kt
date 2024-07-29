@@ -1,29 +1,29 @@
-package com.likeminds.feedsocial.auth.view
+package com.likeminds.feedvideo.auth.view
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.utils.LMFeedRoute
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
-import com.likeminds.feedsocial.MainActivity
-import com.likeminds.feedsocial.R
-import com.likeminds.feedsocial.auth.util.AuthPreferences
-import com.likeminds.feedsocial.databinding.ActivityAuthBinding
+import com.likeminds.feedvideo.MainActivity
+import com.likeminds.feedvideo.R
+import com.likeminds.feedvideo.auth.util.LMVideoFeedAuthPreferences
+import com.likeminds.feedvideo.databinding.ActivityFeedVideoAuthBinding
 
-class AuthActivity : AppCompatActivity() {
+class LMVideoFeedAuthActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityAuthBinding
+    private lateinit var binding: ActivityFeedVideoAuthBinding
 
-    private lateinit var authPreferences: AuthPreferences
+    private lateinit var lmVideoFeedAuthPreferences: LMVideoFeedAuthPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        authPreferences = AuthPreferences(this)
-        binding = ActivityAuthBinding.inflate(layoutInflater)
+        lmVideoFeedAuthPreferences = LMVideoFeedAuthPreferences(this)
+        binding = ActivityFeedVideoAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val isLoggedIn = authPreferences.getIsLoggedIn()
+        val isLoggedIn = lmVideoFeedAuthPreferences.getIsLoggedIn()
 
         if (isLoggedIn) {
             // user already logged in, navigate using deep linking or to [MainActivity]
@@ -91,10 +91,10 @@ class AuthActivity : AppCompatActivity() {
                 }
 
                 // save login details to auth prefs
-                authPreferences.saveIsLoggedIn(true)
-                authPreferences.saveApiKey(apiKey)
-                authPreferences.saveUserName(userName)
-                authPreferences.saveUserId(userId)
+                lmVideoFeedAuthPreferences.saveIsLoggedIn(true)
+                lmVideoFeedAuthPreferences.saveApiKey(apiKey)
+                lmVideoFeedAuthPreferences.saveUserName(userName)
+                lmVideoFeedAuthPreferences.saveUserId(userId)
 
                 navigateToMainActivity()
             }

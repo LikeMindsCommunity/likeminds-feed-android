@@ -1,9 +1,9 @@
-package com.likeminds.feedsocial
+package com.likeminds.feedvideo
 
 import android.content.Context
 import android.util.Log
-import com.likeminds.feedsocial.LMSocialFeed.Companion.LM_SOCIAL_FEED_TAG
-import com.likeminds.feedsocial.auth.util.LMSocialFeedAuthPreferences
+import com.likeminds.feedvideo.LMVideoFeed.Companion.LM_VIDEO_FEED_TAG
+import com.likeminds.feedvideo.auth.util.LMVideoFeedAuthPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -13,7 +13,7 @@ import java.net.URL
 
 class GetTokensTask {
 
-    private lateinit var lmSocialFeedAuthPreferences: LMSocialFeedAuthPreferences
+    private lateinit var lmVideoFeedAuthPreferences: LMVideoFeedAuthPreferences
 
     // Get tokens from the server
     suspend fun getTokens(context: Context, isProd: Boolean): Pair<String, String> {
@@ -25,7 +25,7 @@ class GetTokensTask {
                 "https://betaauth.likeminds.community/sdk/initiate"
             }
 
-            lmSocialFeedAuthPreferences = LMSocialFeedAuthPreferences(context)
+            lmVideoFeedAuthPreferences = LMVideoFeedAuthPreferences(context)
 
             // Create connection
             val url = URL(apiUrl)
@@ -39,7 +39,7 @@ class GetTokensTask {
                     "Content-Type",
                     "application/json"
                 )
-                setRequestProperty("x-api-key", lmSocialFeedAuthPreferences.getApiKey())
+                setRequestProperty("x-api-key", lmVideoFeedAuthPreferences.getApiKey())
                 setRequestProperty("x-version-code", "15")
                 setRequestProperty("x-platform-code", "an")
                 setRequestProperty("x-sdk-source", "feed")
@@ -47,8 +47,8 @@ class GetTokensTask {
 
             // Create request body
             val request = JSONObject().apply {
-                put("uuid", lmSocialFeedAuthPreferences.getUserId())
-                put("user_name", lmSocialFeedAuthPreferences.getUserName())
+                put("uuid", lmVideoFeedAuthPreferences.getUserId())
+                put("user_name", lmVideoFeedAuthPreferences.getUserName())
                 put("token_expiry_beta", 1)
                 put("rtm_token_expiry_beta", 2)
             }
@@ -77,7 +77,7 @@ class GetTokensTask {
                 val refreshToken = data.getString("refresh_token")
                 Pair(accessToken, refreshToken)
             } else {
-                Log.e(LM_SOCIAL_FEED_TAG, "Error: HTTP $responseCode")
+                Log.e(LM_VIDEO_FEED_TAG, "Error: HTTP $responseCode")
                 Pair("", "")
             }
         }
