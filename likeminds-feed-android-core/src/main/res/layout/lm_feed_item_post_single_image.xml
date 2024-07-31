@@ -66,7 +66,7 @@
             tools:scaleType="centerCrop"
             tools:srcCompat="@drawable/lm_feed_ic_pdf" />
 
-        <com.likeminds.feed.android.core.ui.widgets.post.postfooterview.view.LMFeedPostFooterView
+        <com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
             android:id="@+id/post_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

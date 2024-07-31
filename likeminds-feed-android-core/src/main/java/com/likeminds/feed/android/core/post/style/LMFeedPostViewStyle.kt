@@ -8,7 +8,7 @@ import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollOptionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollViewStyle
-import com.likeminds.feed.android.core.ui.widgets.post.postfooterview.style.LMFeedPostFooterViewStyle
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.*
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
@@ -21,7 +21,7 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * @property postHeaderViewStyle : [LMFeedPostHeaderViewStyle] this will help you to customize the post header view [LMFeedPostHeaderView]
  * @property postContentTextStyle : [LMFeedTextStyle] this will help you to customize the text content of the post
  * @property postMediaViewStyle: [LMFeedPostMediaViewStyle] this will help you to customize the media attached in the post
- * @property postFooterViewStyle: [LMFeedPostFooterViewStyle] this will help you to customize the footer view of the post [LMFeedPostFooterView]
+ * @property postActionViewStyle: [LMFeedPostActionViewStyle] this will help you to customize the action view of the post [LMFeedPostActionView]
  * @property postTopicsGroupStyle: [LMFeedChipGroupStyle] this will help you to customize the chip group in the post [LMFeedChipGroup]
  * @property postTopicChipsStyle: [LMFeedChipStyle] this will help you to customize the chips of the chip group in the post [LMFeedChip]
  *
@@ -33,8 +33,8 @@ class LMFeedPostViewStyle private constructor(
     val postContentTextStyle: LMFeedTextStyle,
     //post media style
     val postMediaViewStyle: LMFeedPostMediaViewStyle,
-    //post footer style
-    val postFooterViewStyle: LMFeedPostFooterViewStyle,
+    //post action style
+    val postActionViewStyle: LMFeedPostActionViewStyle,
     //post topics chip group style
     val postTopicsGroupStyle: LMFeedChipGroupStyle,
     //post topics chip style
@@ -96,8 +96,8 @@ class LMFeedPostViewStyle private constructor(
                 .fontResource(R.font.lm_feed_roboto)
                 .build()
 
-        private var postFooterViewStyle: LMFeedPostFooterViewStyle =
-            LMFeedPostFooterViewStyle.Builder()
+        private var postActionViewStyle: LMFeedPostActionViewStyle =
+            LMFeedPostActionViewStyle.Builder()
                 .likeIconStyle(
                     LMFeedIconStyle.Builder()
                         .activeSrc(R.drawable.lm_feed_ic_like_filled)
@@ -336,8 +336,8 @@ class LMFeedPostViewStyle private constructor(
             this.postMediaViewStyle = postMediaViewStyle
         }
 
-        fun postFooterViewStyle(postFooterViewStyle: LMFeedPostFooterViewStyle) = apply {
-            this.postFooterViewStyle = postFooterViewStyle
+        fun postActionViewStyle(postActionViewStyle: LMFeedPostActionViewStyle) = apply {
+            this.postActionViewStyle = postActionViewStyle
         }
 
         fun postTopicsGroupStyle(postTopicsGroupStyle: LMFeedChipGroupStyle) = apply {
@@ -352,7 +352,7 @@ class LMFeedPostViewStyle private constructor(
             postHeaderViewStyle,
             postContentTextStyle,
             postMediaViewStyle,
-            postFooterViewStyle,
+            postActionViewStyle,
             postTopicsGroupStyle,
             postTopicChipStyle
         )
@@ -362,7 +362,7 @@ class LMFeedPostViewStyle private constructor(
         return Builder().postHeaderViewStyle(postHeaderViewStyle)
             .postContentTextStyle(postContentTextStyle)
             .postMediaViewStyle(postMediaViewStyle)
-            .postFooterViewStyle(postFooterViewStyle)
+            .postActionViewStyle(postActionViewStyle)
             .postTopicsGroupStyle(postTopicsGroupStyle)
             .postTopicChipStyle(postTopicChipsStyle)
     }

@@ -20,7 +20,7 @@ import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
-import com.likeminds.feed.android.core.ui.widgets.post.postfooterview.view.LMFeedPostFooterView
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
@@ -55,7 +55,7 @@ object LMFeedPostBinderUtils {
     }
 
     // customizes the footer view of the post
-    fun customizePostFooterView(postFooterView: LMFeedPostFooterView) {
+    fun customizePostFooterView(postFooterView: LMFeedPostActionHorizontalView) {
         postFooterView.apply {
             val postFooterViewStyle =
                 LMFeedStyleTransformer.postViewStyle.postFooterViewStyle
@@ -257,7 +257,7 @@ object LMFeedPostBinderUtils {
 
     // sets the data in the post footer view
     fun setPostFooterViewData(
-        footerView: LMFeedPostFooterView,
+        footerView: LMFeedPostActionHorizontalView,
         footerViewData: LMFeedPostFooterViewData
     ) {
         footerView.apply {

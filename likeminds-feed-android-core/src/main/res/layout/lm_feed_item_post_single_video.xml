@@ -61,7 +61,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_post_content" />
 
-        <com.likeminds.feed.android.core.ui.widgets.post.postfooterview.view.LMFeedPostFooterView
+        <com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
             android:id="@+id/post_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

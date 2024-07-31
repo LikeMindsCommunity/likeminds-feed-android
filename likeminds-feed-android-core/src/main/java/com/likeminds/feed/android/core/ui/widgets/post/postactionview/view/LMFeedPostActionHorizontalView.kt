@@ -1,4 +1,4 @@
-package com.likeminds.feed.android.core.ui.widgets.post.postfooterview.view
+package com.likeminds.feed.android.core.ui.widgets.post.postactionview.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -8,16 +8,16 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.databinding.LmFeedPostFooterViewBinding
+import com.likeminds.feed.android.core.databinding.LmFeedPostActionHorizontalViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.widgets.post.postfooterview.style.LMFeedPostFooterViewStyle
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
 import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
 
-class LMFeedPostFooterView : ConstraintLayout {
+class LMFeedPostActionHorizontalView : ConstraintLayout {
 
     constructor(context: Context) : super(context)
 
@@ -32,10 +32,10 @@ class LMFeedPostFooterView : ConstraintLayout {
     private val inflater =
         (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
 
-    private val binding = LmFeedPostFooterViewBinding.inflate(inflater, this, true)
+    private val binding = LmFeedPostActionHorizontalViewBinding.inflate(inflater, this, true)
 
     //sets provided [postFooterViewStyle] to the post footer view
-    fun setStyle(postFooterViewStyle: LMFeedPostFooterViewStyle) {
+    fun setStyle(postFooterViewStyle: LMFeedPostActionViewStyle) {
 
         postFooterViewStyle.apply {
             //set background color
@@ -118,7 +118,7 @@ class LMFeedPostFooterView : ConstraintLayout {
      * @param isLiked - whether the post is liked or not.
      */
     fun setLikesIcon(isLiked: Boolean = false) {
-        val iconStyle = LMFeedStyleTransformer.postViewStyle.postFooterViewStyle.likeIconStyle
+        val iconStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle.likeIconStyle
 
         val likeIcon = if (isLiked) {
             iconStyle.activeSrc
@@ -173,7 +173,7 @@ class LMFeedPostFooterView : ConstraintLayout {
      */
     fun setSaveIcon(isSaved: Boolean = false) {
         binding.ivSave.apply {
-            val iconStyle = LMFeedStyleTransformer.postViewStyle.postFooterViewStyle.saveIconStyle
+            val iconStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle.saveIconStyle
 
             if (iconStyle == null) {
                 hide()

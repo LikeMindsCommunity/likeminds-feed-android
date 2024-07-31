@@ -1,4 +1,4 @@
-package com.likeminds.feed.android.core.ui.widgets.post.postfooterview.style
+package com.likeminds.feed.android.core.ui.widgets.post.postactionview.style
 
 import android.view.View
 import androidx.annotation.ColorRes
@@ -7,16 +7,16 @@ import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
- * [LMFeedPostFooterViewStyle] helps you to customize the post footer view
+ * [LMFeedPostActionViewStyle] helps you to customize the post action view
  *
- * @property likeIconStyle : [LMFeedIconStyle] this will help you to customize the like icon in the post footer view
- * @property likeTextStyle : [LMFeedTextStyle] this will help you to customize the like text in the post footer view | set its value to [null] if you want to hide the like text in the post footer
- * @property commentTextStyle: [LMFeedTextStyle] this will help you to customize the comment text in the post footer view
- * @property saveIconStyle: [LMFeedIconStyle] this will help you to customize the save icon in the post footer view | set its value to [null] if you want to hide the save icon in the post footer
- * @property shareIconStyle: [LMFeedIconStyle] this will help you to customize the share icon in the post footer view | set its value to [null] if you want to hide the share icon in the post footer
- * @property backgroundColor: [Int] should be in format of [ColorRes] to add background color of the footer view | Default value =  [null]
+ * @property likeIconStyle : [LMFeedIconStyle] this will help you to customize the like icon in the post action view
+ * @property likeTextStyle : [LMFeedTextStyle] this will help you to customize the like text in the post action view | set its value to [null] if you want to hide the like text in the post action
+ * @property commentTextStyle: [LMFeedTextStyle] this will help you to customize the comment text in the post action view
+ * @property saveIconStyle: [LMFeedIconStyle] this will help you to customize the save icon in the post action view | set its value to [null] if you want to hide the save icon in the post action
+ * @property shareIconStyle: [LMFeedIconStyle] this will help you to customize the share icon in the post action view | set its value to [null] if you want to hide the share icon in the post action
+ * @property backgroundColor: [Int] should be in format of [ColorRes] to add background color of the action view | Default value =  [null]
  * */
-class LMFeedPostFooterViewStyle private constructor(
+class LMFeedPostActionViewStyle private constructor(
     //likes icon style
     val likeIconStyle: LMFeedIconStyle,
     //likes text style
@@ -27,7 +27,7 @@ class LMFeedPostFooterViewStyle private constructor(
     val saveIconStyle: LMFeedIconStyle?,
     //share icon style
     val shareIconStyle: LMFeedIconStyle?,
-    //background color of the footer view
+    //background color of the action view
     @ColorRes val backgroundColor: Int?,
 ) : LMFeedViewStyle {
 
@@ -78,7 +78,7 @@ class LMFeedPostFooterViewStyle private constructor(
         fun backgroundColor(@ColorRes backgroundColor: Int?) =
             apply { this.backgroundColor = backgroundColor }
 
-        fun build() = LMFeedPostFooterViewStyle(
+        fun build() = LMFeedPostActionViewStyle(
             likeIconStyle,
             likeTextStyle,
             commentTextStyle,
