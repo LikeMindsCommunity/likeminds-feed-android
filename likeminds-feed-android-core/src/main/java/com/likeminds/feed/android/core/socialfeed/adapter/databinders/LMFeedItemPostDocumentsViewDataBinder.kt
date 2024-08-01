@@ -29,7 +29,7 @@ class LMFeedItemPostDocumentsViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
-            LMFeedPostBinderUtils.customizePostFooterView(postFooter)
+            LMFeedPostBinderUtils.customizePostActionHorizontalView(postFooter)
 
             LMFeedPostBinderUtils.customizePostTopicsGroup(postTopicsGroup)
 
@@ -56,7 +56,7 @@ class LMFeedItemPostDocumentsViewDataBinder(
             this.position = position
             postViewData = data
 
-            // updates the data in the post footer view
+            // updates the data in the post action view
             LMFeedPostBinderUtils.setPostFooterViewData(
                 postFooter,
                 data.footerViewData

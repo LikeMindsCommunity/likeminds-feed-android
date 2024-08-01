@@ -310,6 +310,16 @@ class LMFeedPostViewStyle private constructor(
                         )
                         .build()
                 )
+                .postVerticalVideoMediaStyle(
+                    LMFeedPostVideoMediaViewStyle.Builder()
+                        .videoProgressStyle(
+                            LMFeedProgressBarStyle.Builder()
+                                .progressColor(LMFeedTheme.getButtonColor())
+                                .build()
+                        )
+                        .backgroundColor(R.color.lm_feed_black)
+                        .build()
+                )
                 .build()
 
         private var postTopicsGroupStyle: LMFeedChipGroupStyle =

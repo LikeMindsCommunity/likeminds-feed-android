@@ -34,16 +34,16 @@ class LMFeedPostActionHorizontalView : ConstraintLayout {
 
     private val binding = LmFeedPostActionHorizontalViewBinding.inflate(inflater, this, true)
 
-    //sets provided [postFooterViewStyle] to the post footer view
-    fun setStyle(postFooterViewStyle: LMFeedPostActionViewStyle) {
+    //sets provided [postActionViewStyle] to the post action view
+    fun setStyle(postActionViewStyle: LMFeedPostActionViewStyle) {
 
-        postFooterViewStyle.apply {
+        postActionViewStyle.apply {
             //set background color
             backgroundColor?.let {
                 setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
             }
 
-            //configures each view in the post footer view with the provided style
+            //configures each view in the post action view with the provided style
             configureLikeText(likeTextStyle)
             configureLikesIcon(likeIconStyle)
             configureCommentsText(commentTextStyle)

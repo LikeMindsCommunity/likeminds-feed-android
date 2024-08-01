@@ -7,7 +7,7 @@
         android:id="@+id/cl_root"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground">
+        tools:background="?android:attr/selectableItemBackground">
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
             android:id="@+id/iv_like"

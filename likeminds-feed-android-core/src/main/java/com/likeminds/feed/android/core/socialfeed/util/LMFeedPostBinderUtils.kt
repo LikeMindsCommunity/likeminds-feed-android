@@ -25,6 +25,7 @@ import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFee
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.*
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionVerticalView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
@@ -54,17 +55,27 @@ object LMFeedPostBinderUtils {
         }
     }
 
-    // customizes the footer view of the post
-    fun customizePostFooterView(postFooterView: LMFeedPostActionHorizontalView) {
-        postFooterView.apply {
-            val postFooterViewStyle =
-                LMFeedStyleTransformer.postViewStyle.postFooterViewStyle
+    // customizes the horizontal post action view
+    fun customizePostActionHorizontalView(postActionHorizontalView: LMFeedPostActionHorizontalView) {
+        postActionHorizontalView.apply {
+            val postActionViewStyle =
+                LMFeedStyleTransformer.postViewStyle.postActionViewStyle
 
-            setStyle(postFooterViewStyle)
+            setStyle(postActionViewStyle)
         }
     }
 
-    // customizes the footer view of the post
+    // customizes the vertical post action view
+    fun customizePostActionVerticalView(postActionVerticalView: LMFeedPostActionVerticalView) {
+        postActionVerticalView.apply {
+            val postActionViewStyle =
+                LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+
+            setStyle(postActionViewStyle)
+        }
+    }
+
+    // customizes the topics view of the post
     fun customizePostTopicsGroup(postTopicsGroup: LMFeedChipGroup) {
         postTopicsGroup.apply {
             val postTopicsGroupViewStyle =
@@ -255,7 +266,7 @@ object LMFeedPostBinderUtils {
         }
     }
 
-    // sets the data in the post footer view
+    // sets the data in the post action view
     fun setPostFooterViewData(
         footerView: LMFeedPostActionHorizontalView,
         footerViewData: LMFeedPostFooterViewData

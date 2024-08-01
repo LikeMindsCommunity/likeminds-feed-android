@@ -1,10 +1,12 @@
 package com.likeminds.feed.android.core.videofeed.adapter
 
 import com.likeminds.feed.android.core.utils.base.*
+import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 import com.likeminds.feed.android.core.videofeed.adapter.databinders.LMFeedItemPostVideoFeedViewDataBinder
 
 class LMFeedVideoFeedAdapter(
-    private val videoFeedAdapterListener: LMFeedVideoFeedAdapterListener
+    private val videoFeedAdapterListener: LMFeedVideoFeedAdapterListener,
+    private val postVideoPreviewAutoPlayHelper: LMFeedPostVideoPreviewAutoPlayHelper
 ) : LMFeedBaseRecyclerAdapter<LMFeedBaseViewType>() {
 
     init {
@@ -15,7 +17,10 @@ class LMFeedVideoFeedAdapter(
         val viewDataBinders = ArrayList<LMFeedViewDataBinder<*, *>>(1)
 
         val itemPostVideoFeedViewDataBinder =
-            LMFeedItemPostVideoFeedViewDataBinder(videoFeedAdapterListener)
+            LMFeedItemPostVideoFeedViewDataBinder(
+                videoFeedAdapterListener,
+                postVideoPreviewAutoPlayHelper
+            )
 
         viewDataBinders.add(itemPostVideoFeedViewDataBinder)
 

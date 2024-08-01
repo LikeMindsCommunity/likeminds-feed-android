@@ -32,7 +32,7 @@ class LMFeedItemPostPollViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
-            LMFeedPostBinderUtils.customizePostFooterView(postFooter)
+            LMFeedPostBinderUtils.customizePostActionHorizontalView(postFooter)
 
             LMFeedPostBinderUtils.customizePostTopicsGroup(postTopicsGroup)
 
@@ -59,7 +59,7 @@ class LMFeedItemPostPollViewDataBinder(
             this.position = position
             postViewData = data
 
-            // updates the data in the post footer view
+            // updates the data in the post action view
             LMFeedPostBinderUtils.setPostFooterViewData(
                 postFooter,
                 data.footerViewData
