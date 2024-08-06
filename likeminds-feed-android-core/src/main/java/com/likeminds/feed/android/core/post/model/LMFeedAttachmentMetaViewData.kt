@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.post.model
 
 import android.net.Uri
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
+import com.likeminds.feed.android.core.widget.model.LMFeedWidgetViewData
 
 class LMFeedAttachmentMetaViewData private constructor(
     val name: String?,
@@ -15,7 +16,8 @@ class LMFeedAttachmentMetaViewData private constructor(
     val height: Int?,
     val uri: Uri?,
     val thumbnail: String?,
-    val poll: LMFeedPollViewData?
+    val poll: LMFeedPollViewData?,
+    val widgetViewData: LMFeedWidgetViewData?
 ) {
 
     class Builder {
@@ -31,6 +33,7 @@ class LMFeedAttachmentMetaViewData private constructor(
         private var uri: Uri? = null
         private var thumbnail: String? = null
         private var poll: LMFeedPollViewData? = null
+        private var widgetViewData: LMFeedWidgetViewData? = null
 
         fun name(name: String?) = apply {
             this.name = name
@@ -80,6 +83,10 @@ class LMFeedAttachmentMetaViewData private constructor(
             this.poll = poll
         }
 
+        fun widgetViewData(widgetViewData: LMFeedWidgetViewData?) = apply {
+            this.widgetViewData = widgetViewData
+        }
+
         fun build() = LMFeedAttachmentMetaViewData(
             name,
             url,
@@ -92,7 +99,8 @@ class LMFeedAttachmentMetaViewData private constructor(
             height,
             uri,
             thumbnail,
-            poll
+            poll,
+            widgetViewData
         )
     }
 
@@ -110,5 +118,6 @@ class LMFeedAttachmentMetaViewData private constructor(
             .uri(uri)
             .thumbnail(thumbnail)
             .poll(poll)
+            .widgetViewData(widgetViewData)
     }
 }
