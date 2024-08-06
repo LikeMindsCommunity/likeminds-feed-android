@@ -323,6 +323,28 @@ object LMFeedViewDataConvertor {
         }
     }
 
+    fun abc(attachment: Attachment): LMFeedAttachmentMetaViewData {
+        val attachmentMeta = attachment.attachmentMeta
+        return when (attachment.attachmentType) {
+            AttachmentType.NONE -> {
+                LMFeedAttachmentMetaViewData.Builder().build()
+            }
+
+            AttachmentType.IMAGE -> {
+                //name
+                //url
+                //
+            }
+
+            AttachmentType.VIDEO -> TODO()
+            AttachmentType.DOCUMENT -> TODO()
+            AttachmentType.LINK -> TODO()
+            AttachmentType.CUSTOM_WIDGET -> TODO()
+            AttachmentType.POLL -> TODO()
+            AttachmentType.ARTICLE -> TODO()
+        }
+    }
+
     /**
      * converts list of [AttachmentMeta] to list of [LMFeedAttachmentMetaViewData]
      * @param attachmentMeta: instance of [AttachmentMeta]
