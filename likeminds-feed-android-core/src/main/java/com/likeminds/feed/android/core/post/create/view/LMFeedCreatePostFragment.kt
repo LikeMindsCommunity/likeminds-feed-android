@@ -71,6 +71,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import org.json.JSONObject
 
 open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterListener {
     private lateinit var binding: LmFeedFragmentCreatePostBinding
@@ -569,6 +570,12 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                 val text = etPostComposer.text
                 val updatedText = memberTagging.replaceSelectedMembers(text).trim()
                 LMFeedViewUtils.hideKeyboard(binding.root)
+
+                val metadata = JSONObject().apply {
+                    put("abc", "abc")
+                    put("787", "9090")
+                }
+
                 when {
                     selectedMediaUris.isNotEmpty() -> {
                         headerViewCreatePost.setSubmitButtonEnabled(
@@ -581,7 +588,8 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                             fileUris = selectedMediaUris,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll
+                            poll = poll,
+                            metadata = metadata
                         )
                     }
 
@@ -595,7 +603,8 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                             postTextContent = updatedText,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll
+                            poll = poll,
+                            metadata = metadata
                         )
                     }
 
@@ -609,7 +618,8 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                             postTextContent = updatedText,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll
+                            poll = poll,
+                            metadata = metadata
                         )
                     }
                 }

@@ -29,6 +29,7 @@ import com.likeminds.usertagging.util.UserTaggingDecoder
 import com.likeminds.usertagging.util.UserTaggingUtil
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.json.JSONObject
 import kotlin.collections.set
 
 class LMFeedCreatePostViewModel : ViewModel() {
@@ -185,7 +186,8 @@ class LMFeedCreatePostViewModel : ViewModel() {
         fileUris: List<SingleUriData>? = null,
         ogTags: LMFeedLinkOGTagsViewData? = null,
         selectedTopics: ArrayList<LMFeedTopicViewData>? = null,
-        poll: LMFeedPollViewData? = null
+        poll: LMFeedPollViewData? = null,
+        metadata: JSONObject? = null
     ) {
         viewModelScope.launchIO {
             var updatedText = postTextContent?.trim()
@@ -213,26 +215,39 @@ class LMFeedCreatePostViewModel : ViewModel() {
                     uploadData,
                     updatedText,
                     updatedFileUris,
-                    selectedTopics
+                    selectedTopics,
+                    metadata
                 )
             } else {
                 // if the post does not have any upload-able attachments
                 val requestBuilder = AddPostRequest.Builder()
                     .text(updatedText)
 
-                if (ogTags != null) {
-                    // if the post has ogTags
-                    requestBuilder.attachments(LMFeedViewDataConvertor.convertAttachments(ogTags))
-                }
-
                 if (!topicIds.isNullOrEmpty()) {
                     //if user has selected any topics
                     requestBuilder.topicIds(topicIds)
                 }
 
-                if (poll != null) {
-                    val pollAttachment = LMFeedViewDataConvertor.convertPoll(poll)
-                    requestBuilder.attachments(pollAttachment)
+                when {
+                    ogTags != null -> {
+                        requestBuilder.attachments(
+                            LMFeedViewDataConvertor.convertAttachments(
+                                ogTags,
+                                metadata
+                            )
+                        )
+                    }
+
+                    poll != null -> {
+                        val pollAttachment = LMFeedViewDataConvertor.convertPoll(poll, metadata)
+                        requestBuilder.attachments(pollAttachment)
+                    }
+
+                    metadata != null -> {
+                        val customAttachment =
+                            listOf(LMFeedViewDataConvertor.convertCustomWidget(metadata))
+                        requestBuilder.attachments(customAttachment)
+                    }
                 }
 
                 val request = requestBuilder.build()
@@ -321,7 +336,8 @@ class LMFeedCreatePostViewModel : ViewModel() {
         uploadData: Pair<WorkContinuation, String>,
         text: String?,
         fileUris: List<LMFeedFileUploadViewData>,
-        selectedTopics: ArrayList<LMFeedTopicViewData>?
+        selectedTopics: ArrayList<LMFeedTopicViewData>?,
+        metadata: JSONObject? = null
     ) {
         viewModelScope.launchIO {
             val workerUUID = uploadData.second
@@ -331,7 +347,8 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 temporaryPostId,
                 workerUUID,
                 text,
-                fileUris
+                fileUris,
+                metadata
             )
 
             val topics = LMFeedViewDataConvertor.convertTopicsViewData(selectedTopics?.toList())

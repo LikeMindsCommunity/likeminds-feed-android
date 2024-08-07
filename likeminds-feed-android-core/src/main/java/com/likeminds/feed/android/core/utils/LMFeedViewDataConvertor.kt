@@ -850,14 +850,15 @@ object LMFeedViewDataConvertor {
         temporaryId: String,
         workerUUID: String,
         text: String?,
-        fileUris: List<LMFeedFileUploadViewData>
+        fileUris: List<LMFeedFileUploadViewData>,
+        metadata: JSONObject?,
     ): Post {
         return Post.Builder()
             .tempId(temporaryId)
             .id(temporaryId)
             .workerUUID(workerUUID)
             .text(text ?: "")
-            .attachments(convertAttachments(fileUris))
+            .attachments(convertAttachments(fileUris, metadata))
             .build()
     }
 
@@ -910,24 +911,15 @@ object LMFeedViewDataConvertor {
         }
     }
 
-    private fun convertAttachmentMeta(
-        attachmentMeta: LMFeedAttachmentMetaViewData
-    ): AttachmentMeta {
-        return AttachmentMeta.Builder().name(attachmentMeta.name)
-            .ogTags(convertOGTags(attachmentMeta.ogTags))
-            .url(attachmentMeta.url)
-            .size(attachmentMeta.size)
-            .duration(attachmentMeta.duration)
-            .pageCount(attachmentMeta.pageCount)
-            .format(attachmentMeta.format)
-            .build()
-    }
-
     // creates attachment list of Network Model for link attachment
     fun convertAttachments(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
+        linkOGTagsViewData: LMFeedLinkOGTagsViewData,
+        metadata: JSONObject?
     ): List<Attachment> {
-        return listOf(
+        val attachments = ArrayList<Attachment>()
+
+        //add link attachment
+        attachments.add(
             Attachment.Builder()
                 .attachmentType(AttachmentType.LINK)
                 .attachmentMeta(
@@ -937,34 +929,36 @@ object LMFeedViewDataConvertor {
                 )
                 .build()
         )
-    }
 
-    // creates AttachmentMeta Network Model for link attachment meta
-    private fun convertAttachmentMeta(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
-    ): AttachmentMeta {
-        return AttachmentMeta.Builder()
-            .ogTags(convertOGTags(linkOGTagsViewData))
-            .build()
-    }
-
-    // converts LinkOGTags view data model to network model
-    private fun convertOGTags(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
-    ): LinkOGTags {
-        return LinkOGTags.Builder()
-            .title(linkOGTagsViewData.title)
-            .image(linkOGTagsViewData.image)
-            .description(linkOGTagsViewData.description)
-            .url(linkOGTagsViewData.url)
-            .build()
+        //add custom widget
+        metadata?.let {
+            attachments.add(convertCustomWidget(it))
+        }
+        return attachments
     }
 
     // converts list of [LMFeedFileUploadViewData] to list of network [Attachment] model
-    private fun convertAttachments(fileUris: List<LMFeedFileUploadViewData>): List<Attachment> {
-        return fileUris.map {
-            convertAttachment(it)
+    private fun convertAttachments(
+        fileUris: List<LMFeedFileUploadViewData>,
+        metadata: JSONObject?
+    ): List<Attachment> {
+        val attachments = ArrayList<Attachment>()
+
+        //add media files
+        attachments.addAll(
+            fileUris.map {
+                convertAttachment(it)
+            }
+        )
+
+        //add meta
+        metadata?.let {
+            attachments.add(
+                convertCustomWidget(it)
+            )
         }
+
+        return attachments
     }
 
     // converts [LMFeedFileUploadViewData] to network [Attachment] model
@@ -1040,12 +1034,29 @@ object LMFeedViewDataConvertor {
     }
 
     // converts [LMFeedPollViewData] to [Attachment]
-    fun convertPoll(poll: LMFeedPollViewData): List<Attachment> {
-        return listOf(
+    fun convertPoll(poll: LMFeedPollViewData, metadata: JSONObject?): List<Attachment> {
+        val attachments = ArrayList<Attachment>()
+
+        attachments.add(
             Attachment.Builder()
                 .attachmentType(AttachmentType.POLL)
                 .attachmentMeta(LMFeedAttachmentsUtil.convertPollToJSONObject(poll))
                 .build()
         )
+
+        metadata?.let {
+            attachments.add(
+                convertCustomWidget(it)
+            )
+        }
+
+        return attachments
+    }
+
+    fun convertCustomWidget(metadata: JSONObject): Attachment {
+        return Attachment.Builder()
+            .attachmentType(AttachmentType.CUSTOM_WIDGET)
+            .attachmentMeta(metadata)
+            .build()
     }
 }
