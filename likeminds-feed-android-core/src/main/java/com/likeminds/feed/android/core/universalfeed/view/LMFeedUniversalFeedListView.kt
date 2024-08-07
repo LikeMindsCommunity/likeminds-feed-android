@@ -2,11 +2,9 @@ package com.likeminds.feed.android.core.universalfeed.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapter
 import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
@@ -27,7 +25,7 @@ class LMFeedUniversalFeedListView @JvmOverloads constructor(
     val linearLayoutManager: LinearLayoutManager
     private val dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
-    private lateinit var universalFeedAdapter: LMFeedUniversalFeedAdapter
+    lateinit var universalFeedAdapter: LMFeedUniversalFeedAdapter
     private var postVideoAutoPlayHelper: LMFeedPostVideoAutoPlayHelper? = null
     private lateinit var paginationScrollListener: LMFeedEndlessRecyclerViewScrollListener
 
