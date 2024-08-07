@@ -1,15 +1,21 @@
 package com.likeminds.feed.android.core.videofeed.view
 
 import android.os.Bundle
-import android.view.*
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentVideoFeedBinding
-import com.likeminds.feed.android.core.post.model.*
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapterListener
+import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
+import kotlin.math.log
 
 open class LMFeedVideoFeedFragment :
     Fragment(),
@@ -19,8 +25,18 @@ open class LMFeedVideoFeedFragment :
 
     private lateinit var videoFeedAdapter: LMFeedVideoFeedAdapter
 
+    private val videoFeedViewModel: LMFeedVideoFeedViewModel by viewModels()
+
     private val postVideoPreviewAutoPlayHelper by lazy {
         LMFeedPostVideoPreviewAutoPlayHelper.getInstance()
+    }
+
+    private var pageToCall: Int = 1
+
+    private var previousTotal: Int = 0
+
+    companion object {
+        private const val VIDEO_PRELOAD_THRESHOLD = 5
     }
 
     override fun onCreateView(
@@ -30,93 +46,95 @@ open class LMFeedVideoFeedFragment :
     ): View {
         binding = LmFeedFragmentVideoFeedBinding.inflate(layoutInflater)
 
+        binding.vp2VideoFeed.apply {
+            for (i in 0 until childCount) {
+                Log.d("PUI", "onCreateView: ")
+                if (getChildAt(i) is RecyclerView) {
+                    val recyclerView = getChildAt(i) as RecyclerView
+                    val itemAnimator = recyclerView.itemAnimator
+                    if (itemAnimator != null && itemAnimator is SimpleItemAnimator) {
+                        itemAnimator.supportsChangeAnimations = false
+                    }
+                }
+            }
+        }
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        fetchData()
         setAdapter()
+        observeResponses()
+    }
+
+    private fun fetchData() {
+        videoFeedViewModel.getFeed(pageToCall)
     }
 
     fun setAdapter() {
         videoFeedAdapter = LMFeedVideoFeedAdapter(this, postVideoPreviewAutoPlayHelper)
-        videoFeedAdapter.addAll(
-            listOf(LMFeedPostViewData.Builder()
-                .mediaViewData(
-                    LMFeedMediaViewData.Builder()
-                        .attachments(
-                            listOf(
-                                LMFeedAttachmentViewData.Builder()
-                                    .attachmentMeta(
-                                        LMFeedAttachmentMetaViewData.Builder()
-                                            .url("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
-                                            .build()
-                                    )
-                                    .attachmentType(REEL)
-                                    .build()
-                            )
-                        )
-                        .build()
-                )
-                .build(),
-                LMFeedPostViewData.Builder()
-                    .mediaViewData(
-                        LMFeedMediaViewData.Builder()
-                            .attachments(
-                                listOf(
-                                    LMFeedAttachmentViewData.Builder()
-                                        .attachmentMeta(
-                                            LMFeedAttachmentMetaViewData.Builder()
-                                                .url("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4")
-                                                .build()
-                                        )
-                                        .attachmentType(REEL)
-                                        .build()
-                                )
-                            )
-                            .build()
-                    )
-                    .build(),
-                LMFeedPostViewData.Builder()
-                    .mediaViewData(
-                        LMFeedMediaViewData.Builder()
-                            .attachments(
-                                listOf(
-                                    LMFeedAttachmentViewData.Builder()
-                                        .attachmentMeta(
-                                            LMFeedAttachmentMetaViewData.Builder()
-                                                .url("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4")
-                                                .build()
-                                        )
-                                        .attachmentType(REEL)
-                                        .build()
-                                )
-                            )
-                            .build()
-                    )
-                    .build(),
-                LMFeedPostViewData.Builder()
-                    .mediaViewData(
-                        LMFeedMediaViewData.Builder()
-                            .attachments(
-                                listOf(
-                                    LMFeedAttachmentViewData.Builder()
-                                        .attachmentMeta(
-                                            LMFeedAttachmentMetaViewData.Builder()
-                                                .url("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4")
-                                                .build()
-                                        )
-                                        .attachmentType(REEL)
-                                        .build()
-                                )
-                            )
-                            .build()
-                    )
-                    .build()
-            )
-        )
-        binding.vp2VideoFeed.adapter = videoFeedAdapter
+
+        binding.vp2VideoFeed.apply {
+            registerOnPageChangeCallback(object : OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+
+                    if (position >= 0 && videoFeedAdapter.items()[position] != null) {
+                        videoFeedAdapter.notifyItemChanged(position)
+                    }
+                }
+
+                override fun onPageScrollStateChanged(state: Int) {
+                    super.onPageScrollStateChanged(state)
+
+                    // Call API if the last page is reached
+                    val size: Int = videoFeedAdapter.itemCount
+
+                    if (currentItem > 0 && currentItem >= size - VIDEO_PRELOAD_THRESHOLD) {
+                        if (videoFeedAdapter.itemCount > previousTotal) {
+                            pageToCall++
+                            previousTotal = videoFeedAdapter.itemCount
+                            videoFeedViewModel.getFeed(pageToCall)
+                        } else {
+                            // todo: add that you have reached end
+                        }
+                    }
+                }
+            })
+
+            adapter = videoFeedAdapter
+        }
+    }
+
+    private fun observeResponses() {
+        videoFeedViewModel.videoFeedResponse.observe(viewLifecycleOwner) { response ->
+            val page = response.first
+            val posts = response.second
+
+            //todo:
+            if (page == 1) {
+                videoFeedAdapter.replace(posts)
+//                checkPostsAndReplace(posts)
+            } else {
+                videoFeedAdapter.addAll(posts)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val position = binding.vp2VideoFeed.currentItem
+
+        if (position >= 0
+            && videoFeedAdapter.itemCount > position
+            && videoFeedAdapter.items()[position] != null
+        ) {
+            videoFeedAdapter.notifyItemChanged(position)
+        }
     }
 
     override fun onPause() {
