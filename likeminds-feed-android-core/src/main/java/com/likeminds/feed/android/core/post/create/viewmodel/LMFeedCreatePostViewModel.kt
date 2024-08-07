@@ -285,6 +285,8 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 VIDEO -> {
                     val thumbnailUri =
                         FileUtil.getVideoThumbnailUri(context, fileUploadViewData.uri)
+                    val dimensions = FileUtil.getVideoDimensions(context, fileUploadViewData.uri)
+                    builder.height(dimensions.second).width(dimensions.first)
                     if (thumbnailUri != null) {
                         builder.thumbnailUri(thumbnailUri).build()
                     } else {

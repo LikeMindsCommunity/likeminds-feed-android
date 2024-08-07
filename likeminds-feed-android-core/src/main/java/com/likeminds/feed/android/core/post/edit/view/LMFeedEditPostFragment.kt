@@ -29,8 +29,7 @@ import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostDisabledTop
 import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity.Companion.LM_FEED_EDIT_POST_EXTRAS
 import com.likeminds.feed.android.core.post.edit.viewmodel.LMFeedEditPostViewModel
-import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
-import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
+import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
@@ -592,7 +591,11 @@ open class LMFeedEditPostFragment :
                 false
             })
 
-            if (postMediaViewData == null && poll == null) {
+            val postContainsOGTags = postMediaViewData?.attachments?.find {
+                it.attachmentType == LINK
+            } != null
+
+            if (postContainsOGTags && poll == null) {
                 // text watcher with debounce to add delay in api calls for ogTags
                 textChanges()
                     .debounce(500)
@@ -882,6 +885,7 @@ open class LMFeedEditPostFragment :
     // clears link preview
     private fun clearPreviewLink() {
         ogTags = null
+        postMediaViewData = null
         binding.linkPreview.apply {
             root.hide()
         }

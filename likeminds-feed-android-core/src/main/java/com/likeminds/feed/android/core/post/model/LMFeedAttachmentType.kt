@@ -8,7 +8,6 @@ const val DOCUMENT = 3
 const val LINK = 4
 const val CUSTOM_WIDGET = 5
 const val POLL = 6
-const val ARTICLE = 7
 
 @IntDef(
     IMAGE,
@@ -16,8 +15,7 @@ const val ARTICLE = 7
     DOCUMENT,
     LINK,
     CUSTOM_WIDGET,
-    POLL,
-    ARTICLE
+    POLL
 )
 @Retention(AnnotationRetention.SOURCE)
 annotation class LMFeedAttachmentType

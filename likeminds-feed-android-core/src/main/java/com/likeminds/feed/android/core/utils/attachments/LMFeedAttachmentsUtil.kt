@@ -1,5 +1,8 @@
 package com.likeminds.feed.android.core.utils.attachments
 
+import android.util.Base64
+import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
+import com.likeminds.feed.android.core.post.create.model.LMFeedFileUploadViewData
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentMetaViewData
 import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
@@ -8,8 +11,12 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findStringOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor.convertPoll
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor.convertWidget
+import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedAWSKeys
+import com.likeminds.likemindsfeed.poll.util.PollUtil.getPollMultiSelectStateValue
+import com.likeminds.likemindsfeed.poll.util.PollUtil.getPollTypeValue
 import com.likeminds.likemindsfeed.sdk.model.User
 import com.likeminds.likemindsfeed.widgets.model.Widget
+import org.json.JSONArray
 import org.json.JSONObject
 
 object LMFeedAttachmentsUtil {
@@ -33,6 +40,11 @@ object LMFeedAttachmentsUtil {
     const val POLL_MULTIPLE_SELECT_NUMBER_KEY = "multiple_select_number"
     const val POLL_EXPIRY_TIME_KEY = "expiry_time"
     const val POLL_IS_ANONYMOUS_KEY = "is_anonymous"
+    const val POLL_OPTIONS_KEYS = "options"
+
+    const val AWS_FOLDER_PATH_KEY = "aws_folder_path"
+    const val LOCAL_FILE_PATH_KEY = "local_file_path"
+    const val URI_KEY = "uri"
 
     fun convertAttachmentMetaToImage(attachmentMeta: JSONObject): LMFeedAttachmentMetaViewData {
         //get all the required data
@@ -96,8 +108,8 @@ object LMFeedAttachmentsUtil {
     fun convertAttachmentMetaToDocument(attachmentMeta: JSONObject): LMFeedAttachmentMetaViewData {
         //get all the required data
         val format = attachmentMeta.findStringOrDefault(FORMAT_KEY, "")
-        val name = attachmentMeta.findStringOrDefault(PAGE_COUNT_KEY, "")
-        val pageCount = attachmentMeta.findIntOrDefault(NAME_KEY, 0)
+        val name = attachmentMeta.findStringOrDefault(NAME_KEY, "")
+        val pageCount = attachmentMeta.findIntOrDefault(PAGE_COUNT_KEY, 0)
         val size = attachmentMeta.findLongOrDefault(SIZE_KEY, 0L)
         val url = attachmentMeta.findStringOrDefault(URL_KEY, "")
 
@@ -145,12 +157,12 @@ object LMFeedAttachmentsUtil {
         }
     }
 
-    fun convertLinkOGTagToJSONObject(attachmentMeta: LMFeedAttachmentMetaViewData): JSONObject {
+    fun convertLinkOGTagToJSONObject(ogTags: LMFeedLinkOGTagsViewData): JSONObject {
         val ogTagJSONObject = JSONObject().apply {
-            put(TITLE_KEY, attachmentMeta.ogTags.title)
-            put(IMAGE_KEY, attachmentMeta.ogTags.image)
-            put(DESCRIPTION_KEY, attachmentMeta.ogTags.description)
-            put(URL_KEY, attachmentMeta.ogTags.url)
+            put(TITLE_KEY, ogTags.title)
+            put(IMAGE_KEY, ogTags.image)
+            put(DESCRIPTION_KEY, ogTags.description)
+            put(URL_KEY, ogTags.url)
         }
         return JSONObject().apply {
             put(OG_TAG_KEY, ogTagJSONObject)
@@ -190,5 +202,52 @@ object LMFeedAttachmentsUtil {
                 )
             )
             .build()
+    }
+
+    fun convertPollToJSONObject(poll: LMFeedPollViewData): JSONObject {
+        return JSONObject().apply {
+            if (poll.id.isNotEmpty()) {
+                put(ENTITY_ID_KEY, poll.id)
+            }
+
+            put(TITLE_KEY, poll.title)
+            put(POLL_EXPIRY_TIME_KEY, poll.expiryTime)
+
+            val pollOptionsTexts = poll.options.map { it.text }
+            val options = JSONArray(pollOptionsTexts)
+            put(POLL_OPTIONS_KEYS, options)
+
+            put(POLL_ALLOW_ADD_OPTION_KEY, poll.allowAddOption)
+            put(
+                POLL_MULTIPLE_SELECT_STATE_KEY,
+                poll.multipleSelectState.getPollMultiSelectStateValue()
+            )
+            put(POLL_MULTIPLE_SELECT_NUMBER_KEY, poll.multipleSelectNumber)
+            put(POLL_IS_ANONYMOUS_KEY, poll.isAnonymous)
+            put(POLL_TYPE_KEY, poll.pollType.getPollTypeValue())
+        }
+    }
+
+    fun convertFileUploadToJSONObject(fileUri: LMFeedFileUploadViewData): JSONObject {
+        return JSONObject().apply {
+            val url = String(
+                Base64.decode(
+                    LMFeedAWSKeys.getBucketBaseUrl(),
+                    Base64.DEFAULT
+                )
+            ) + fileUri.awsFolderPath
+
+            put(URL_KEY, url)
+            put(FORMAT_KEY, fileUri.format)
+            put(AWS_FOLDER_PATH_KEY, fileUri.awsFolderPath)
+            put(LOCAL_FILE_PATH_KEY, fileUri.localFilePath)
+            put(URI_KEY, fileUri.uri)
+            put(NAME_KEY, fileUri.mediaName)
+            put(PAGE_COUNT_KEY, fileUri.pdfPageCount)
+            put(SIZE_KEY, fileUri.size)
+            put(HEIGHT_KEY, fileUri.height)
+            put(WIDTH_KEY, fileUri.width)
+            put(DURATION_KEY, fileUri.duration)
+        }
     }
 }

@@ -17,29 +17,16 @@ import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.universalfeed.model.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
-import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findJSONObjectOrNull
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findStringOrDefault
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.DESCRIPTION_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.DURATION_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.ENTITY_ID_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.FORMAT_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.HEIGHT_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.IMAGE_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.NAME_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.OG_TAG_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.PAGE_COUNT_KEY
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_ALLOW_ADD_OPTION_KEY
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_EXPIRY_TIME_KEY
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_IS_ANONYMOUS_KEY
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_MULTIPLE_SELECT_NUMBER_KEY
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_MULTIPLE_SELECT_STATE_KEY
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_TYPE_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.SIZE_KEY
 import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.TITLE_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.URL_KEY
-import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.WIDTH_KEY
 import com.likeminds.feed.android.core.utils.base.model.*
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedAWSKeys
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
@@ -889,36 +876,32 @@ object LMFeedViewDataConvertor {
     ): Attachment {
         return Attachment.Builder()
             .attachmentType(attachment.attachmentType.getAttachmentType())
-            .attachmentMeta(convertAttachmentMeta(attachment.attachmentMeta))
+            .attachmentMeta(convertAttachmentMeta(attachment))
             .build()
     }
 
     private fun convertAttachmentMeta(
-        attachmentMeta: LMFeedAttachmentViewData
+        attachmentViewData: LMFeedAttachmentViewData
     ): JSONObject {
-        return when (attachmentMeta.attachmentType) {
-            1 -> {
-
+        return when (@LMFeedAttachmentType attachmentViewData.attachmentType) {
+            IMAGE -> {
+                LMFeedAttachmentsUtil.convertImageToJSONObject(attachmentViewData.attachmentMeta)
             }
 
-            2 -> {
-
+            VIDEO -> {
+                LMFeedAttachmentsUtil.convertVideoToJSONObject(attachmentViewData.attachmentMeta)
             }
 
-            3 -> {
-
+            DOCUMENT -> {
+                LMFeedAttachmentsUtil.convertDocumentToJSONObject(attachmentViewData.attachmentMeta)
             }
 
-            4 -> {
-
+            LINK -> {
+                LMFeedAttachmentsUtil.convertLinkOGTagToJSONObject(attachmentViewData.attachmentMeta.ogTags)
             }
 
-            5 -> {
-
-            }
-
-            6 -> {
-
+            CUSTOM_WIDGET -> {
+                LMFeedAttachmentsUtil.convertCustomWidgetToJSONObject(attachmentViewData.attachmentMeta)
             }
 
             else -> {
@@ -947,7 +930,11 @@ object LMFeedViewDataConvertor {
         return listOf(
             Attachment.Builder()
                 .attachmentType(AttachmentType.LINK)
-                .attachmentMeta(convertAttachmentMeta(linkOGTagsViewData))
+                .attachmentMeta(
+                    LMFeedAttachmentsUtil.convertLinkOGTagToJSONObject(
+                        linkOGTagsViewData
+                    )
+                )
                 .build()
         )
     }
@@ -998,7 +985,7 @@ object LMFeedViewDataConvertor {
 
         return Attachment.Builder()
             .attachmentType(attachmentType)
-            .attachmentMeta(convertAttachmentMeta(fileUri))
+            .attachmentMeta(LMFeedAttachmentsUtil.convertFileUploadToJSONObject(fileUri))
             .build()
     }
 
@@ -1057,24 +1044,8 @@ object LMFeedViewDataConvertor {
         return listOf(
             Attachment.Builder()
                 .attachmentType(AttachmentType.POLL)
-                .attachmentMeta(convertPollAttachmentMeta(poll))
+                .attachmentMeta(LMFeedAttachmentsUtil.convertPollToJSONObject(poll))
                 .build()
         )
     }
-
-    // converts [LMFeedPollViewData] to [AttachmentMeta]
-    private fun convertPollAttachmentMeta(poll: LMFeedPollViewData): AttachmentMeta {
-        return AttachmentMeta.Builder()
-            .entityId(poll.id)
-            .title(poll.title)
-            .expiryTime(poll.expiryTime)
-            .pollOptions(poll.options.map { it.text })
-            .multiSelectState(poll.multipleSelectState)
-            .pollType(poll.pollType)
-            .multiSelectNumber(poll.multipleSelectNumber)
-            .isAnonymous(poll.isAnonymous)
-            .allowAddOption(poll.allowAddOption)
-            .build()
-    }
-
 }
