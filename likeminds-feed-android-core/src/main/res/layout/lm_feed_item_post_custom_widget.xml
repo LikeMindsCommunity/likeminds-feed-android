@@ -50,13 +50,25 @@
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_large" />
 
+        <TextView
+            android:id="@+id/tv_post_cw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bright_red"
+            android:fontFamily="@font/lm_feed_roboto"
+            android:textColor="@color/lm_feed_grey"
+            android:textSize="@dimen/lm_feed_text_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_post_content" />
+
         <com.likeminds.feed.android.core.ui.widgets.post.postfooterview.view.LMFeedPostFooterView
             android:id="@+id/post_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_post_content" />
+            app:layout_constraintTop_toBottomOf="@id/tv_post_cw" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

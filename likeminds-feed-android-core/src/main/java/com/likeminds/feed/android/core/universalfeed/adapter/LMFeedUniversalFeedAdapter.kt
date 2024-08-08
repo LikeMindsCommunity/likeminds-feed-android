@@ -7,7 +7,6 @@ import com.likeminds.feed.android.core.universalfeed.adapter.databinders.*
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getItemInList
 import com.likeminds.feed.android.core.utils.base.*
-import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_CUSTOM_WIDGET
 
 class LMFeedUniversalFeedAdapter(
     private val universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
@@ -59,22 +58,8 @@ class LMFeedUniversalFeedAdapter(
         return items().getItemInList(position)
     }
 
-    fun replaceTextOnlyBinder(viewDataBinder: LMFeedViewDataBinder<*, *>) {
-        val view = viewDataBinder.viewType
-
-        val indexOfViewData = this.supportedViewDataBinder.indexOfFirst {
-            it.viewType == view
-        }
-
-        this.supportedViewDataBinder[indexOfViewData] = viewDataBinder
-    }
-
-    fun replaceCustomWidgetBinder(viewDataBinder: LMFeedViewDataBinder<*, *>) {
-        val indexOfViewData = this.supportedViewDataBinder.indexOfFirst {
-            it.viewType == ITEM_POST_CUSTOM_WIDGET
-        }
-
-        this.supportedViewDataBinder[indexOfViewData] = viewDataBinder
+    fun replaceViewDataBinder(viewType: Int, viewDataBinder: LMFeedViewDataBinder<*, *>) {
+        supportedViewBinderResolverMap.put(viewType, viewDataBinder)
     }
 }
 

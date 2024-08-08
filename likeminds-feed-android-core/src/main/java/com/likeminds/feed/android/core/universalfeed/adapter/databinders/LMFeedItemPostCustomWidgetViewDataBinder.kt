@@ -3,9 +3,12 @@ package com.likeminds.feed.android.core.universalfeed.adapter.databinders
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostCustomWidgetBinding
+import com.likeminds.feed.android.core.post.model.CUSTOM_WIDGET
 import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.universalfeed.util.LMFeedPostBinderUtils
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_CUSTOM_WIDGET
 
@@ -64,6 +67,22 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
                     return@setPostBindData
                 }, executeBinder = {}
             )
+
+            val customWidgetData = data.mediaViewData.attachments.find {
+                it.attachmentType == CUSTOM_WIDGET
+            }
+            if (customWidgetData != null) {
+                val widgetData = customWidgetData.attachmentMeta.widgetViewData
+                if (widgetData != null) {
+                    val metadata = widgetData.metadata.toString()
+                    binding.tvPostCw.show()
+                    binding.tvPostCw.text = metadata
+                } else {
+                    binding.tvPostCw.hide()
+                }
+            } else {
+                binding.tvPostCw.hide()
+            }
         }
     }
 

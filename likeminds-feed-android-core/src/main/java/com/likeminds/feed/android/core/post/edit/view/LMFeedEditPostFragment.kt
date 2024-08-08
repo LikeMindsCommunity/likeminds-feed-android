@@ -71,6 +71,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import org.json.JSONObject
 
 open class LMFeedEditPostFragment :
     Fragment(),
@@ -83,6 +84,7 @@ open class LMFeedEditPostFragment :
     private var postMediaViewData: LMFeedMediaViewData? = null
     private var ogTags: LMFeedLinkOGTagsViewData? = null
     private var poll: LMFeedPollViewData? = null
+    private var metadata: JSONObject? = null
 
     private var post: LMFeedPostViewData? = null
 
@@ -320,6 +322,7 @@ open class LMFeedEditPostFragment :
                 if (disabledTopics.isEmpty()) {
                     //call api as all topics are enabled
                     headerViewEditPost.setSubmitButtonEnabled(isEnabled = true, showProgress = true)
+                    //todo add meta data
                     editPostViewModel.editPost(
                         editPostExtras.postId,
                         updatedText,
@@ -335,6 +338,7 @@ open class LMFeedEditPostFragment :
             } else {
                 //call api as no topics are enabled
                 headerViewEditPost.setSubmitButtonEnabled(isEnabled = true, showProgress = true)
+                //todo add meta data
                 editPostViewModel.editPost(
                     editPostExtras.postId,
                     updatedText,
@@ -532,6 +536,10 @@ open class LMFeedEditPostFragment :
                         .build()
 
                     showPollView()
+                }
+
+                ITEM_POST_CUSTOM_WIDGET -> {
+
                 }
 
                 else -> {

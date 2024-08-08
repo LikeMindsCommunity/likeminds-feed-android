@@ -103,6 +103,8 @@ open class LMFeedUniversalFeedFragment :
         binding = LmFeedFragmentUniversalFeedBinding.inflate(layoutInflater)
 
         binding.apply {
+            rvUniversal.initAdapterAndSetListener(this@LMFeedUniversalFeedFragment)
+
             customizeCreateNewPostButton(fabNewPost)
             customizeUniversalFeedHeaderView(headerViewUniversal)
             customizeNoPostLayout(layoutNoPost)
@@ -605,7 +607,7 @@ open class LMFeedUniversalFeedFragment :
     private fun initUniversalFeedRecyclerView() {
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
         binding.rvUniversal.apply {
-            setAdapter(this@LMFeedUniversalFeedFragment)
+            setAdapter()
 
             val paginationScrollListener =
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -1405,7 +1407,6 @@ open class LMFeedUniversalFeedFragment :
     }
 
     protected open fun customizeUniversalFeedListView(rvUniversal: LMFeedUniversalFeedListView) {
-
     }
 
     //processes the user profile clicked

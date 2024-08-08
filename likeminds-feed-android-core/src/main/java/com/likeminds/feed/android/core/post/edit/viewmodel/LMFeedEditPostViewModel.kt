@@ -20,6 +20,7 @@ import com.likeminds.usertagging.model.TagUser
 import com.likeminds.usertagging.util.UserTaggingUtil
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.json.JSONObject
 
 class LMFeedEditPostViewModel : ViewModel() {
 
@@ -150,7 +151,8 @@ class LMFeedEditPostViewModel : ViewModel() {
         attachments: List<LMFeedAttachmentViewData>? = null,
         ogTags: LMFeedLinkOGTagsViewData? = null,
         selectedTopics: List<LMFeedTopicViewData>? = null,
-        poll: LMFeedPollViewData? = null
+        poll: LMFeedPollViewData? = null,
+        metadata: JSONObject? = null
     ) {
         viewModelScope.launchIO {
             var updatedText = postTextContent?.trim()
@@ -180,11 +182,21 @@ class LMFeedEditPostViewModel : ViewModel() {
 
                     if (ogTags != null) {
                         // if the post has ogTags
-                        requestBuilder.attachments(LMFeedViewDataConvertor.convertAttachments(ogTags))
+                        requestBuilder.attachments(
+                            LMFeedViewDataConvertor.convertAttachments(
+                                ogTags,
+                                metadata
+                            )
+                        )
                     }
                     if (poll != null) {
                         //if the post has poll
-                        requestBuilder.attachments(LMFeedViewDataConvertor.convertPoll(poll))
+                        requestBuilder.attachments(
+                            LMFeedViewDataConvertor.convertPoll(
+                                poll,
+                                metadata
+                            )
+                        )
                     }
                     requestBuilder.build()
                 }

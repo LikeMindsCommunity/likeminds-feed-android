@@ -25,6 +25,10 @@ class LMFeedPostViewData private constructor(
 
     override val viewType: Int
         get() = when {
+            (mediaViewData.attachments.isEmpty()) -> {
+                ITEM_POST_TEXT_ONLY
+            }
+
             (noOfCustomWidgets == mediaViewData.attachments.size) -> {
                 ITEM_POST_CUSTOM_WIDGET
             }
