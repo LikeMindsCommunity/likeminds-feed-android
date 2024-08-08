@@ -23,6 +23,7 @@ import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostFooterViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostHeaderViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
@@ -60,11 +61,11 @@ object LMFeedPostBinderUtils {
     }
 
     // customizes the content view of the post
-    fun customizePostContentView(postContent: LMFeedTextView) {
-        postContent.apply {
-            val postContentTextStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-            setStyle(postContentTextStyle)
-        }
+    fun customizePostContentView(
+        postContent: LMFeedTextView,
+        postContentTextStyle: LMFeedTextStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
+    ) {
+        postContent.setStyle(postContentTextStyle)
     }
 
     // customizes the horizontal post action view

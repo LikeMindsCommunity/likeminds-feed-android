@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.videofeed.adapter.databinders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
@@ -27,19 +28,45 @@ class LMFeedItemPostVideoFeedViewDataBinder(
         )
 
         binding.apply {
-            val verticalVideoPostHeaderViewStyle =
-                LMFeedStyleTransformer.postViewStyle.postHeaderViewStyle.toBuilder()
-                    .backgroundColor(android.R.color.transparent)
-                    .menuIconStyle(null)
-                    .pinIconStyle(null)
-                    .build()
+            val postViewStyle = LMFeedStyleTransformer.postViewStyle
+            val postHeaderViewStyle = postViewStyle.postHeaderViewStyle
+
+            val verticalVideoPostHeaderViewStyle = postHeaderViewStyle.toBuilder()
+                .authorNameViewStyle(
+                    postHeaderViewStyle.authorNameViewStyle.toBuilder()
+                        .textColor(R.color.lm_feed_white)
+                        .build()
+                )
+                .postEditedTextStyle(
+                    postHeaderViewStyle.postEditedTextStyle?.toBuilder()
+                        ?.textColor(R.color.lm_feed_white)
+                        ?.build()
+                )
+                .timestampTextStyle(
+                    postHeaderViewStyle.timestampTextStyle?.toBuilder()
+                        ?.textColor(R.color.lm_feed_white)
+                        ?.build()
+                )
+                .backgroundColor(android.R.color.transparent)
+                .menuIconStyle(null)
+                .pinIconStyle(null)
+                .build()
 
             LMFeedPostBinderUtils.customizePostHeaderView(
                 postHeader,
                 verticalVideoPostHeaderViewStyle
             )
 
-            LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
+            val verticalVideoPostContentTextStyle = postViewStyle.postContentTextStyle.toBuilder()
+                .textColor(R.color.lm_feed_white)
+                // todo: this needs to be handle properly
+                .maxLines(1)
+                .build()
+
+            LMFeedPostBinderUtils.customizePostContentView(
+                tvPostContent,
+                verticalVideoPostContentTextStyle
+            )
 
             LMFeedPostBinderUtils.customizePostActionVerticalView(postActionView)
 
