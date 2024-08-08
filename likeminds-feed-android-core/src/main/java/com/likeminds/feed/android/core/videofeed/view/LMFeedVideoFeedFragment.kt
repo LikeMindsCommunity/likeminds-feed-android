@@ -4,13 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentVideoFeedBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.utils.LMFeedRoute
+import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
@@ -142,5 +147,72 @@ open class LMFeedVideoFeedFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         postVideoPreviewAutoPlayHelper.removePlayer()
+    }
+
+    //callback when the user clicks on the post like button
+    override fun onPostLikeClicked(position: Int, postViewData: LMFeedPostViewData) {
+        val userPreferences = LMFeedUserPreferences(requireContext())
+        val loggedInUUID = userPreferences.getUUID()
+
+        //call api
+        videoFeedViewModel.likePost(
+            postViewData.id,
+            postViewData.footerViewData.isLiked,
+            loggedInUUID
+        )
+
+        val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
+
+        //update view pager item
+        videoFeedAdapter.update(adapterPosition, postViewData)
+    }
+
+    //callback when the user clicks on the link in the post content
+    override fun onPostContentLinkClicked(url: String) {
+        // creates a route and returns an intent to handle the link
+        val intent = LMFeedRoute.handleDeepLink(requireContext(), url)
+        if (intent != null) {
+            try {
+                // starts activity with the intent
+                ActivityCompat.startActivity(requireContext(), intent, null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    //callback when the user clicks on the post author header
+    override fun onPostAuthorHeaderClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostAuthorHeaderClicked(position, postViewData)
+
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.openProfile(postViewData.headerViewData.user)
+    }
+
+    //callback when the tag of the user is clicked
+    override fun onPostTaggedMemberClicked(position: Int, uuid: String) {
+        super.onPostTaggedMemberClicked(position, uuid)
+
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.openProfileWithUUID(uuid)
+    }
+
+    /**
+     * Adapter Util Block
+     **/
+
+    //get index and post from the adapter using postId
+    private fun getIndexAndPostFromAdapter(postId: String): Pair<Int, LMFeedPostViewData>? {
+        val index = videoFeedAdapter.items().indexOfFirst {
+            (it is LMFeedPostViewData) && (it.id == postId)
+        }
+
+        if (index == -1) {
+            return null
+        }
+
+        val post = videoFeedAdapter.items()[index] as? LMFeedPostViewData ?: return null
+
+        return Pair(index, post)
     }
 }

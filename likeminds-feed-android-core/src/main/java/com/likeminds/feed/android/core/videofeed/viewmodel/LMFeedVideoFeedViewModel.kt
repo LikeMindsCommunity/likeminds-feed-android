@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.post.model.LikePostRequest
 import com.likeminds.likemindsfeed.universalfeed.model.GetFeedRequest
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -40,6 +42,8 @@ class LMFeedVideoFeedViewModel : ViewModel() {
 
     sealed class ErrorMessageEvent {
         data class VideoFeed(val errorMessage: String?) : ErrorMessageEvent()
+
+        data class LikePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
     }
 
     fun getFeed(page: Int, topicsIds: List<String>? = null) {
@@ -74,6 +78,39 @@ class LMFeedVideoFeedViewModel : ViewModel() {
             } else {
                 //for error
                 errorMessageChannel.send(ErrorMessageEvent.VideoFeed(response.errorMessage))
+            }
+        }
+    }
+
+    //for like/unlike a post
+    fun likePost(
+        postId: String,
+        postLiked: Boolean,
+        loggedInUUID: String
+    ) {
+        viewModelScope.launchIO {
+            val request = LikePostRequest.Builder()
+                .postId(postId)
+                .build()
+
+            //call like post api
+            val response = lmFeedClient.likePost(request)
+
+            //check for error
+            if (response.success) {
+                //sends event for post liked
+                LMFeedAnalytics.sendPostLikedEvent(
+                    uuid = loggedInUUID,
+                    postId = postId,
+                    postLiked = postLiked
+                )
+            } else {
+                errorMessageChannel.send(
+                    ErrorMessageEvent.LikePost(
+                        postId,
+                        response.errorMessage
+                    )
+                )
             }
         }
     }

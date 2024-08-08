@@ -691,6 +691,7 @@ open class LMFeedSocialFeedFragment :
         LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
     }
 
+    //callback when the user clicks on the post like button
     override fun onPostLikeClicked(position: Int, postViewData: LMFeedPostViewData) {
         val userPreferences = LMFeedUserPreferences(requireContext())
         val loggedInUUID = userPreferences.getUUID()
@@ -710,6 +711,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    //callback when the user clicks on the post likes count
     override fun onPostLikesCountClicked(position: Int, postViewData: LMFeedPostViewData) {
         //show the likes screen
         val likesScreenExtras = LMFeedLikesScreenExtras.Builder()
@@ -719,6 +721,7 @@ open class LMFeedSocialFeedFragment :
         LMFeedLikesActivity.start(requireContext(), likesScreenExtras)
     }
 
+    //callback when the user clicks on the post comments count
     override fun onPostCommentsCountClicked(position: Int, postViewData: LMFeedPostViewData) {
         // sends comment list open event
         LMFeedAnalytics.sendCommentListOpenEvent()
@@ -730,6 +733,7 @@ open class LMFeedSocialFeedFragment :
         LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
     }
 
+    //callback when the user clicks on the save post button
     override fun onPostSaveClicked(position: Int, postViewData: LMFeedPostViewData) {
         //call api
         socialFeedViewModel.savePost(postViewData)
@@ -742,6 +746,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    //callback when the user clicks on the share post button
     override fun onPostShareClicked(position: Int, postViewData: LMFeedPostViewData) {
         val userMeta = LMFeedUserMetaData.getInstance()
         LMFeedShareUtils.sharePost(
@@ -777,6 +782,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    //callback when the user clicks on the link in the post content
     override fun onPostContentLinkClicked(url: String) {
         // creates a route and returns an intent to handle the link
         val intent = LMFeedRoute.handleDeepLink(requireContext(), url)
@@ -790,6 +796,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    //callback when the user clicks on the post menu icon
     override fun onPostMenuIconClicked(
         position: Int,
         anchorView: View,
@@ -806,6 +813,7 @@ open class LMFeedSocialFeedFragment :
         popupMenu.show()
     }
 
+    //callback when the user clicks on the post image media
     override fun onPostImageMediaClicked(position: Int, postViewData: LMFeedPostViewData) {
         // sends comment list open event
         LMFeedAnalytics.sendCommentListOpenEvent()
@@ -817,6 +825,7 @@ open class LMFeedSocialFeedFragment :
         LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
     }
 
+    //callback when the user clicks on the post video media
     override fun onPostVideoMediaClicked(position: Int, postViewData: LMFeedPostViewData) {
         // sends comment list open event
         LMFeedAnalytics.sendCommentListOpenEvent()
@@ -828,6 +837,7 @@ open class LMFeedSocialFeedFragment :
         LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
     }
 
+    //callback when the user clicks on the post link media
     override fun onPostLinkMediaClicked(position: Int, postViewData: LMFeedPostViewData) {
         // creates a route and returns an intent to handle the link
         val intent = LMFeedRoute.handleDeepLink(
@@ -845,6 +855,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    //callback when the user clicks on the post documents media
     override fun onPostDocumentMediaClicked(
         position: Int,
         parentPosition: Int,
@@ -856,6 +867,7 @@ open class LMFeedSocialFeedFragment :
         LMFeedAndroidUtils.startDocumentViewer(requireContext(), pdfUri)
     }
 
+    //callback when the user clicks on the post image inside multiple media
     override fun onPostMultipleMediaImageClicked(
         position: Int,
         parentPosition: Int,
@@ -871,6 +883,7 @@ open class LMFeedSocialFeedFragment :
         LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
     }
 
+    //callback when the user clicks on the post video inside multiple media
     override fun onPostMultipleMediaVideoClicked(
         position: Int,
         parentPosition: Int,
