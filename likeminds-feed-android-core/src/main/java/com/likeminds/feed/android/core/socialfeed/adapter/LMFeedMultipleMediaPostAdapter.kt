@@ -6,7 +6,7 @@ import com.likeminds.feed.android.core.utils.base.*
 
 class LMFeedMultipleMediaPostAdapter(
     private val parentPosition: Int,
-    private val listener: LMFeedSocialFeedAdapterListener,
+    private val listener: LMFeedPostAdapterListener,
     private val isMediaRemovable: Boolean = false
 ) : LMFeedBaseRecyclerAdapter<LMFeedBaseViewType>() {
 

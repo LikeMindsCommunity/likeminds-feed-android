@@ -24,6 +24,16 @@
             app:layout_constraintEnd_toStartOf="@id/post_action_view"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
+            android:id="@+id/post_topics_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/lm_feed_regular_margin"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/post_header" />
+
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_post_content"
             android:layout_width="match_parent"

@@ -3,7 +3,7 @@ package com.likeminds.feed.android.core.socialfeed.adapter.databinders
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostSingleImageBinding
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
@@ -11,7 +11,7 @@ import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_SINGLE_IMAGE
 
 class LMFeedItemPostSingleImageViewDataBinder(
-    private val socialFeedAdapterListener: LMFeedSocialFeedAdapterListener
+    private val postAdapterListener: LMFeedPostAdapterListener
 ) : LMFeedViewDataBinder<LmFeedItemPostSingleImageBinding, LMFeedPostViewData>() {
 
     override val viewType: Int
@@ -68,7 +68,7 @@ class LMFeedItemPostSingleImageViewDataBinder(
                 data,
                 position,
                 postTopicsGroup,
-                socialFeedAdapterListener,
+                postAdapterListener,
                 returnBinder = {
                     return@setPostBindData
                 }, executeBinder = {
@@ -86,7 +86,7 @@ class LMFeedItemPostSingleImageViewDataBinder(
         binding.apply {
             postHeader.setMenuIconClickListener {
                 val post = postViewData ?: return@setMenuIconClickListener
-                socialFeedAdapterListener.onPostMenuIconClicked(
+                postAdapterListener.onPostMenuIconClicked(
                     position,
                     postHeader.headerMenu,
                     post
@@ -95,24 +95,24 @@ class LMFeedItemPostSingleImageViewDataBinder(
 
             postHeader.setAuthorFrameClickListener {
                 val post = postViewData ?: return@setAuthorFrameClickListener
-                socialFeedAdapterListener.onPostAuthorHeaderClicked(position, post)
+                postAdapterListener.onPostAuthorHeaderClicked(position, post)
             }
 
             postImageView.setOnClickListener {
                 val post = postViewData ?: return@setOnClickListener
-                socialFeedAdapterListener.onPostImageMediaClicked(position, post)
+                postAdapterListener.onPostImageMediaClicked(position, post)
             }
 
             postFooter.setLikeIconClickListener {
                 val post = postViewData ?: return@setLikeIconClickListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
-                socialFeedAdapterListener.onPostLikeClicked(position, updatedPost)
+                postAdapterListener.onPostLikeClicked(position, updatedPost)
             }
 
             postFooter.setLikesCountClickListener {
                 val post = postViewData ?: return@setLikesCountClickListener
                 if (post.footerViewData.likesCount > 0) {
-                    socialFeedAdapterListener.onPostLikesCountClicked(position, post)
+                    postAdapterListener.onPostLikesCountClicked(position, post)
                 } else {
                     return@setLikesCountClickListener
                 }
@@ -120,18 +120,18 @@ class LMFeedItemPostSingleImageViewDataBinder(
 
             postFooter.setCommentsCountClickListener {
                 val post = postViewData ?: return@setCommentsCountClickListener
-                socialFeedAdapterListener.onPostCommentsCountClicked(position, post)
+                postAdapterListener.onPostCommentsCountClicked(position, post)
             }
 
             postFooter.setSaveIconListener {
                 val post = postViewData ?: return@setSaveIconListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
-                socialFeedAdapterListener.onPostSaveClicked(position, updatedPost)
+                postAdapterListener.onPostSaveClicked(position, updatedPost)
             }
 
             postFooter.setShareIconListener {
                 val post = postViewData ?: return@setShareIconListener
-                socialFeedAdapterListener.onPostShareClicked(position, post)
+                postAdapterListener.onPostShareClicked(position, post)
             }
         }
     }

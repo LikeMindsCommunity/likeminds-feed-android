@@ -1,7 +1,6 @@
 package com.likeminds.feed.android.core.videofeed.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentVideoFeedBinding
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
-import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapterListener
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
-import kotlin.math.log
 
 open class LMFeedVideoFeedFragment :
     Fragment(),
-    LMFeedVideoFeedAdapterListener {
+    LMFeedPostAdapterListener {
 
     private lateinit var binding: LmFeedFragmentVideoFeedBinding
 
@@ -48,7 +46,6 @@ open class LMFeedVideoFeedFragment :
 
         binding.vp2VideoFeed.apply {
             for (i in 0 until childCount) {
-                Log.d("PUI", "onCreateView: ")
                 if (getChildAt(i) is RecyclerView) {
                     val recyclerView = getChildAt(i) as RecyclerView
                     val itemAnimator = recyclerView.itemAnimator

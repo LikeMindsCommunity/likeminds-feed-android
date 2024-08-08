@@ -1,7 +1,11 @@
 package com.likeminds.feed.android.core.socialfeed.util
 
 import android.content.Context
-import android.text.*
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.TextUtils
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
@@ -13,6 +17,11 @@ import com.likeminds.feed.android.core.overflowmenu.model.PIN_POST_MENU_ITEM_ID
 import com.likeminds.feed.android.core.overflowmenu.model.UNPIN_POST_MENU_ITEM_ID
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostFooterViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostHeaderViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
@@ -21,12 +30,17 @@ import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
-import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
-import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
-import com.likeminds.feed.android.core.socialfeed.model.*
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionVerticalView
-import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
+import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
+import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostDocumentView
+import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostDocumentsMediaView
+import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostImageMediaView
+import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostLinkMediaView
+import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostMultipleMediaView
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
+import com.likeminds.feed.android.core.utils.LMFeedSeeMoreUtil
+import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
@@ -38,13 +52,11 @@ import com.likeminds.usertagging.util.UserTaggingDecoder
 object LMFeedPostBinderUtils {
 
     // customizes the header view of the post
-    fun customizePostHeaderView(postHeaderView: LMFeedPostHeaderView) {
-        postHeaderView.apply {
-            val postHeaderViewStyle =
-                LMFeedStyleTransformer.postViewStyle.postHeaderViewStyle
-
-            setStyle(postHeaderViewStyle)
-        }
+    fun customizePostHeaderView(
+        postHeaderView: LMFeedPostHeaderView,
+        postHeaderViewStyle: LMFeedPostHeaderViewStyle = LMFeedStyleTransformer.postViewStyle.postHeaderViewStyle
+    ) {
+        postHeaderView.setStyle(postHeaderViewStyle)
     }
 
     // customizes the content view of the post
@@ -92,13 +104,13 @@ object LMFeedPostBinderUtils {
         data: LMFeedPostViewData,
         position: Int,
         topicsView: LMFeedChipGroup,
-        socialFeedAdapterListener: LMFeedSocialFeedAdapterListener,
+        postAdapterListener: LMFeedPostAdapterListener,
         returnBinder: () -> Unit,
         executeBinder: () -> Unit
     ) {
         if (data.fromPostLiked || data.fromPostSaved || data.fromVideoAction) {
             // update fromLiked/fromSaved variables and return from binder
-            socialFeedAdapterListener.updateFromLikedSaved(position, data)
+            postAdapterListener.updateFromLikedSaved(position, data)
             returnBinder()
         } else {
             // call all the common functions
@@ -113,7 +125,7 @@ object LMFeedPostBinderUtils {
             setPostContentViewData(
                 contentView,
                 data,
-                socialFeedAdapterListener,
+                postAdapterListener,
                 position
             )
 
@@ -149,7 +161,7 @@ object LMFeedPostBinderUtils {
     private fun setPostContentViewData(
         contentView: LMFeedTextView,
         postViewData: LMFeedPostViewData,
-        socialFeedAdapterListener: LMFeedSocialFeedAdapterListener,
+        postAdapterListener: LMFeedPostAdapterListener,
         position: Int,
     ) {
         contentView.apply {
@@ -188,7 +200,7 @@ object LMFeedPostBinderUtils {
                     }
                     alreadySeenFullContent = true
                     val updatedPost = updatePostForSeeFullContent(postViewData)
-                    socialFeedAdapterListener.onPostContentSeeMoreClicked(position, updatedPost)
+                    postAdapterListener.onPostContentSeeMoreClicked(position, updatedPost)
                 }
 
                 override fun updateDrawState(textPaint: TextPaint) {
@@ -199,7 +211,7 @@ object LMFeedPostBinderUtils {
             // post is used here to get lines count in the text view
             post {
                 setOnClickListener {
-                    socialFeedAdapterListener.onPostContentClicked(position, postViewData)
+                    postAdapterListener.onPostContentClicked(position, postViewData)
                 }
 
                 UserTaggingDecoder.decodeRegexIntoSpannableText(
@@ -218,7 +230,7 @@ object LMFeedPostBinderUtils {
                         ?: route.lastPathSegment
                         ?: return@decodeRegexIntoSpannableText
 
-                    socialFeedAdapterListener.onPostTaggedMemberClicked(position, uuid)
+                    postAdapterListener.onPostTaggedMemberClicked(position, uuid)
                 }
 
                 val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
@@ -259,7 +271,7 @@ object LMFeedPostBinderUtils {
                         return@setOnClickListener
                     }
 
-                    socialFeedAdapterListener.onPostContentLinkClicked(url)
+                    postAdapterListener.onPostContentLinkClicked(url)
                     true
                 }
             }
@@ -490,7 +502,7 @@ object LMFeedPostBinderUtils {
         position: Int,
         postDocumentsMediaView: LMFeedPostDocumentsMediaView,
         mediaData: LMFeedMediaViewData,
-        listener: LMFeedSocialFeedAdapterListener
+        listener: LMFeedPostAdapterListener
     ) {
         //sets documents adapter and handles show more functionality of documents
         postDocumentsMediaView.setAdapter(
@@ -534,7 +546,7 @@ object LMFeedPostBinderUtils {
         position: Int,
         multipleMediaView: LMFeedPostMultipleMediaView,
         data: LMFeedMediaViewData,
-        listener: LMFeedSocialFeedAdapterListener
+        listener: LMFeedPostAdapterListener
     ) {
         multipleMediaView.apply {
             //sets multiple media view pager

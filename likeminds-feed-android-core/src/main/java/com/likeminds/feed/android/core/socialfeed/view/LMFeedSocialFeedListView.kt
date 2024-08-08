@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapter
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
@@ -81,9 +81,9 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
     }
 
     //sets the adapter with the provided [listener] to the social feed recycler view
-    fun setAdapter(socialFeedAdapterListener: LMFeedSocialFeedAdapterListener) {
+    fun setAdapter(postAdapterListener: LMFeedPostAdapterListener) {
         //setting adapter
-        socialFeedAdapter = LMFeedSocialFeedAdapter(socialFeedAdapterListener)
+        socialFeedAdapter = LMFeedSocialFeedAdapter(postAdapterListener)
         adapter = socialFeedAdapter
     }
 

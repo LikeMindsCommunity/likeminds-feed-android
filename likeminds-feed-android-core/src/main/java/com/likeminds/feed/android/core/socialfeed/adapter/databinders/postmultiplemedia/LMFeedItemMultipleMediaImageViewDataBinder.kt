@@ -7,7 +7,7 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedItemMultipleMediaImageBinding
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
@@ -15,7 +15,7 @@ import com.likeminds.feed.android.core.utils.base.model.ITEM_MULTIPLE_MEDIA_IMAG
 
 class LMFeedItemMultipleMediaImageViewDataBinder(
     private val parentPosition: Int,
-    private val listener: LMFeedSocialFeedAdapterListener,
+    private val listener: LMFeedPostAdapterListener,
     private val isMediaRemovable: Boolean
 ) : LMFeedViewDataBinder<LmFeedItemMultipleMediaImageBinding, LMFeedAttachmentViewData>() {
 

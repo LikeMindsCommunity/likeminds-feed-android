@@ -5,7 +5,7 @@ import com.likeminds.feed.android.core.utils.base.*
 
 class LMFeedDocumentsAdapter(
     private val parentPosition: Int,
-    private val socialFeedAdapterListener: LMFeedSocialFeedAdapterListener,
+    private val postAdapterListener: LMFeedPostAdapterListener,
     private val isMediaRemovable: Boolean = false
 ) : LMFeedBaseRecyclerAdapter<LMFeedBaseViewType>() {
 
@@ -19,7 +19,7 @@ class LMFeedDocumentsAdapter(
         val documentsBinder =
             LMFeedItemDocumentViewDataBinder(
                 parentPosition,
-                socialFeedAdapterListener,
+                postAdapterListener,
                 isMediaRemovable
             )
         viewDataBinders.add(documentsBinder)

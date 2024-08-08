@@ -54,7 +54,7 @@ import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEn
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
 import com.likeminds.feed.android.core.ui.widgets.poll.view.*
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
@@ -75,7 +75,7 @@ import java.util.UUID
 
 open class LMFeedSocialFeedFragment :
     Fragment(),
-    LMFeedSocialFeedAdapterListener,
+    LMFeedPostAdapterListener,
     LMFeedAdminDeleteDialogListener,
     LMFeedSelfDeleteDialogListener,
     LMFeedSocialSelectedTopicAdapterListener,
