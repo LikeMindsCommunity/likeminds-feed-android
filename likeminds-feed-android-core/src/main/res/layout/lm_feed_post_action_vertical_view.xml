@@ -14,6 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/lm_feed_small_margin"
+            android:padding="@dimen/lm_feed_extra_small_padding"
             android:scaleType="fitCenter"
             android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@id/tv_likes_count"
@@ -30,7 +31,7 @@
             android:layout_marginBottom="@dimen/lm_feed_large_margin"
             android:foreground="?selectableItemBackground"
             android:textStyle="normal"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@id/iv_comment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,8 +39,7 @@
             tools:ignore="UnusedAttribute"
             tools:text="31k"
             tools:textColor="@color/lm_feed_grey"
-            tools:textSize="@dimen/lm_feed_text_medium"
-            tools:visibility="visible" />
+            tools:textSize="@dimen/lm_feed_text_medium" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
             android:id="@+id/iv_comment"
@@ -53,7 +53,7 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="ContentDescription"
             tools:srcCompat="@drawable/lm_feed_ic_comment"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_comments_count"
@@ -73,7 +73,7 @@
             tools:textAlignment="center"
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_medium"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
             android:id="@+id/iv_share"
@@ -88,7 +88,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:srcCompat="@drawable/lm_feed_ic_share"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_share_count"
@@ -108,12 +108,12 @@
             tools:textAlignment="center"
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_medium"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
             android:id="@+id/iv_post_menu"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:scaleType="fitCenter"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -122,7 +122,6 @@
             tools:ignore="ContentDescription,UnusedAttribute"
             tools:src="@drawable/lm_feed_ic_overflow_menu"
             tools:visibility="visible" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

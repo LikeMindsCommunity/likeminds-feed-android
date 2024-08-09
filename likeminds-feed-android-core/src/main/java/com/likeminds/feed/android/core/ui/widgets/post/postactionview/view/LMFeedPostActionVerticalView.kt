@@ -191,4 +191,15 @@ class LMFeedPostActionVerticalView : ConstraintLayout {
             listener.onClick()
         }
     }
+
+    /**
+     * Sets click listener on the menu icon
+     *
+     * @param listener [LMFeedOnClickListener] interface to have click listener
+     */
+    fun setMenuIconListener(listener: LMFeedOnClickListener) {
+        binding.ivPostMenu.setOnClickListener {
+            listener.onClick()
+        }
+    }
 }

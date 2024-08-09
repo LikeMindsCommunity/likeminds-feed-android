@@ -79,6 +79,11 @@ class LMFeedItemPostVideoFeedViewDataBinder(
                         .inActiveSrc(R.drawable.lm_feed_ic_like_white)
                         .build()
                 )
+                .likeTextStyle(
+                    postActionViewStyle.likeTextStyle?.toBuilder()
+                        ?.textColor(R.color.lm_feed_white)
+                        ?.build()
+                )
                 .menuIconStyle(
                     LMFeedIconStyle.Builder()
                         .inActiveSrc(R.drawable.lm_feed_ic_overflow_menu_white)
@@ -97,6 +102,8 @@ class LMFeedItemPostVideoFeedViewDataBinder(
                     ?: return@apply
 
             postVideoView.setStyle(postVerticalVideoMediaStyle)
+
+            setClickListeners(this)
         }
 
         return binding
@@ -108,6 +115,9 @@ class LMFeedItemPostVideoFeedViewDataBinder(
         position: Int
     ) {
         binding.apply {
+            this.position = position
+            postViewData = data
+
             // updates the data in the post action view
             LMFeedPostBinderUtils.setPostVerticalActionViewData(
                 postActionView,
@@ -126,6 +136,26 @@ class LMFeedItemPostVideoFeedViewDataBinder(
                     return@setPostBindData
                 }, executeBinder = {}
             )
+        }
+    }
+
+    private fun setClickListeners(binding: LmFeedItemPostVideoFeedBinding) {
+        binding.apply {
+            postHeader.setAuthorFrameClickListener {
+                val post = this.postViewData ?: return@setAuthorFrameClickListener
+                postAdapterListener.onPostAuthorHeaderClicked(position, post)
+            }
+
+            postActionView.setLikeIconClickListener {
+                val post = this.postViewData ?: return@setLikeIconClickListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
+                postAdapterListener.onPostLikeClicked(position, updatedPost)
+            }
+
+            postActionView.setMenuIconListener {
+                val post = this.postViewData ?: return@setMenuIconListener
+                postAdapterListener.onPostActionMenuClicked(position, post)
+            }
         }
     }
 }

@@ -142,4 +142,8 @@ interface LMFeedPostAdapterListener {
     ) {
         //triggered when a poll option vote count is clicked
     }
+
+    fun onPostActionMenuClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the post action menu is clicked
+    }
 }

@@ -259,6 +259,13 @@ open class LMFeedVideoFeedFragment :
         coreCallback?.openProfileWithUUID(uuid)
     }
 
+    //callback when the user clicks on the post menu icon in the post action view
+    override fun onPostActionMenuClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostActionMenuClicked(position, postViewData)
+
+        //todo:
+    }
+
     /**
      * Adapter Util Block
      **/
