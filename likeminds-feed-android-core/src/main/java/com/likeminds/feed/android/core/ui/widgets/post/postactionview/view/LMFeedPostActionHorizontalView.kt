@@ -66,8 +66,14 @@ class LMFeedPostActionHorizontalView : ConstraintLayout {
         binding.ivLike.setStyle(likeIconStyle)
     }
 
-    private fun configureCommentsText(commentTextStyle: LMFeedTextStyle) {
-        binding.tvCommentsCount.setStyle(commentTextStyle)
+    private fun configureCommentsText(commentTextStyle: LMFeedTextStyle?) {
+        binding.tvCommentsCount.apply {
+            if (commentTextStyle == null) {
+                hide()
+            } else {
+                setStyle(commentTextStyle)
+            }
+        }
     }
 
     private fun configureSaveIcon(saveIconStyle: LMFeedIconStyle?) {

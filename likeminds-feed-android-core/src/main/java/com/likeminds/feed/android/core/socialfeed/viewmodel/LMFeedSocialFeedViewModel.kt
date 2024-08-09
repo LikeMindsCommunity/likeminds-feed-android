@@ -307,7 +307,7 @@ class LMFeedSocialFeedViewModel : ViewModel() {
                 LMFeedAnalytics.sendPostSavedEvent(
                     uuid = postViewData.headerViewData.user.sdkClientInfoViewData.uuid,
                     postId = postViewData.id,
-                    postSaved = postViewData.footerViewData.isSaved
+                    postSaved = postViewData.actionViewData.isSaved
                 )
 
                 _postSavedResponse.postValue(postViewData)

@@ -6,10 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.likeminds.customgallery.utils.ViewUtils.show
 import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedPostActionVerticalViewBinding
-import com.likeminds.feed.android.core.ui.base.styles.*
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
+import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
@@ -48,6 +51,7 @@ class LMFeedPostActionVerticalView : ConstraintLayout {
             configureLikesIcon(likeIconStyle)
             configureCommentsText(commentTextStyle)
             configureShareIcon(shareIconStyle)
+            configureMenuIcon(menuIconStyle)
         }
     }
 
@@ -65,8 +69,14 @@ class LMFeedPostActionVerticalView : ConstraintLayout {
         binding.ivLike.setStyle(likeIconStyle)
     }
 
-    private fun configureCommentsText(commentTextStyle: LMFeedTextStyle) {
-        binding.tvCommentsCount.setStyle(commentTextStyle)
+    private fun configureCommentsText(commentTextStyle: LMFeedTextStyle?) {
+        binding.tvCommentsCount.apply {
+            if (commentTextStyle == null) {
+                hide()
+            } else {
+                setStyle(commentTextStyle)
+            }
+        }
     }
 
     private fun configureShareIcon(shareIconStyle: LMFeedIconStyle?) {
@@ -84,6 +94,18 @@ class LMFeedPostActionVerticalView : ConstraintLayout {
 
         if (shareIconStyle != null) {
             binding.ivShare.setStyle(shareIconStyle)
+            show()
+        }
+    }
+
+    private fun configureMenuIcon(menuIconStyle: LMFeedIconStyle?) {
+        binding.ivPostMenu.apply {
+            if (menuIconStyle == null) {
+                hide()
+            } else {
+                setStyle(menuIconStyle)
+                show()
+            }
         }
     }
 

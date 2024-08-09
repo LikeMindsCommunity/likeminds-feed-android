@@ -7,6 +7,7 @@ import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBindin
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_VIDEO_FEED
@@ -68,7 +69,27 @@ class LMFeedItemPostVideoFeedViewDataBinder(
                 verticalVideoPostContentTextStyle
             )
 
-            LMFeedPostBinderUtils.customizePostActionVerticalView(postActionView)
+            val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+
+            val verticalPostActionViewStyle = postActionViewStyle.toBuilder()
+                .commentTextStyle(null)
+                .shareIconStyle(null)
+                .likeIconStyle(
+                    postActionViewStyle.likeIconStyle.toBuilder()
+                        .inActiveSrc(R.drawable.lm_feed_ic_like_white)
+                        .build()
+                )
+                .menuIconStyle(
+                    LMFeedIconStyle.Builder()
+                        .inActiveSrc(R.drawable.lm_feed_ic_overflow_menu_white)
+                        .build()
+                )
+                .build()
+
+            LMFeedPostBinderUtils.customizePostActionVerticalView(
+                postActionView,
+                verticalPostActionViewStyle
+            )
 
             //set video media style to post video view
             val postVerticalVideoMediaStyle =
@@ -87,9 +108,10 @@ class LMFeedItemPostVideoFeedViewDataBinder(
         position: Int
     ) {
         binding.apply {
-            postVideoPreviewAutoPlayHelper.playVideoInView(
-                postVideoView,
-                data.mediaViewData.attachments.first().attachmentMeta.url
+            // updates the data in the post action view
+            LMFeedPostBinderUtils.setPostVerticalActionViewData(
+                postActionView,
+                data.actionViewData
             )
 
             // checks whether to bind complete data or not and execute corresponding lambda function

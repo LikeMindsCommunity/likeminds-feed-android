@@ -10,7 +10,7 @@ class  LMFeedPostViewData private constructor(
     val headerViewData: LMFeedPostHeaderViewData,
     val contentViewData: LMFeedPostContentViewData,
     val mediaViewData: LMFeedMediaViewData,
-    val footerViewData: LMFeedPostFooterViewData,
+    val actionViewData: LMFeedPostActionViewData,
     val topicsViewData: List<LMFeedTopicViewData>,
     val fromPostLiked: Boolean,
     val fromPostSaved: Boolean,
@@ -61,8 +61,8 @@ class  LMFeedPostViewData private constructor(
             LMFeedPostContentViewData.Builder().build()
         private var mediaViewData: LMFeedMediaViewData =
             LMFeedMediaViewData.Builder().build()
-        private var footerViewData: LMFeedPostFooterViewData =
-            LMFeedPostFooterViewData.Builder().build()
+        private var actionViewData: LMFeedPostActionViewData =
+            LMFeedPostActionViewData.Builder().build()
         private var topicsViewData: List<LMFeedTopicViewData> = emptyList()
         private var fromPostLiked: Boolean = false
         private var fromPostSaved: Boolean = false
@@ -79,8 +79,8 @@ class  LMFeedPostViewData private constructor(
         fun mediaViewData(mediaViewData: LMFeedMediaViewData) =
             apply { this.mediaViewData = mediaViewData }
 
-        fun footerViewData(footerViewData: LMFeedPostFooterViewData) =
-            apply { this.footerViewData = footerViewData }
+        fun actionViewData(actionViewData: LMFeedPostActionViewData) =
+            apply { this.actionViewData = actionViewData }
 
         fun topicsViewData(topicsViewData: List<LMFeedTopicViewData>) =
             apply { this.topicsViewData = topicsViewData }
@@ -96,7 +96,7 @@ class  LMFeedPostViewData private constructor(
             headerViewData,
             contentViewData,
             mediaViewData,
-            footerViewData,
+            actionViewData,
             topicsViewData,
             fromPostLiked,
             fromPostSaved,
@@ -111,7 +111,7 @@ class  LMFeedPostViewData private constructor(
             .headerViewData(headerViewData)
             .contentViewData(contentViewData)
             .mediaViewData(mediaViewData)
-            .footerViewData(footerViewData)
+            .actionViewData(actionViewData)
             .topicsViewData(topicsViewData)
             .fromPostLiked(fromPostLiked)
             .fromPostSaved(fromPostSaved)

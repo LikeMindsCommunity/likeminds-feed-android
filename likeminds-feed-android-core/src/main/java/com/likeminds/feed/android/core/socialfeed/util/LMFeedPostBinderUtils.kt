@@ -19,7 +19,7 @@ import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostFooterViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostActionViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostHeaderViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
@@ -30,6 +30,7 @@ import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionVerticalView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
@@ -69,23 +70,19 @@ object LMFeedPostBinderUtils {
     }
 
     // customizes the horizontal post action view
-    fun customizePostActionHorizontalView(postActionHorizontalView: LMFeedPostActionHorizontalView) {
-        postActionHorizontalView.apply {
-            val postActionViewStyle =
-                LMFeedStyleTransformer.postViewStyle.postActionViewStyle
-
-            setStyle(postActionViewStyle)
-        }
+    fun customizePostActionHorizontalView(
+        postActionHorizontalView: LMFeedPostActionHorizontalView,
+        postActionHorizontalViewStyle: LMFeedPostActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+    ) {
+        postActionHorizontalView.setStyle(postActionHorizontalViewStyle)
     }
 
     // customizes the vertical post action view
-    fun customizePostActionVerticalView(postActionVerticalView: LMFeedPostActionVerticalView) {
-        postActionVerticalView.apply {
-            val postActionViewStyle =
-                LMFeedStyleTransformer.postViewStyle.postActionViewStyle
-
-            setStyle(postActionViewStyle)
-        }
+    fun customizePostActionVerticalView(
+        postActionVerticalView: LMFeedPostActionVerticalView,
+        postActionVerticalViewStyle: LMFeedPostActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+    ) {
+        postActionVerticalView.setStyle(postActionVerticalViewStyle)
     }
 
     // customizes the topics view of the post
@@ -279,36 +276,58 @@ object LMFeedPostBinderUtils {
         }
     }
 
-    // sets the data in the post action view
-    fun setPostFooterViewData(
-        footerView: LMFeedPostActionHorizontalView,
-        footerViewData: LMFeedPostFooterViewData
+    // sets the data in the post horizontal action view
+    fun setPostHorizontalActionViewData(
+        horizontalActionView: LMFeedPostActionHorizontalView,
+        postActionViewData: LMFeedPostActionViewData
     ) {
-        footerView.apply {
-            setLikesIcon(footerViewData.isLiked)
-            setSaveIcon(footerViewData.isSaved)
+        horizontalActionView.apply {
+            setLikesIcon(postActionViewData.isLiked)
+            setSaveIcon(postActionViewData.isSaved)
 
-            val likesCountText = if (footerViewData.likesCount == 0) {
+            val likesCountText = if (postActionViewData.likesCount == 0) {
                 context.getString(R.string.lm_feed_like)
             } else {
                 context.resources.getQuantityString(
                     R.plurals.lm_feed_likes,
-                    footerViewData.likesCount,
-                    footerViewData.likesCount
+                    postActionViewData.likesCount,
+                    postActionViewData.likesCount
                 )
             }
             setLikesCount(likesCountText)
 
-            val commentsCountText = if (footerViewData.commentsCount == 0) {
+            val commentsCountText = if (postActionViewData.commentsCount == 0) {
                 context.getString(R.string.lm_feed_add_comment)
             } else {
                 context.resources.getQuantityString(
                     R.plurals.lm_feed_comments,
-                    footerViewData.commentsCount,
-                    footerViewData.commentsCount
+                    postActionViewData.commentsCount,
+                    postActionViewData.commentsCount
                 )
             }
             setCommentsCount(commentsCountText)
+        }
+    }
+
+    // sets the data in the post vertical action view
+    fun setPostVerticalActionViewData(
+        verticalActionView: LMFeedPostActionVerticalView,
+        postActionViewData: LMFeedPostActionViewData
+    ) {
+        verticalActionView.apply {
+            setLikesIcon(postActionViewData.isLiked)
+
+            val likesCountText = if (postActionViewData.likesCount == 0) {
+                context.getString(R.string.lm_feed_like)
+            } else {
+                context.resources.getQuantityString(
+                    R.plurals.lm_feed_likes,
+                    postActionViewData.likesCount,
+                    postActionViewData.likesCount
+                )
+            }
+
+            setLikesCount(likesCountText)
         }
     }
 
@@ -332,7 +351,7 @@ object LMFeedPostBinderUtils {
 
     // update post object for a like action
     fun updatePostForLike(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
-        val footerData = oldPostViewData.footerViewData
+        val footerData = oldPostViewData.actionViewData
         val newLikesCount = if (footerData.isLiked) {
             footerData.likesCount - 1
         } else {
@@ -347,20 +366,20 @@ object LMFeedPostBinderUtils {
             .build()
 
         return oldPostViewData.toBuilder()
-            .footerViewData(updatedFooterData)
+            .actionViewData(updatedFooterData)
             .fromPostLiked(true)
             .build()
     }
 
     // update post object for a save action
     fun updatePostForSave(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
-        val footerData = oldPostViewData.footerViewData
+        val footerData = oldPostViewData.actionViewData
         val updatedFooterData = footerData.toBuilder()
             .isSaved(!footerData.isSaved)
             .build()
 
         return oldPostViewData.toBuilder()
-            .footerViewData(updatedFooterData)
+            .actionViewData(updatedFooterData)
             .fromPostSaved(true)
             .build()
     }

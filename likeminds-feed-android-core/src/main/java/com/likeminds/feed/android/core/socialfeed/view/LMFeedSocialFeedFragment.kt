@@ -255,7 +255,7 @@ open class LMFeedSocialFeedFragment :
 
         socialFeedViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
             //create toast message
-            val toastMessage = if (postViewData.footerViewData.isSaved) {
+            val toastMessage = if (postViewData.actionViewData.isSaved) {
                 getString(
                     R.string.lm_feed_s_saved,
                     LMFeedCommunityUtil.getPostVariable()
@@ -325,7 +325,7 @@ open class LMFeedSocialFeedFragment :
                     val post = pair.second
                     val index = pair.first
 
-                    val footerData = post.footerViewData
+                    val footerData = post.actionViewData
 
                     val newLikesCount = if (footerData.isLiked) {
                         footerData.likesCount - 1
@@ -341,7 +341,7 @@ open class LMFeedSocialFeedFragment :
                         .build()
 
                     val updatedPostData = post.toBuilder()
-                        .footerViewData(updatedFooterData)
+                        .actionViewData(updatedFooterData)
                         .fromPostLiked(true)
                         .build()
 
@@ -388,13 +388,13 @@ open class LMFeedSocialFeedFragment :
                         val index = pair.first
 
                         //update footer view data
-                        val updatedFooterViewData = post.footerViewData.toBuilder()
-                            .isSaved(!post.footerViewData.isSaved)
+                        val updatedFooterViewData = post.actionViewData.toBuilder()
+                            .isSaved(!post.actionViewData.isSaved)
                             .build()
 
                         //update post view data
                         val updatedPostViewData = post.toBuilder()
-                            .footerViewData(updatedFooterViewData)
+                            .actionViewData(updatedFooterViewData)
                             .fromPostSaved(true)
                             .build()
 
@@ -699,7 +699,7 @@ open class LMFeedSocialFeedFragment :
         //call api
         socialFeedViewModel.likePost(
             postViewData.id,
-            postViewData.footerViewData.isLiked,
+            postViewData.actionViewData.isLiked,
             loggedInUUID
         )
 

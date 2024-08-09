@@ -29,7 +29,7 @@ class LMFeedItemPostDocumentsViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
-            LMFeedPostBinderUtils.customizePostActionHorizontalView(postFooter)
+            LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
 
             LMFeedPostBinderUtils.customizePostTopicsGroup(postTopicsGroup)
 
@@ -57,9 +57,9 @@ class LMFeedItemPostDocumentsViewDataBinder(
             postViewData = data
 
             // updates the data in the post action view
-            LMFeedPostBinderUtils.setPostFooterViewData(
-                postFooter,
-                data.footerViewData
+            LMFeedPostBinderUtils.setPostHorizontalActionViewData(
+                postAction,
+                data.actionViewData
             )
 
             // checks whether to bind complete data or not and execute corresponding lambda function
@@ -110,33 +110,33 @@ class LMFeedItemPostDocumentsViewDataBinder(
                 )
             }
 
-            postFooter.setLikeIconClickListener {
+            postAction.setLikeIconClickListener {
                 val post = postViewData ?: return@setLikeIconClickListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
                 postAdapterListener.onPostLikeClicked(position, updatedPost)
             }
 
-            postFooter.setLikesCountClickListener {
+            postAction.setLikesCountClickListener {
                 val post = postViewData ?: return@setLikesCountClickListener
-                if (post.footerViewData.likesCount > 0) {
+                if (post.actionViewData.likesCount > 0) {
                     postAdapterListener.onPostLikesCountClicked(position, post)
                 } else {
                     return@setLikesCountClickListener
                 }
             }
 
-            postFooter.setCommentsCountClickListener {
+            postAction.setCommentsCountClickListener {
                 val post = postViewData ?: return@setCommentsCountClickListener
                 postAdapterListener.onPostCommentsCountClicked(position, post)
             }
 
-            postFooter.setSaveIconListener {
+            postAction.setSaveIconListener {
                 val post = postViewData ?: return@setSaveIconListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
                 postAdapterListener.onPostSaveClicked(position, updatedPost)
             }
 
-            postFooter.setShareIconListener {
+            postAction.setShareIconListener {
                 val post = postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
             }

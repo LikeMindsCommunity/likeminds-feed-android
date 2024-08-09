@@ -208,8 +208,8 @@ object LMFeedViewDataConvertor {
             )
             .build()
 
-        //post footer view data
-        val postFooterViewData = LMFeedPostFooterViewData.Builder()
+        //post action view data
+        val postActionViewData = LMFeedPostActionViewData.Builder()
             .likesCount(post.likesCount)
             .commentsCount(post.commentsCount)
             .isSaved(post.isSaved)
@@ -229,7 +229,7 @@ object LMFeedViewDataConvertor {
             .headerViewData(postHeaderViewData)
             .contentViewData(postContentViewData)
             .mediaViewData(postMediaViewData)
-            .footerViewData(postFooterViewData)
+            .actionViewData(postActionViewData)
             .topicsViewData(topicsViewData)
             .build()
     }

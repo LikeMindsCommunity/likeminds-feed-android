@@ -38,7 +38,7 @@ class LMFeedPostViewStyle private constructor(
     //post topics chip group style
     val postTopicsGroupStyle: LMFeedChipGroupStyle,
     //post topics chip style
-    val postTopicChipsStyle: LMFeedChipStyle
+    val postTopicChipsStyle: LMFeedChipStyle,
 ) : LMFeedViewStyle {
 
     class Builder {

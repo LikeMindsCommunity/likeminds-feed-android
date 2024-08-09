@@ -1,24 +1,34 @@
 package com.likeminds.feed.android.core.videofeed.view
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.google.android.exoplayer2.upstream.DataSpec
+import com.google.android.exoplayer2.upstream.cache.CacheWriter
 import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentVideoFeedBinding
+import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedRoute
+import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
+import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 open class LMFeedVideoFeedFragment :
     Fragment(),
@@ -85,7 +95,39 @@ open class LMFeedVideoFeedFragment :
                     super.onPageSelected(position)
 
                     if (position >= 0 && videoFeedAdapter.items()[position] != null) {
-                        videoFeedAdapter.notifyItemChanged(position)
+                        val data = videoFeedAdapter.items()[position] as LMFeedPostViewData
+
+                        val videoFeedBinding =
+                            ((get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position) as? LMFeedDataBoundViewHolder<*>)
+                                ?.binding as? LmFeedItemPostVideoFeedBinding ?: return
+
+                        val url = data.mediaViewData.attachments.first().attachmentMeta.url
+
+                        postVideoPreviewAutoPlayHelper.playVideoInView(
+                            videoFeedBinding.postVideoView,
+                            url
+                        )
+
+                        //todo: not working properly have to check.
+//                        val uri = Uri.parse(url)
+//                        // factory which is used to generate "content key" for uri.
+//                        // content keys are not always equal to urL
+//                        // in complex cases the factory may be different from default implementation
+//                        val cacheKeyFactory =
+//                            LMFeedVideoCache.getInstance(requireContext().applicationContext).cacheKeyFactory
+//                        // content key used to retrieve metadata for cache entry
+//                        val contentKey = cacheKeyFactory.buildCacheKey(DataSpec(uri))
+//                        val contentMetadata =
+//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
+//                                .getContentMetadata(contentKey)
+//                        val contentLength = ContentMetadata.getContentLength(contentMetadata)
+//                        // this is summary for all cache spans, cached by exoplayer, which belongs to given urL.
+//                        // each span is a chunk of content, which may be randomly downloaded
+//                        val cachedLength =
+//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
+//                                .getCachedBytes(contentKey, 0L, contentLength)
+
+//                        cache(position + 1)
                     }
                 }
 
@@ -108,6 +150,26 @@ open class LMFeedVideoFeedFragment :
             })
 
             adapter = videoFeedAdapter
+        }
+    }
+
+    private fun cache(url: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+//            if (videoFeedAdapter.itemCount <= po?
+//            val url =
+//                (videoFeedAdapter.items()[position] as LMFeedPostViewData).mediaViewData.attachments.first().attachmentMeta.url
+            CacheWriter(
+                LMFeedVideoCache.getInstance(requireContext().applicationContext)
+                    .createDataSource(),
+                DataSpec(
+                    Uri.parse(url),
+                    0,
+                    100 * 1024 * 1024
+                ),
+                null
+            ) { requestLength, bytesCached, newBytesCached ->
+//                Log.d("PUI", "cache: ${requestLength/(1024 * 1024)}::::::${bytesCached/(1024 * 1024)}::::::${newBytesCached/(1024)}:::::$url ")
+            }.cache()
         }
     }
 
@@ -135,7 +197,7 @@ open class LMFeedVideoFeedFragment :
             && videoFeedAdapter.itemCount > position
             && videoFeedAdapter.items()[position] != null
         ) {
-            videoFeedAdapter.notifyItemChanged(position)
+            binding.vp2VideoFeed.currentItem = position
         }
     }
 
@@ -157,7 +219,7 @@ open class LMFeedVideoFeedFragment :
         //call api
         videoFeedViewModel.likePost(
             postViewData.id,
-            postViewData.footerViewData.isLiked,
+            postViewData.actionViewData.isLiked,
             loggedInUUID
         )
 

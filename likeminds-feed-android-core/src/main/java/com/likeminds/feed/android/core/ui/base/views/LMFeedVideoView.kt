@@ -4,20 +4,19 @@ import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultAllocator
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.util.Util
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
-import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostVideoMediaViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
-import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
+import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 
 /**
  * Represents a video view
@@ -34,23 +33,6 @@ class LMFeedVideoView @JvmOverloads constructor(
     private var thumbnailView: LMFeedImageView? = null
 
     private var lastPos: Long = 0
-
-    // creates an instance with DataSourceFactory for reading and writing cache
-    private val cacheDataSourceFactory by lazy {
-        CacheDataSource.Factory()
-            .setCache(LMFeedVideoCache.getInstance(context))
-            .setUpstreamDataSourceFactory(
-                DefaultHttpDataSource.Factory()
-                    .setUserAgent(
-                        Util.getUserAgent(
-                            context, context.getString(
-                                R.string.lm_feed_app_name
-                            )
-                        )
-                    )
-            )
-            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-    }
 
     init {
         descendantFocusability = FOCUS_AFTER_DESCENDANTS
@@ -128,7 +110,7 @@ class LMFeedVideoView @JvmOverloads constructor(
         setThumbnail(thumbnailView, thumbnailSrc)
 
         val mediaSource =
-            ProgressiveMediaSource.Factory(cacheDataSourceFactory)
+            ProgressiveMediaSource.Factory(LMFeedVideoCache.getInstance(context.applicationContext))
                 .createMediaSource(MediaItem.fromUri(videoUri))
         exoPlayer.setMediaSource(mediaSource)
         exoPlayer.seekTo(lastPos)

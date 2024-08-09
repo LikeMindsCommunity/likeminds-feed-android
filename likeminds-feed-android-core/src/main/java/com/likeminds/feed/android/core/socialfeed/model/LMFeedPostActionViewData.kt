@@ -2,7 +2,7 @@ package com.likeminds.feed.android.core.socialfeed.model
 
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 
-class LMFeedPostFooterViewData private constructor(
+class LMFeedPostActionViewData private constructor(
     val likesCount: Int,
     val commentsCount: Int,
     val isSaved: Boolean,
@@ -23,7 +23,7 @@ class LMFeedPostFooterViewData private constructor(
         fun isLiked(isLiked: Boolean) = apply { this.isLiked = isLiked }
         fun replies(replies: MutableList<LMFeedCommentViewData>) = apply { this.replies = replies }
 
-        fun build() = LMFeedPostFooterViewData(
+        fun build() = LMFeedPostActionViewData(
             likesCount,
             commentsCount,
             isSaved,
