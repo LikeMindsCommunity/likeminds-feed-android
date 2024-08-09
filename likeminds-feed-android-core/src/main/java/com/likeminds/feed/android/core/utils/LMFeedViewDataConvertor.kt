@@ -19,9 +19,18 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefau
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findStringOrDefault
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_ALLOW_ADD_OPTION_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_EXPIRY_TIME_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_IS_ANONYMOUS_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_MULTIPLE_SELECT_NUMBER_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_MULTIPLE_SELECT_STATE_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.POLL_TYPE_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.TITLE_KEY
 import com.likeminds.feed.android.core.utils.base.model.*
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedAWSKeys
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
+import com.likeminds.feed.android.core.widget.model.LMFeedWidgetViewData
 import com.likeminds.likemindsfeed.comment.model.Comment
 import com.likeminds.likemindsfeed.moderation.model.ReportTag
 import com.likeminds.likemindsfeed.notificationfeed.model.Activity
@@ -36,16 +45,9 @@ import com.likeminds.likemindsfeed.sdk.model.SDKClientInfo
 import com.likeminds.likemindsfeed.sdk.model.User
 import com.likeminds.likemindsfeed.topic.model.Topic
 import com.likeminds.likemindsfeed.widgets.model.Widget
+import org.json.JSONObject
 
 object LMFeedViewDataConvertor {
-
-    private const val POLL_ALLOW_ADD_OPTION_KEY = "allow_add_option"
-    private const val POLL_TYPE_KEY = "poll_type"
-    private const val POLL_MULTIPLE_SELECT_STATE_KEY = "multiple_select_state"
-    private const val POLL_MULTIPLE_SELECT_NUMBER_KEY = "multiple_select_number"
-    private const val POLL_TITLE_KEY = "title"
-    private const val POLL_EXPIRY_TIME_KEY = "expiry_time"
-    private const val POLL_IS_ANONYMOUS_KEY = "is_anonymous"
 
     /**--------------------------------
      * Media Model -> View Data Model
@@ -313,7 +315,7 @@ object LMFeedViewDataConvertor {
                 .attachmentType(attachment.attachmentType.getAttachmentValue())
                 .attachmentMeta(
                     convertAttachmentMeta(
-                        attachment.attachmentMeta,
+                        attachment,
                         usersMap,
                         widgetsMap
                     )
@@ -324,35 +326,55 @@ object LMFeedViewDataConvertor {
     }
 
     /**
-     * converts list of [AttachmentMeta] to list of [LMFeedAttachmentMetaViewData]
-     * @param attachmentMeta: instance of [AttachmentMeta]
+     * converts list of [Attachment] to list of [LMFeedAttachmentMetaViewData]
+     * @param attachment: instance of [Attachment]
+     * @param usersMap: Map of [String, User]
+     * @param widgetsMap: Map of [String, Widget]
+     *
+     * @return [LMFeedAttachmentMetaViewData]
      */
-    private fun convertAttachmentMeta(
-        attachmentMeta: AttachmentMeta?,
+    fun convertAttachmentMeta(
+        attachment: Attachment,
         usersMap: Map<String, User>,
         widgetsMap: Map<String, Widget>
     ): LMFeedAttachmentMetaViewData {
-        if (attachmentMeta == null) {
-            return LMFeedAttachmentMetaViewData.Builder().build()
-        }
+        val attachmentMeta = attachment.attachmentMeta
+        return when (attachment.attachmentType) {
+            AttachmentType.NONE -> {
+                LMFeedAttachmentMetaViewData.Builder().build()
+            }
 
-        return LMFeedAttachmentMetaViewData.Builder()
-            .name(attachmentMeta.name)
-            .url(attachmentMeta.url)
-            .format(attachmentMeta.format)
-            .size(attachmentMeta.size)
-            .duration(attachmentMeta.duration)
-            .pageCount(attachmentMeta.pageCount)
-            .ogTags(convertLinkOGTags(attachmentMeta.ogTags))
-            .thumbnail(attachmentMeta.thumbnailUrl)
-            .poll(
-                convertPoll(
-                    attachmentMeta.entityId ?: "",
-                    usersMap,
+            AttachmentType.IMAGE -> {
+                LMFeedAttachmentsUtil.convertAttachmentMetaToImage(attachmentMeta)
+            }
+
+            AttachmentType.VIDEO -> {
+                LMFeedAttachmentsUtil.convertAttachmentMetaToVideo(attachmentMeta)
+            }
+
+            AttachmentType.DOCUMENT -> {
+                LMFeedAttachmentsUtil.convertAttachmentMetaToDocument(attachmentMeta)
+            }
+
+            AttachmentType.LINK -> {
+                LMFeedAttachmentsUtil.convertAttachmentMetaToLinkOGTag(attachmentMeta)
+            }
+
+            AttachmentType.CUSTOM_WIDGET -> {
+                LMFeedAttachmentsUtil.convertAttachmentMetaToCustomWidget(
+                    attachmentMeta,
                     widgetsMap
                 )
-            )
-            .build()
+            }
+
+            AttachmentType.POLL -> {
+                LMFeedAttachmentsUtil.convertAttachmentMetaToPoll(
+                    attachmentMeta,
+                    widgetsMap,
+                    usersMap
+                )
+            }
+        }
     }
 
     /**
@@ -375,7 +397,7 @@ object LMFeedViewDataConvertor {
     /**
      * extracts poll from the [widgetsMap] and converts it to [LMFeedPollViewData]
      * */
-    private fun convertPoll(
+    fun convertPoll(
         pollId: String,
         usersMap: Map<String, User>,
         widgetsMap: Map<String, Widget>
@@ -411,7 +433,7 @@ object LMFeedViewDataConvertor {
 
         var poll = LMFeedPollViewData.Builder()
             .id(pollId)
-            .title(pollMetaData.findStringOrDefault(POLL_TITLE_KEY, ""))
+            .title(pollMetaData.findStringOrDefault(TITLE_KEY, ""))
             .pollAnswerText(pollLMMeta.pollAnswerText ?: "")
             .toShowResults(toShowResults)
             .expiryTime(pollMetaData.findLongOrDefault(POLL_EXPIRY_TIME_KEY, 0))
@@ -770,14 +792,21 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
-    // converts list of Topic network model to list of view data model
+    /**
+     * convert list of [Topic] to list of [LMFeedTopicViewData]
+     * @param topics: list of [Topic]
+     * */
     private fun convertTopics(topics: List<Topic>): List<LMFeedTopicViewData> {
         return topics.map {
             convertTopic(it)
         }
     }
 
-    // converts list of [PollVote] network model and corresponding users map to list of [LMFeedPollVoteViewData]
+    /**
+     * convert list of [PollVote] to [LMFeedPollVoteViewData]
+     * @param votes: list of [PollVote]
+     * @param usersMap: [Map] of String to [User]
+     * */
     fun convertPollVotes(
         votes: List<PollVote>,
         usersMap: Map<String, User>
@@ -796,6 +825,23 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    /**
+     * convert [Widget] to [LMFeedWidgetViewData]
+     * @param widget: [Widget]
+     * @return [LMFeedWidgetViewData]
+     * */
+    fun convertWidget(widget: Widget?): LMFeedWidgetViewData? {
+        if (widget == null) return null
+        return LMFeedWidgetViewData.Builder()
+            .id(widget.id)
+            .createdAt(widget.createdAt)
+            .metadata(widget.metadata)
+            .parentEntityId(widget.parentEntityId)
+            .parentEntityType(widget.parentEntityType)
+            .updatedAt(widget.updatedAt)
+            .build()
+    }
+
     /**--------------------------------
      * View Data Model -> Network Model
     --------------------------------*/
@@ -804,14 +850,15 @@ object LMFeedViewDataConvertor {
         temporaryId: String,
         workerUUID: String,
         text: String?,
-        fileUris: List<LMFeedFileUploadViewData>
+        fileUris: List<LMFeedFileUploadViewData>,
+        metadata: JSONObject?,
     ): Post {
         return Post.Builder()
             .tempId(temporaryId)
             .id(temporaryId)
             .workerUUID(workerUUID)
             .text(text ?: "")
-            .attachments(convertAttachments(fileUris))
+            .attachments(convertAttachments(fileUris, metadata))
             .build()
     }
 
@@ -830,61 +877,88 @@ object LMFeedViewDataConvertor {
     ): Attachment {
         return Attachment.Builder()
             .attachmentType(attachment.attachmentType.getAttachmentType())
-            .attachmentMeta(convertAttachmentMeta(attachment.attachmentMeta))
+            .attachmentMeta(convertAttachmentMeta(attachment))
             .build()
     }
 
     private fun convertAttachmentMeta(
-        attachmentMeta: LMFeedAttachmentMetaViewData
-    ): AttachmentMeta {
-        return AttachmentMeta.Builder().name(attachmentMeta.name)
-            .ogTags(convertOGTags(attachmentMeta.ogTags))
-            .url(attachmentMeta.url)
-            .size(attachmentMeta.size)
-            .duration(attachmentMeta.duration)
-            .pageCount(attachmentMeta.pageCount)
-            .format(attachmentMeta.format)
-            .build()
+        attachmentViewData: LMFeedAttachmentViewData
+    ): JSONObject {
+        return when (@LMFeedAttachmentType attachmentViewData.attachmentType) {
+            IMAGE -> {
+                LMFeedAttachmentsUtil.convertImageToJSONObject(attachmentViewData.attachmentMeta)
+            }
+
+            VIDEO -> {
+                LMFeedAttachmentsUtil.convertVideoToJSONObject(attachmentViewData.attachmentMeta)
+            }
+
+            DOCUMENT -> {
+                LMFeedAttachmentsUtil.convertDocumentToJSONObject(attachmentViewData.attachmentMeta)
+            }
+
+            LINK -> {
+                LMFeedAttachmentsUtil.convertLinkOGTagToJSONObject(attachmentViewData.attachmentMeta.ogTags)
+            }
+
+            CUSTOM_WIDGET -> {
+                LMFeedAttachmentsUtil.convertCustomWidgetToJSONObject(attachmentViewData.attachmentMeta)
+            }
+
+            else -> {
+                JSONObject()
+            }
+        }
     }
 
     // creates attachment list of Network Model for link attachment
     fun convertAttachments(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
+        linkOGTagsViewData: LMFeedLinkOGTagsViewData,
+        metadata: JSONObject?
     ): List<Attachment> {
-        return listOf(
+        val attachments = ArrayList<Attachment>()
+
+        //add link attachment
+        attachments.add(
             Attachment.Builder()
                 .attachmentType(AttachmentType.LINK)
-                .attachmentMeta(convertAttachmentMeta(linkOGTagsViewData))
+                .attachmentMeta(
+                    LMFeedAttachmentsUtil.convertLinkOGTagToJSONObject(
+                        linkOGTagsViewData
+                    )
+                )
                 .build()
         )
-    }
 
-    // creates AttachmentMeta Network Model for link attachment meta
-    private fun convertAttachmentMeta(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
-    ): AttachmentMeta {
-        return AttachmentMeta.Builder()
-            .ogTags(convertOGTags(linkOGTagsViewData))
-            .build()
-    }
-
-    // converts LinkOGTags view data model to network model
-    private fun convertOGTags(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
-    ): LinkOGTags {
-        return LinkOGTags.Builder()
-            .title(linkOGTagsViewData.title)
-            .image(linkOGTagsViewData.image)
-            .description(linkOGTagsViewData.description)
-            .url(linkOGTagsViewData.url)
-            .build()
+        //add custom widget
+        metadata?.let {
+            attachments.add(convertCustomWidget(it))
+        }
+        return attachments
     }
 
     // converts list of [LMFeedFileUploadViewData] to list of network [Attachment] model
-    private fun convertAttachments(fileUris: List<LMFeedFileUploadViewData>): List<Attachment> {
-        return fileUris.map {
-            convertAttachment(it)
+    private fun convertAttachments(
+        fileUris: List<LMFeedFileUploadViewData>,
+        metadata: JSONObject?
+    ): List<Attachment> {
+        val attachments = ArrayList<Attachment>()
+
+        //add media files
+        attachments.addAll(
+            fileUris.map {
+                convertAttachment(it)
+            }
+        )
+
+        //add meta
+        metadata?.let {
+            attachments.add(
+                convertCustomWidget(it)
+            )
         }
+
+        return attachments
     }
 
     // converts [LMFeedFileUploadViewData] to network [Attachment] model
@@ -905,7 +979,7 @@ object LMFeedViewDataConvertor {
 
         return Attachment.Builder()
             .attachmentType(attachmentType)
-            .attachmentMeta(convertAttachmentMeta(fileUri))
+            .attachmentMeta(LMFeedAttachmentsUtil.convertFileUploadToJSONObject(fileUri))
             .build()
     }
 
@@ -960,28 +1034,29 @@ object LMFeedViewDataConvertor {
     }
 
     // converts [LMFeedPollViewData] to [Attachment]
-    fun convertPoll(poll: LMFeedPollViewData): List<Attachment> {
-        return listOf(
+    fun convertPoll(poll: LMFeedPollViewData, metadata: JSONObject?): List<Attachment> {
+        val attachments = ArrayList<Attachment>()
+
+        attachments.add(
             Attachment.Builder()
                 .attachmentType(AttachmentType.POLL)
-                .attachmentMeta(convertPollAttachmentMeta(poll))
+                .attachmentMeta(LMFeedAttachmentsUtil.convertPollToJSONObject(poll))
                 .build()
         )
+
+        metadata?.let {
+            attachments.add(
+                convertCustomWidget(it)
+            )
+        }
+
+        return attachments
     }
 
-    // converts [LMFeedPollViewData] to [AttachmentMeta]
-    private fun convertPollAttachmentMeta(poll: LMFeedPollViewData): AttachmentMeta {
-        return AttachmentMeta.Builder()
-            .entityId(poll.id)
-            .title(poll.title)
-            .expiryTime(poll.expiryTime)
-            .pollOptions(poll.options.map { it.text })
-            .multiSelectState(poll.multipleSelectState)
-            .pollType(poll.pollType)
-            .multiSelectNumber(poll.multipleSelectNumber)
-            .isAnonymous(poll.isAnonymous)
-            .allowAddOption(poll.allowAddOption)
+    fun convertCustomWidget(metadata: JSONObject): Attachment {
+        return Attachment.Builder()
+            .attachmentType(AttachmentType.CUSTOM_WIDGET)
+            .attachmentMeta(metadata)
             .build()
     }
-
 }

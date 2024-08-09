@@ -123,4 +123,8 @@ object LMFeedValueUtils {
     fun JSONObject.findBooleanOrDefault(key: String, defaultValue: Boolean): Boolean {
         return this.optBoolean(key, defaultValue)
     }
+
+    fun JSONObject.findJSONObjectOrNull(key: String): JSONObject? {
+        return this.optJSONObject(key)
+    }
 }

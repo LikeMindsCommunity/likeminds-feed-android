@@ -29,8 +29,7 @@ import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostDisabledTop
 import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity.Companion.LM_FEED_EDIT_POST_EXTRAS
 import com.likeminds.feed.android.core.post.edit.viewmodel.LMFeedEditPostViewModel
-import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
-import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
+import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
@@ -72,6 +71,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import org.json.JSONObject
 
 open class LMFeedEditPostFragment :
     Fragment(),
@@ -84,6 +84,7 @@ open class LMFeedEditPostFragment :
     private var postMediaViewData: LMFeedMediaViewData? = null
     private var ogTags: LMFeedLinkOGTagsViewData? = null
     private var poll: LMFeedPollViewData? = null
+    private var metadata: JSONObject? = null
 
     private var post: LMFeedPostViewData? = null
 
@@ -321,6 +322,7 @@ open class LMFeedEditPostFragment :
                 if (disabledTopics.isEmpty()) {
                     //call api as all topics are enabled
                     headerViewEditPost.setSubmitButtonEnabled(isEnabled = true, showProgress = true)
+                    //todo add meta data
                     editPostViewModel.editPost(
                         editPostExtras.postId,
                         updatedText,
@@ -336,6 +338,7 @@ open class LMFeedEditPostFragment :
             } else {
                 //call api as no topics are enabled
                 headerViewEditPost.setSubmitButtonEnabled(isEnabled = true, showProgress = true)
+                //todo add meta data
                 editPostViewModel.editPost(
                     editPostExtras.postId,
                     updatedText,
@@ -535,6 +538,10 @@ open class LMFeedEditPostFragment :
                     showPollView()
                 }
 
+                ITEM_POST_CUSTOM_WIDGET -> {
+
+                }
+
                 else -> {
                     Log.e(LOG_TAG, "invalid view type")
                 }
@@ -592,7 +599,11 @@ open class LMFeedEditPostFragment :
                 false
             })
 
-            if (postMediaViewData == null && poll == null) {
+            val postContainsOGTags = postMediaViewData?.attachments?.find {
+                it.attachmentType == LINK
+            } != null
+
+            if (postContainsOGTags && poll == null) {
                 // text watcher with debounce to add delay in api calls for ogTags
                 textChanges()
                     .debounce(500)
@@ -882,6 +893,7 @@ open class LMFeedEditPostFragment :
     // clears link preview
     private fun clearPreviewLink() {
         ogTags = null
+        postMediaViewData = null
         binding.linkPreview.apply {
             root.hide()
         }

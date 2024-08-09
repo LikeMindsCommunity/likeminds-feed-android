@@ -3,6 +3,15 @@ package com.likeminds.feed.android.core.utils.mediauploader
 import android.content.Context
 import androidx.work.*
 import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findStringOrDefault
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.AWS_FOLDER_PATH_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.DURATION_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.LOCAL_FILE_PATH_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.NAME_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.PAGE_COUNT_KEY
+import com.likeminds.feed.android.core.utils.attachments.LMFeedAttachmentsUtil.SIZE_KEY
 import com.likeminds.feed.android.core.utils.mediauploader.model.*
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedWorkerUtil.getIntOrNull
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedWorkerUtil.getLongOrNull
@@ -127,14 +136,14 @@ abstract class LMFeedMediaUploadWorker(
         attachmentsToUpload?.mapIndexed { index, attachment ->
             val attachmentMeta = attachment.attachmentMeta
             val request = LMFeedGenericFileRequest.Builder()
-                .name(attachmentMeta.name)
+                .name(attachmentMeta.findStringOrDefault(NAME_KEY, ""))
                 .fileType(attachment.attachmentType.getAttachmentValue())
-                .awsFolderPath(attachmentMeta.awsFolderPath!!)
-                .localFilePath(attachmentMeta.localFilePath)
+                .awsFolderPath(attachmentMeta.findStringOrDefault(AWS_FOLDER_PATH_KEY, ""))
+                .localFilePath(attachmentMeta.findStringOrDefault(LOCAL_FILE_PATH_KEY, ""))
                 .index(index)
-                .pageCount(attachmentMeta.pageCount)
-                .duration(attachmentMeta.duration)
-                .size(attachmentMeta.size)
+                .pageCount(attachmentMeta.findIntOrDefault(PAGE_COUNT_KEY, 0))
+                .duration(attachmentMeta.findIntOrDefault(DURATION_KEY, 0))
+                .size(attachmentMeta.findLongOrDefault(SIZE_KEY, 0L))
                 .build()
             awsFileRequestList.add(request)
         }

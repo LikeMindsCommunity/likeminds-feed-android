@@ -21,7 +21,7 @@ public abstract class LMFeedBaseRecyclerAdapter<T extends LMFeedBaseViewType> ex
 
     private static final String TAG = "BaseRecyclerAdapter";
     private List<T> dataList;
-    private final SparseArray<LMFeedViewDataBinder> supportedViewBinderResolverMap;
+    protected SparseArray<LMFeedViewDataBinder> supportedViewBinderResolverMap;
 
     public LMFeedBaseRecyclerAdapter() {
         dataList = new ArrayList<>(1);

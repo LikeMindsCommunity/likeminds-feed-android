@@ -47,6 +47,10 @@ class LMFeedUniversalFeedAdapter(
             LMFeedItemPostPollViewDataBinder(universalFeedAdapterListener)
         viewDataBinders.add(itemPostPollViewDataBinder)
 
+        val itemPostCustomWidgetViewDataBinder =
+            LMFeedItemPostCustomWidgetViewDataBinder(universalFeedAdapterListener)
+        viewDataBinders.add(itemPostCustomWidgetViewDataBinder)
+
         return viewDataBinders
     }
 
@@ -54,14 +58,8 @@ class LMFeedUniversalFeedAdapter(
         return items().getItemInList(position)
     }
 
-    fun replaceTextOnlyBinder(viewDataBinder: LMFeedViewDataBinder<*, *>) {
-        val view = viewDataBinder.viewType
-
-        val indexOfViewData = this.supportedViewDataBinder.indexOfFirst {
-            it.viewType == view
-        }
-
-        this.supportedViewDataBinder[indexOfViewData] = viewDataBinder
+    fun replaceViewDataBinder(viewType: Int, viewDataBinder: LMFeedViewDataBinder<*, *>) {
+        supportedViewBinderResolverMap.put(viewType, viewDataBinder)
     }
 }
 
