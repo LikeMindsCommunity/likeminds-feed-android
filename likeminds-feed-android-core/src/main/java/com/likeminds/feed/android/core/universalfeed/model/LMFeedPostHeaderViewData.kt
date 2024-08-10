@@ -52,4 +52,24 @@ class LMFeedPostHeaderViewData private constructor(
             .updatedAt(updatedAt)
             .menuItems(menuItems)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedPostHeaderViewData(isEdited=")
+            append(isEdited)
+            append(", isPinned=")
+            append(isPinned)
+            append(", userId='")
+            append(userId)
+            append("', user=")
+            append(user)
+            append(", createdAt=")
+            append(createdAt)
+            append(", updatedAt=")
+            append(updatedAt)
+            append(", menuItems=")
+            append(menuItems)
+            append(")")
+        }
+    }
 }

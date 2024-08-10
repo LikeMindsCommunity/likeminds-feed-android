@@ -115,10 +115,8 @@ object LMFeedViewDataConvertor {
         val postMediaViewData = LMFeedMediaViewData.Builder()
             .attachments(
                 convertAttachments(
-                    post.attachments,
                     post.id,
-                    emptyMap(),
-                    emptyMap()
+                    post.attachments
                 )
             )
             .workerUUID(post.workerUUID ?: "")
@@ -130,6 +128,42 @@ object LMFeedViewDataConvertor {
             .mediaViewData(postMediaViewData)
             .topicsViewData(convertTopics(topics))
             .isPosted(post.isPosted)
+            .build()
+    }
+
+    private fun convertAttachments(
+        postId: String,
+        attachments: List<Attachment>?
+    ): List<LMFeedAttachmentViewData> {
+        if (attachments.isNullOrEmpty()) return emptyList()
+        return attachments.map { attachment ->
+            LMFeedAttachmentViewData.Builder()
+                .postId(postId)
+                .attachmentType(attachment.attachmentType.getAttachmentValue())
+                .attachmentMeta(convertAttachments(attachment.attachmentMeta))
+                .build()
+        }
+    }
+
+    private fun convertAttachments(attachmentMeta: AttachmentMeta): LMFeedAttachmentMetaViewData {
+        return LMFeedAttachmentMetaViewData.Builder()
+            .name(attachmentMeta.name)
+            .url(attachmentMeta.url)
+            .format(attachmentMeta.format)
+            .size(attachmentMeta.size)
+            .duration(attachmentMeta.duration)
+            .pageCount(attachmentMeta.pageCount)
+            .thumbnail(attachmentMeta.thumbnailUrl)
+            .height(attachmentMeta.height)
+            .width(attachmentMeta.width)
+            .widgetViewData(convertWidgetViewData(attachmentMeta.meta))
+            .build()
+    }
+
+    private fun convertWidgetViewData(meta: JSONObject?): LMFeedWidgetViewData? {
+        if (meta == null) return null
+        return LMFeedWidgetViewData.Builder()
+            .metadata(meta)
             .build()
     }
 
@@ -368,9 +402,9 @@ object LMFeedViewDataConvertor {
      * convert [LinkOGTags] to [LMFeedLinkOGTagsViewData]
      * @param linkOGTags: object of [LinkOGTags]
      **/
-    fun convertLinkOGTags(linkOGTags: LinkOGTags?): LMFeedLinkOGTagsViewData {
+    fun convertLinkOGTags(linkOGTags: LinkOGTags?): LMFeedLinkOGTagsViewData? {
         if (linkOGTags == null) {
-            return LMFeedLinkOGTagsViewData.Builder().build()
+            return null
         }
 
         return LMFeedLinkOGTagsViewData.Builder()
@@ -823,8 +857,6 @@ object LMFeedViewDataConvertor {
         widgetsMap: Map<String, Widget>
     ): LMFeedWidgetViewData? {
         if (entityId.isNullOrEmpty()) return null
-        if (widgetsMap.isEmpty()) return null
-
         val widget = widgetsMap[entityId] ?: return null
 
         return LMFeedWidgetViewData.Builder()
@@ -889,6 +921,7 @@ object LMFeedViewDataConvertor {
             .format(attachmentMeta.format)
             .height(attachmentMeta.height)
             .width(attachmentMeta.width)
+            .meta(attachmentMeta.widgetViewData?.metadata)
             .build()
     }
 
@@ -925,8 +958,9 @@ object LMFeedViewDataConvertor {
 
     // converts LinkOGTags view data model to network model
     private fun convertOGTags(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
-    ): LinkOGTags {
+        linkOGTagsViewData: LMFeedLinkOGTagsViewData?
+    ): LinkOGTags? {
+        if (linkOGTagsViewData == null) return null
         return LinkOGTags.Builder()
             .title(linkOGTagsViewData.title)
             .image(linkOGTagsViewData.image)

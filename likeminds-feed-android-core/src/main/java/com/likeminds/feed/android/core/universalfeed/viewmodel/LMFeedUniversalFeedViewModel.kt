@@ -162,12 +162,14 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
             val post = data.post
             val topics = data.topics
 
+            val postViewData = LMFeedViewDataConvertor.convertPost(
+                post,
+                topics
+            )
+
             postDataEventChannel.send(
                 PostDataEvent.PostDbData(
-                    LMFeedViewDataConvertor.convertPost(
-                        post,
-                        topics
-                    )
+                    postViewData
                 )
             )
         }
@@ -188,13 +190,13 @@ class LMFeedUniversalFeedViewModel : ViewModel() {
                 it.id
             }
 
+            val attachments = LMFeedViewDataConvertor.createAttachments(
+                postingData.mediaViewData.attachments
+            )
+
             val request = AddPostRequest.Builder()
                 .text(updatedText)
-                .attachments(
-                    LMFeedViewDataConvertor.createAttachments(
-                        postingData.mediaViewData.attachments
-                    )
-                )
+                .attachments(attachments)
                 .tempId(postingData.mediaViewData.temporaryId.toString())
                 .topicIds(topicIds)
                 .build()

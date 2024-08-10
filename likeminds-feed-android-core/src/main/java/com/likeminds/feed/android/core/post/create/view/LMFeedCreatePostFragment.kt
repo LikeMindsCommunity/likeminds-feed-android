@@ -571,6 +571,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                 val updatedText = memberTagging.replaceSelectedMembers(text).trim()
                 LMFeedViewUtils.hideKeyboard(binding.root)
 
+                //todo removed
                 val metadata = JSONObject().apply {
                     put("abc", "abc")
                     put("787", "9090")

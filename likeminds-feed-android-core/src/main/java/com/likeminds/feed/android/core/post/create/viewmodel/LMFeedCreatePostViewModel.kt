@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.post.create.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.WorkContinuation
 import androidx.work.WorkManager
@@ -286,8 +287,11 @@ class LMFeedCreatePostViewModel : ViewModel() {
 
             // generates awsFolderPath to upload the file
             val awsFolderPath = generateAWSFolderPathFromFileName(it.mediaName, loggedInUUID)
-            val builder = fileUploadViewData.toBuilder().localFilePath(it.localFilePath)
+
+            val builder = fileUploadViewData.toBuilder()
+                .localFilePath(it.localFilePath)
                 .awsFolderPath(awsFolderPath)
+
             when (fileUploadViewData.fileType) {
                 IMAGE -> {
                     val dimensions = FileUtil.getImageDimensions(context, fileUploadViewData.uri)
@@ -300,8 +304,10 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 VIDEO -> {
                     val thumbnailUri =
                         FileUtil.getVideoThumbnailUri(context, fileUploadViewData.uri)
+
                     val dimensions = FileUtil.getVideoDimensions(context, fileUploadViewData.uri)
                     builder.height(dimensions.second).width(dimensions.first)
+
                     if (thumbnailUri != null) {
                         builder.thumbnailUri(thumbnailUri).build()
                     } else {

@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.universalfeed.adapter.databinders
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostLinkBinding
+import com.likeminds.feed.android.core.post.model.LINK
 import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
 import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.universalfeed.util.LMFeedPostBinderUtils
@@ -52,8 +53,10 @@ class LMFeedItemPostLinkViewDataBinder(
         position: Int
     ) {
         binding.apply {
-            val linkAttachment = data.mediaViewData.attachments.first()
-            val ogTags = linkAttachment.attachmentMeta.ogTags
+            val linkAttachment = data.mediaViewData.attachments.firstOrNull {
+                it.attachmentType == LINK
+            }
+            val ogTags = linkAttachment?.attachmentMeta?.ogTags ?: return
 
             //sets variables in the binding
             this.position = position

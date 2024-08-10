@@ -74,4 +74,34 @@ class LMFeedFileUploadViewData private constructor(
             .localFilePath(localFilePath)
             .format(format)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedFileUploadViewData:(uri:")
+            append(uri)
+            append(",fileType:")
+            append(fileType)
+            append(",width:")
+            append(width)
+            append(",height:")
+            append(height)
+            append(",thumbnailUri:")
+            append(thumbnailUri)
+            append(",size:")
+            append(size)
+            append(",mediaName:")
+            append(mediaName)
+            append(",pdfPageCount:")
+            append(pdfPageCount)
+            append(",duration:")
+            append(duration)
+            append(",awsFolderPath:")
+            append(awsFolderPath)
+            append(",localFilePath:")
+            append(localFilePath)
+            append(",format:")
+            append(format)
+            append(")")
+        }
+    }
 }

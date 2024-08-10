@@ -128,4 +128,26 @@ class LMFeedPostViewData private constructor(
             .fromVideoAction(fromVideoAction)
             .isPosted(isPosted)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedPostViewData(id='")
+            append(id)
+            append("', headerViewData=")
+            append(headerViewData)
+            append(", contentViewData=")
+            append(contentViewData)
+            append(", mediaViewData=")
+            append(mediaViewData)
+            append(", footerViewData=")
+            append(footerViewData)
+            append(", topicsViewData=")
+            append(topicsViewData)
+            append(", fromPostLiked=")
+            append(fromPostLiked)
+            append(", fromPostSaved=")
+            append(fromPostSaved)
+            append(")")
+        }
+    }
 }

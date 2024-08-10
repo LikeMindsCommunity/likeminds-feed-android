@@ -11,7 +11,7 @@ class LMFeedAttachmentMetaViewData private constructor(
     val size: Long?,
     val duration: Int?,
     val pageCount: Int?,
-    val ogTags: LMFeedLinkOGTagsViewData,
+    val ogTags: LMFeedLinkOGTagsViewData?,
     val width: Int?,
     val height: Int?,
     val uri: Uri?,
@@ -27,7 +27,7 @@ class LMFeedAttachmentMetaViewData private constructor(
         private var size: Long? = null
         private var duration: Int? = null
         private var pageCount: Int? = null
-        private var ogTags: LMFeedLinkOGTagsViewData = LMFeedLinkOGTagsViewData.Builder().build()
+        private var ogTags: LMFeedLinkOGTagsViewData? = null
         private var width: Int? = null
         private var height: Int? = null
         private var uri: Uri? = null
@@ -59,7 +59,7 @@ class LMFeedAttachmentMetaViewData private constructor(
             this.pageCount = pageCount
         }
 
-        fun ogTags(ogTags: LMFeedLinkOGTagsViewData) = apply {
+        fun ogTags(ogTags: LMFeedLinkOGTagsViewData?) = apply {
             this.ogTags = ogTags
         }
 
@@ -119,5 +119,37 @@ class LMFeedAttachmentMetaViewData private constructor(
             .thumbnail(thumbnail)
             .poll(poll)
             .widgetViewData(widgetViewData)
+    }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedAttachmentMetaViewData(name=")
+            append(name)
+            append(", url=")
+            append(url)
+            append(", format=")
+            append(format)
+            append(", size=")
+            append(size)
+            append(", duration=")
+            append(duration)
+            append(", pageCount=")
+            append(pageCount)
+            append(", ogTags=")
+            append(ogTags)
+            append(", width=")
+            append(width)
+            append(", height=")
+            append(height)
+            append(", uri=")
+            append(uri)
+            append(", thumbnail=")
+            append(thumbnail)
+            append(", poll=")
+            append(poll)
+            append(", widgetViewData=")
+            append(widgetViewData)
+            append(")")
+        }
     }
 }
