@@ -11,8 +11,7 @@ import androidx.core.text.util.LinkifyCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.overflowmenu.model.PIN_POST_MENU_ITEM_ID
 import com.likeminds.feed.android.core.overflowmenu.model.UNPIN_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
-import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
+import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
@@ -455,7 +454,9 @@ object LMFeedPostBinderUtils {
         val postImageMediaStyle =
             LMFeedStyleTransformer.postViewStyle.postMediaViewStyle.postImageMediaStyle ?: return
 
-        mediaData.attachments.first().attachmentMeta.url?.let { url ->
+        mediaData.attachments.first {
+            it.attachmentType == IMAGE
+        }.attachmentMeta.url?.let { url ->
             ivPost.setImage(url, postImageMediaStyle)
         }
     }

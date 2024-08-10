@@ -129,20 +129,24 @@ class LMFeedPostMultipleMediaView : ConstraintLayout {
 
     //returns the updated attachments list for multiple media view
     private fun getUpdatedAttachmentsForMultipleMedia(attachments: List<LMFeedAttachmentViewData>): List<LMFeedAttachmentViewData> {
-        return attachments.map {
-            when (it.attachmentType) {
-                IMAGE -> {
-                    it.toBuilder().dynamicViewType(ITEM_MULTIPLE_MEDIA_IMAGE).build()
-                }
+        return attachments
+            .filter {
+                it.attachmentType == IMAGE || it.attachmentType == VIDEO
+            }
+            .map {
+                when (it.attachmentType) {
+                    IMAGE -> {
+                        it.toBuilder().dynamicViewType(ITEM_MULTIPLE_MEDIA_IMAGE).build()
+                    }
 
-                VIDEO -> {
-                    it.toBuilder().dynamicViewType(ITEM_MULTIPLE_MEDIA_VIDEO).build()
-                }
+                    VIDEO -> {
+                        it.toBuilder().dynamicViewType(ITEM_MULTIPLE_MEDIA_VIDEO).build()
+                    }
 
-                else -> {
-                    it
+                    else -> {
+                        it
+                    }
                 }
             }
-        }
     }
 }
