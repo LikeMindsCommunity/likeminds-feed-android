@@ -130,19 +130,19 @@ class LMFeedVideoView @JvmOverloads constructor(
         Log.d("PUI", "createCachedMediaSource: $type")
         return when (type) {
             C.CONTENT_TYPE_DASH ->
-                DashMediaSource.Factory(LMFeedVideoCache.getInstance(context))
+                DashMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
                     .createMediaSource(MediaItem.fromUri(uri))
 
             C.CONTENT_TYPE_SS ->
-                SsMediaSource.Factory(LMFeedVideoCache.getInstance(context))
+                SsMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
                     .createMediaSource(MediaItem.fromUri(uri))
 
             C.CONTENT_TYPE_HLS ->
-                HlsMediaSource.Factory(LMFeedVideoCache.getInstance(context))
+                HlsMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
                     .createMediaSource(MediaItem.fromUri(uri))
 
             else -> {
-                return ProgressiveMediaSource.Factory(LMFeedVideoCache.getInstance(context))
+                return ProgressiveMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
                     .createMediaSource(MediaItem.fromUri(uri))
             }
         }

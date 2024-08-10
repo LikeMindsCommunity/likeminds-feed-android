@@ -77,6 +77,7 @@ class LMFeedItemPostVideoFeedViewDataBinder(
         }
     }
 
+    //sets the required click listeners to the binding
     private fun setClickListeners(binding: LmFeedItemPostVideoFeedBinding) {
         binding.apply {
             postHeader.setAuthorFrameClickListener {

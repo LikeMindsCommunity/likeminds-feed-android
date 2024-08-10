@@ -2,7 +2,6 @@ package com.likeminds.feed.android.core.videofeed.view
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,12 +51,14 @@ open class LMFeedVideoFeedFragment :
         LMFeedPostVideoPreviewAutoPlayHelper.getInstance()
     }
 
-    private var pageToCall: Int = 1
+    private var pageToCall: Int = 0
 
     private var previousTotal: Int = 0
 
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
+        private const val CACHE_SIZE_EACH_VIDEO = 10 * 1024 * 1024L // 10 MB
+        private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
     }
 
     override fun onCreateView(
@@ -148,15 +149,18 @@ open class LMFeedVideoFeedFragment :
         super.onViewCreated(view, savedInstanceState)
 
         fetchData()
-        setAdapter()
+        initViewPager()
         observeResponses()
     }
 
+    //calls the getFeed() function to fetch feed videos
     private fun fetchData() {
+        pageToCall++
         videoFeedViewModel.getFeed(pageToCall)
     }
 
-    fun setAdapter() {
+    //initializes the view pager
+    private fun initViewPager() {
         videoFeedAdapter = LMFeedVideoFeedAdapter(this)
 
         binding.vp2VideoFeed.apply {
@@ -164,8 +168,10 @@ open class LMFeedVideoFeedFragment :
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
 
+                    //plays the video in the view pager
                     playVideoInViewPager(position)
 
+                    //if the current item is the last item then show Caught up layout
                     if (position == videoFeedAdapter.itemCount - 1
                         && (videoFeedAdapter.items().lastOrNull() !is LMFeedCaughtUpViewData)
                     ) {
@@ -176,14 +182,13 @@ open class LMFeedVideoFeedFragment :
                 override fun onPageScrollStateChanged(state: Int) {
                     super.onPageScrollStateChanged(state)
 
-                    // Call API if the last page is reached
                     val size: Int = videoFeedAdapter.itemCount
 
+                    // Call API if the [VIDEO_PRELOAD_THRESHOLD] is reached
                     if (currentItem > 0 && currentItem >= size - VIDEO_PRELOAD_THRESHOLD) {
                         if (videoFeedAdapter.itemCount > previousTotal) {
-                            pageToCall++
                             previousTotal = videoFeedAdapter.itemCount
-                            videoFeedViewModel.getFeed(pageToCall)
+                            fetchData()
                         }
                     }
                 }
@@ -193,86 +198,7 @@ open class LMFeedVideoFeedFragment :
         }
     }
 
-    private fun playVideoInViewPager(position: Int) {
-        binding.vp2VideoFeed.apply {
-            if (position >= 0 && videoFeedAdapter.items()[position] != null) {
-                val data = videoFeedAdapter.items()[position]
-                if (data !is LMFeedPostViewData) {
-                    postVideoPreviewAutoPlayHelper.removePlayer()
-                    return
-                }
-
-                val videoFeedBinding =
-                    ((get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position) as? LMFeedDataBoundViewHolder<*>)
-                        ?.binding as? LmFeedItemPostVideoFeedBinding ?: return
-
-                val url = data.mediaViewData.attachments.first().attachmentMeta.url
-
-                postVideoPreviewAutoPlayHelper.playVideoInView(
-                    videoFeedBinding.postVideoView,
-                    url
-                )
-
-                //todo: not working properly have to check.
-
-//                        val uri = Uri.parse(url)
-//                        // factory which is used to generate "content key" for uri.
-//                        // content keys are not always equal to urL
-//                        // in complex cases the factory may be different from default implementation
-//                        val cacheKeyFactory =
-//                            LMFeedVideoCache.getInstance(requireContext().applicationContext).cacheKeyFactory
-//                        // content key used to retrieve metadata for cache entry
-//                        val contentKey = cacheKeyFactory.buildCacheKey(DataSpec(uri))
-//                        val contentMetadata =
-//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
-//                                .getContentMetadata(contentKey)
-//                        val contentLength = ContentMetadata.getContentLength(contentMetadata)
-//                        // this is summary for all cache spans, cached by exoplayer, which belongs to given urL.
-//                        // each span is a chunk of content, which may be randomly downloaded
-//                        val cachedLength =
-//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
-//                                .getCachedBytes(contentKey, 0L, contentLength)
-
-                cache(position + 1)
-            } else {
-                Log.d("PUI", "playVideoInViewPager: $position")
-                postVideoPreviewAutoPlayHelper.removePlayer()
-            }
-        }
-    }
-
-    private fun cache(position: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            if (videoFeedAdapter.itemCount <= position) {
-                return@launch
-            }
-
-            val data = (videoFeedAdapter.items()[position])
-
-            if (data !is LMFeedPostViewData) {
-                return@launch
-            }
-
-            val url =
-                data.mediaViewData.attachments.first().attachmentMeta.url
-            CacheWriter(
-                LMFeedVideoCache.getInstance(requireContext().applicationContext)
-                    .createDataSource(),
-                DataSpec(
-                    Uri.parse(url),
-                    0,
-                    5 * 1024 * 1024
-                ),
-                null
-            ) { requestLength, bytesCached, newBytesCached ->
-                Log.d(
-                    "PUIII",
-                    "cache: ${requestLength / (1024 * 1024)}::::::${bytesCached / (1024 * 1024)}::::::${newBytesCached / (1024)}:::::$url "
-                )
-            }.cache()
-        }
-    }
-
+    //observes live data responses
     private fun observeResponses() {
         videoFeedViewModel.videoFeedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
@@ -329,11 +255,75 @@ open class LMFeedVideoFeedFragment :
         }.observeInLifecycle(viewLifecycleOwner)
     }
 
+    //checks whether posts are empty or not and replaces the posts accordingly
     private fun checkPostsAndReplace(posts: List<LMFeedPostViewData>) {
         if (posts.isEmpty()) {
             videoFeedAdapter.add(LMFeedCaughtUpViewData.Builder().build())
         } else {
+            //cache starting 2 videos
+            preCache(0)
             videoFeedAdapter.replace(posts)
+        }
+    }
+
+    //player the video at specified position if present in view pager
+    private fun playVideoInViewPager(position: Int) {
+        binding.vp2VideoFeed.apply {
+            if (position >= 0 && videoFeedAdapter.items()[position] != null) {
+                val data = videoFeedAdapter.items()[position]
+                if (data !is LMFeedPostViewData) {
+                    postVideoPreviewAutoPlayHelper.removePlayer()
+                    return
+                }
+
+                //get the video feed binding to play the view in [postVideoView]
+                val videoFeedBinding =
+                    ((get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position) as? LMFeedDataBoundViewHolder<*>)
+                        ?.binding as? LmFeedItemPostVideoFeedBinding ?: return
+
+                val url = data.mediaViewData.attachments.firstOrNull()?.attachmentMeta?.url ?: ""
+
+                //plays the video in the [postVideoView]
+                postVideoPreviewAutoPlayHelper.playVideoInView(
+                    videoFeedBinding.postVideoView,
+                    url
+                )
+
+                //cache videos from next position till [PRECACHE_VIDEO_COUNT]
+                preCache(position + 1)
+            } else {
+                postVideoPreviewAutoPlayHelper.removePlayer()
+            }
+        }
+    }
+
+    //precache the videos from specified position till [PRECACHE_VIDEO_COUNT]
+    private fun preCache(position: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            for (i in position..position + PRECACHE_VIDEO_COUNT) {
+                if (videoFeedAdapter.itemCount <= i) {
+                    return@launch
+                }
+
+                val data = (videoFeedAdapter.items()[i])
+                if (data !is LMFeedPostViewData) {
+                    return@launch
+                }
+
+                val url =
+                    data.mediaViewData.attachments.first().attachmentMeta.url
+
+                CacheWriter(
+                    LMFeedVideoCache.getCacheDataSourceFactory(requireContext().applicationContext)
+                        .createDataSource(),
+                    DataSpec(
+                        Uri.parse(url),
+                        0,
+                        CACHE_SIZE_EACH_VIDEO
+                    ),
+                    null
+                ) { _, _, _ -> }.cache()
+            }
         }
     }
 
@@ -411,6 +401,7 @@ open class LMFeedVideoFeedFragment :
         }
     }
 
+    //callback when the user clicks on the video feed caught up layout
     override fun onPostVideoFeedCaughtUpClicked() {
         super.onPostVideoFeedCaughtUpClicked()
 

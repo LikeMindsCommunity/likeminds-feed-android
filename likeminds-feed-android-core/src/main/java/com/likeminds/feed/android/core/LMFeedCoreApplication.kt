@@ -97,7 +97,7 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
         enablePushNotifications: Boolean = false,
         deviceId: String? = null
     ) {
-        LMFeedVideoCache.getInstance(application.applicationContext)
+        LMFeedVideoCache.getCacheDataSourceFactory(application.applicationContext)
 
         mClient = LMFeedClient.Builder(application)
             .lmCallback(this)

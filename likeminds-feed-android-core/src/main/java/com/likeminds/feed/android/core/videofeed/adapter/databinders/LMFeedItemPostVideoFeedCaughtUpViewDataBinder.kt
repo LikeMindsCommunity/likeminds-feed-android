@@ -59,6 +59,7 @@ class LMFeedItemPostVideoFeedCaughtUpViewDataBinder(
     ) {
     }
 
+    //sets the required click listeners to the binding
     private fun setClickListener(binding: LmFeedItemPostVideoFeedCaughtUpBinding) {
         binding.tvSubtitle.setOnClickListener {
             postAdapterListener.onPostVideoFeedCaughtUpClicked()

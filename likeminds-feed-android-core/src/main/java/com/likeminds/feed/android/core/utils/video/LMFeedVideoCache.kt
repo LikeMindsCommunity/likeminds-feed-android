@@ -15,7 +15,7 @@ class LMFeedVideoCache {
         private var sDownloadCache: SimpleCache? = null
         private var cacheDataSourceFactory: CacheDataSource.Factory? = null
 
-        fun getCache(context: Context): SimpleCache {
+        private fun getCache(context: Context): SimpleCache {
             if (sDownloadCache != null) {
                 return sDownloadCache!!
             }
@@ -36,25 +36,10 @@ class LMFeedVideoCache {
             return sDownloadCache!!
         }
 
-        fun getInstance(context: Context): CacheDataSource.Factory {
+        fun getCacheDataSourceFactory(context: Context): CacheDataSource.Factory {
             if (cacheDataSourceFactory != null) {
                 return cacheDataSourceFactory!!
             }
-
-//            val exoPlayerCacheSize = 500 * 1024 * 1024.toLong()// Set the size of cache for video
-//            val leastRecentlyUsedCacheEvictor =
-//                LeastRecentlyUsedCacheEvictor(exoPlayerCacheSize)
-//            val exoDatabaseProvider = StandaloneDatabaseProvider(context)
-//
-//            val cache = File(context.cacheDir, "lm_feed_video_cache")
-//            if (!cache.exists()) {
-//                cache.mkdirs()
-//            }
-//
-//            if (sDownloadCache == null) {
-//                sDownloadCache =
-//                    SimpleCache(cache, leastRecentlyUsedCacheEvictor, exoDatabaseProvider)
-//            }
 
             getCache(context)
 
