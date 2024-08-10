@@ -29,11 +29,11 @@ import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogListene
 import com.likeminds.feed.android.core.likes.model.LMFeedLikesScreenExtras
 import com.likeminds.feed.android.core.likes.model.POST
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity
-import com.likeminds.feed.android.core.overflowmenu.model.DELETE_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.overflowmenu.model.EDIT_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.overflowmenu.model.PIN_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.overflowmenu.model.REPORT_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.overflowmenu.model.UNPIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.postmenu.model.DELETE_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.postmenu.model.EDIT_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.postmenu.model.PIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.postmenu.model.REPORT_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.postmenu.model.UNPIN_POST_MENU_ITEM_ID
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollOptionViewData
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollResultsExtras
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData

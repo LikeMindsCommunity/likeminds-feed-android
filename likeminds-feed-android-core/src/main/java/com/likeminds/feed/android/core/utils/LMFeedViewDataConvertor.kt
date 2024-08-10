@@ -6,7 +6,7 @@ import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityEntityVi
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.delete.model.LMFeedReasonChooseViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
-import com.likeminds.feed.android.core.overflowmenu.model.LMFeedOverflowMenuItemViewData
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.post.create.model.LMFeedFileUploadViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
@@ -282,14 +282,14 @@ object LMFeedViewDataConvertor {
     }
 
     /**
-     * convert list of [MenuItem] to [LMFeedOverflowMenuItemViewData]
+     * convert list of [MenuItem] to [LMFeedPostMenuItemViewData]
      * @param menuItems: list of [MenuItem]
      * */
     private fun convertOverflowMenuItems(
         menuItems: List<MenuItem>
-    ): List<LMFeedOverflowMenuItemViewData> {
+    ): List<LMFeedPostMenuItemViewData> {
         return menuItems.map { menuItem ->
-            LMFeedOverflowMenuItemViewData.Builder()
+            LMFeedPostMenuItemViewData.Builder()
                 .id(menuItem.id)
                 .title(menuItem.title)
                 .build()

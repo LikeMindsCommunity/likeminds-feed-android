@@ -14,8 +14,8 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.text.util.LinkifyCompat
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.overflowmenu.model.PIN_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.overflowmenu.model.UNPIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.postmenu.model.PIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.postmenu.model.UNPIN_POST_MENU_ITEM_ID
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener

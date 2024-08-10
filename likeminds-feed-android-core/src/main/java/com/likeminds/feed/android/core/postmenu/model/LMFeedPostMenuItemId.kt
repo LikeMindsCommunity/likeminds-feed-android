@@ -1,4 +1,4 @@
-package com.likeminds.feed.android.core.overflowmenu.model
+package com.likeminds.feed.android.core.postmenu.model
 
 import androidx.annotation.IntDef
 
@@ -22,4 +22,4 @@ const val EDIT_COMMENT_MENU_ITEM_ID = 8
     EDIT_COMMENT_MENU_ITEM_ID
 )
 @Retention(AnnotationRetention.SOURCE)
-annotation class LMFeedOverflowMenuItemId
+annotation class LMFeedPostMenuItemId

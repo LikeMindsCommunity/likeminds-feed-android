@@ -1,6 +1,6 @@
 package com.likeminds.feed.android.core.socialfeed.model
 
-import com.likeminds.feed.android.core.overflowmenu.model.LMFeedOverflowMenuItemViewData
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 
 class LMFeedPostHeaderViewData private constructor(
@@ -10,7 +10,7 @@ class LMFeedPostHeaderViewData private constructor(
     val user: LMFeedUserViewData,
     val createdAt: Long,
     val updatedAt: Long,
-    val menuItems: List<LMFeedOverflowMenuItemViewData>
+    val menuItems: List<LMFeedPostMenuItemViewData>
 ) {
 
     class Builder {
@@ -20,7 +20,7 @@ class LMFeedPostHeaderViewData private constructor(
         private var user: LMFeedUserViewData = LMFeedUserViewData.Builder().build()
         private var createdAt: Long = 0L
         private var updatedAt: Long = 0L
-        private var menuItems: List<LMFeedOverflowMenuItemViewData> = emptyList()
+        private var menuItems: List<LMFeedPostMenuItemViewData> = emptyList()
 
         fun isEdited(isEdited: Boolean) = apply { this.isEdited = isEdited }
         fun isPinned(isPinned: Boolean) = apply { this.isPinned = isPinned }
@@ -28,7 +28,7 @@ class LMFeedPostHeaderViewData private constructor(
         fun user(user: LMFeedUserViewData) = apply { this.user = user }
         fun createdAt(createdAt: Long) = apply { this.createdAt = createdAt }
         fun updatedAt(updatedAt: Long) = apply { this.updatedAt = updatedAt }
-        fun menuItems(menuItems: List<LMFeedOverflowMenuItemViewData>) =
+        fun menuItems(menuItems: List<LMFeedPostMenuItemViewData>) =
             apply { this.menuItems = menuItems }
 
         fun build() = LMFeedPostHeaderViewData(
