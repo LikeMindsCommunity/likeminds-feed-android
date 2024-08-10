@@ -84,7 +84,7 @@ open class LMFeedEditPostFragment :
     private var postMediaViewData: LMFeedMediaViewData? = null
     private var ogTags: LMFeedLinkOGTagsViewData? = null
     private var poll: LMFeedPollViewData? = null
-    private var metadata: JSONObject? = null
+    private var widgetData: Pair<String, JSONObject>? = null
 
     private var post: LMFeedPostViewData? = null
 
@@ -318,6 +318,10 @@ open class LMFeedEditPostFragment :
             val updatedText = memberTagging.replaceSelectedMembers(text).trim()
             val topics = selectedTopic.values
 
+            val mediaAttachments = postMediaViewData?.attachments?.filter {
+                it.attachmentType != CUSTOM_WIDGET
+            }
+
             if (selectedTopic.isNotEmpty()) {
                 if (disabledTopics.isEmpty()) {
                     //call api as all topics are enabled
@@ -326,10 +330,11 @@ open class LMFeedEditPostFragment :
                     editPostViewModel.editPost(
                         editPostExtras.postId,
                         updatedText,
-                        attachments = postMediaViewData?.attachments,
+                        attachments = mediaAttachments,
                         ogTags = ogTags,
                         selectedTopics = topics.toList(),
-                        poll = poll
+                        poll = poll,
+                        widgetData = widgetData
                     )
                 } else {
                     //show dialog for disabled topics
@@ -342,10 +347,11 @@ open class LMFeedEditPostFragment :
                 editPostViewModel.editPost(
                     editPostExtras.postId,
                     updatedText,
-                    attachments = postMediaViewData?.attachments,
+                    attachments = mediaAttachments,
                     ogTags = ogTags,
                     selectedTopics = topics.toList(),
-                    poll = poll
+                    poll = poll,
+                    widgetData = widgetData
                 )
             }
         }
@@ -481,6 +487,21 @@ open class LMFeedEditPostFragment :
             val mediaViewData = post.mediaViewData
             val topics = post.topicsViewData
 
+            val customWidgetAttachment = mediaViewData.attachments.firstOrNull {
+                it.attachmentType == CUSTOM_WIDGET
+            }?.attachmentMeta?.widgetViewData
+
+            widgetData = if (customWidgetAttachment != null) {
+                val entityId = customWidgetAttachment.id
+                val data = customWidgetAttachment.metadata.optJSONObject("meta") ?: JSONObject()
+                Pair(
+                    entityId,
+                    data
+                )
+            } else {
+                null
+            }
+
             LMFeedProgressBarHelper.hideProgress(progressBar)
             nestedScroll.show()
 
@@ -518,7 +539,9 @@ open class LMFeedEditPostFragment :
 
                 ITEM_POST_LINK -> {
                     postMediaViewData = mediaViewData
-                    ogTags = postMediaViewData?.attachments?.first()?.attachmentMeta?.ogTags
+                    ogTags = postMediaViewData?.attachments?.firstOrNull {
+                        it.attachmentType == LINK
+                    }?.attachmentMeta?.ogTags
                     showLinkView()
                 }
 
@@ -786,7 +809,9 @@ open class LMFeedEditPostFragment :
     //shows single image preview
     private fun showSingleImagePreview() {
         binding.headerViewEditPost.setSubmitButtonEnabled(isEnabled = true)
-        val attachmentUrl = postMediaViewData?.attachments?.first()?.attachmentMeta?.url ?: return
+        val attachmentUrl = postMediaViewData?.attachments?.firstOrNull {
+            it.attachmentType == IMAGE
+        }?.attachmentMeta?.url ?: return
 
         binding.singleImageAttachment.apply {
             root.show()
@@ -801,7 +826,9 @@ open class LMFeedEditPostFragment :
 
     //shows single video preview
     private fun showSingleVideoPreview() {
-        val videoAttachment = postMediaViewData?.attachments?.first()
+        val videoAttachment = postMediaViewData?.attachments?.firstOrNull {
+            it.attachmentType == VIDEO
+        }
         binding.singleVideoAttachment.apply {
             root.show()
             val meta = videoAttachment?.attachmentMeta

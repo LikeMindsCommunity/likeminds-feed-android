@@ -2,7 +2,6 @@ package com.likeminds.feed.android.core.post.create.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.WorkContinuation
 import androidx.work.WorkManager
@@ -234,19 +233,20 @@ class LMFeedCreatePostViewModel : ViewModel() {
                         requestBuilder.attachments(
                             LMFeedViewDataConvertor.convertAttachments(
                                 ogTags,
-                                metadata
+                                Pair(null, metadata)
                             )
                         )
                     }
 
                     poll != null -> {
-                        val pollAttachment = LMFeedViewDataConvertor.convertPoll(poll, metadata)
+                        val pollAttachment =
+                            LMFeedViewDataConvertor.convertPoll(poll, Pair(null, metadata))
                         requestBuilder.attachments(pollAttachment)
                     }
 
                     metadata != null -> {
                         val customAttachment =
-                            listOf(LMFeedViewDataConvertor.convertCustomWidget(metadata))
+                            listOf(LMFeedViewDataConvertor.convertCustomWidget(null, metadata))
                         requestBuilder.attachments(customAttachment)
                     }
                 }

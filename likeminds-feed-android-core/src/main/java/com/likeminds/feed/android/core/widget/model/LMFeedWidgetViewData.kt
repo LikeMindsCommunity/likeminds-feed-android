@@ -46,4 +46,22 @@ class LMFeedWidgetViewData private constructor(
             .parentEntityType(parentEntityType)
             .updatedAt(updatedAt)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedWidgetViewData(id='")
+            append(id)
+            append("', createdAt=")
+            append(createdAt)
+            append(", metadata=")
+            append(metadata)
+            append(", parentEntityId='")
+            append(parentEntityId)
+            append("', parentEntityType='")
+            append(parentEntityType)
+            append("', updatedAt=")
+            append(updatedAt)
+            append(")")
+        }
+    }
 }

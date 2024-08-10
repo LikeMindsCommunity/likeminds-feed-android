@@ -885,7 +885,7 @@ object LMFeedViewDataConvertor {
             .id(temporaryId)
             .workerUUID(workerUUID)
             .text(text ?: "")
-            .attachments(convertAttachments(fileUris, metadata))
+            .attachments(convertAttachments(fileUris, Pair(null, metadata)))
             .build()
     }
 
@@ -928,7 +928,7 @@ object LMFeedViewDataConvertor {
     // creates attachment list of Network Model for link attachment
     fun convertAttachments(
         linkOGTagsViewData: LMFeedLinkOGTagsViewData,
-        metadata: JSONObject?
+        widgetData: Pair<String?, JSONObject?>?
     ): List<Attachment> {
         val attachments = ArrayList<Attachment>()
 
@@ -941,8 +941,8 @@ object LMFeedViewDataConvertor {
         )
 
         //add custom widget
-        metadata?.let {
-            attachments.add(convertCustomWidget(it))
+        widgetData?.second?.let {
+            attachments.add(convertCustomWidget(widgetData.first, it))
         }
         return attachments
     }
@@ -972,7 +972,7 @@ object LMFeedViewDataConvertor {
     // converts list of [LMFeedFileUploadViewData] to list of network [Attachment] model
     private fun convertAttachments(
         fileUris: List<LMFeedFileUploadViewData>,
-        metadata: JSONObject?
+        widgetData: Pair<String?, JSONObject?>?
     ): List<Attachment> {
         val attachments = ArrayList<Attachment>()
 
@@ -984,9 +984,9 @@ object LMFeedViewDataConvertor {
         )
 
         //add meta
-        metadata?.let {
+        widgetData?.second?.let {
             attachments.add(
-                convertCustomWidget(it)
+                convertCustomWidget(widgetData.first, it)
             )
         }
 
@@ -1068,7 +1068,10 @@ object LMFeedViewDataConvertor {
     }
 
     // converts [LMFeedPollViewData] to [Attachment]
-    fun convertPoll(poll: LMFeedPollViewData, metadata: JSONObject?): List<Attachment> {
+    fun convertPoll(
+        poll: LMFeedPollViewData,
+        widgetData: Pair<String?, JSONObject?>?
+    ): List<Attachment> {
         val attachments = ArrayList<Attachment>()
 
         attachments.add(
@@ -1078,9 +1081,9 @@ object LMFeedViewDataConvertor {
                 .build()
         )
 
-        metadata?.let {
+        widgetData?.second?.let {
             attachments.add(
-                convertCustomWidget(it)
+                convertCustomWidget(widgetData.first, it)
             )
         }
 
@@ -1102,15 +1105,19 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
-    fun convertCustomWidget(metadata: JSONObject): Attachment {
+    fun convertCustomWidget(entityId: String?, metadata: JSONObject): Attachment {
         return Attachment.Builder()
             .attachmentType(AttachmentType.CUSTOM_WIDGET)
-            .attachmentMeta(convertCustomWidgetAttachmentMeta(metadata))
+            .attachmentMeta(convertCustomWidgetAttachmentMeta(entityId, metadata))
             .build()
     }
 
-    private fun convertCustomWidgetAttachmentMeta(metadata: JSONObject): AttachmentMeta {
+    private fun convertCustomWidgetAttachmentMeta(
+        entityId: String?,
+        metadata: JSONObject
+    ): AttachmentMeta {
         return AttachmentMeta.Builder()
+            .entityId(entityId)
             .meta(metadata)
             .build()
     }
