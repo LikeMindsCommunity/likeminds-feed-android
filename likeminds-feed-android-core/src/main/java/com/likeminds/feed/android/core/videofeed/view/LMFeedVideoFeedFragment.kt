@@ -18,6 +18,8 @@ import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentVideoFeedBinding
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBinding
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
+import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
@@ -39,7 +41,8 @@ import kotlinx.coroutines.launch
 
 open class LMFeedVideoFeedFragment :
     Fragment(),
-    LMFeedPostAdapterListener {
+    LMFeedPostAdapterListener,
+    LMFeedPostMenuBottomSheetListener {
 
     private lateinit var binding: LmFeedFragmentVideoFeedBinding
 
@@ -429,6 +432,11 @@ open class LMFeedVideoFeedFragment :
 
         val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
         coreCallback?.openProfileWithUUID(uuid)
+    }
+
+    //callback when the user clicks on post menu item in the menu bottom sheet
+    override fun onPostMenuItemClicked(postId: String, menuItem: LMFeedPostMenuItemViewData) {
+
     }
 
     /**
