@@ -6,8 +6,7 @@ import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPla
 import com.likeminds.feed.android.core.videofeed.adapter.databinders.LMFeedItemPostVideoFeedViewDataBinder
 
 class LMFeedVideoFeedAdapter(
-    private val postAdapterListener: LMFeedPostAdapterListener,
-    private val postVideoPreviewAutoPlayHelper: LMFeedPostVideoPreviewAutoPlayHelper
+    private val postAdapterListener: LMFeedPostAdapterListener
 ) : LMFeedBaseRecyclerAdapter<LMFeedBaseViewType>() {
 
     init {
@@ -18,10 +17,7 @@ class LMFeedVideoFeedAdapter(
         val viewDataBinders = ArrayList<LMFeedViewDataBinder<*, *>>(1)
 
         val itemPostVideoFeedViewDataBinder =
-            LMFeedItemPostVideoFeedViewDataBinder(
-                postAdapterListener,
-                postVideoPreviewAutoPlayHelper
-            )
+            LMFeedItemPostVideoFeedViewDataBinder(postAdapterListener)
 
         viewDataBinders.add(itemPostVideoFeedViewDataBinder)
 

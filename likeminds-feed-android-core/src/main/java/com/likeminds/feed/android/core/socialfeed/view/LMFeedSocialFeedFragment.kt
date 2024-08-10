@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -20,12 +22,21 @@ import com.likeminds.feed.android.core.activityfeed.view.LMFeedActivityFeedActiv
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentSocialFeedBinding
 import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
-import com.likeminds.feed.android.core.delete.view.*
+import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogListener
+import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogListener
 import com.likeminds.feed.android.core.likes.model.LMFeedLikesScreenExtras
 import com.likeminds.feed.android.core.likes.model.POST
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity
-import com.likeminds.feed.android.core.overflowmenu.model.*
-import com.likeminds.feed.android.core.poll.result.model.*
+import com.likeminds.feed.android.core.overflowmenu.model.DELETE_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.EDIT_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.PIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.REPORT_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.UNPIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.poll.result.model.LMFeedPollOptionViewData
+import com.likeminds.feed.android.core.poll.result.model.LMFeedPollResultsExtras
+import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
 import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsActivity
 import com.likeminds.feed.android.core.post.create.model.LMFeedCreatePostExtras
 import com.likeminds.feed.android.core.post.create.view.LMFeedCreatePostActivity
@@ -41,6 +52,11 @@ import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
+import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionResultExtras
@@ -53,14 +69,19 @@ import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderVi
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
-import com.likeminds.feed.android.core.ui.widgets.poll.view.*
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
-import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
-import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
-import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetFragment
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetListener
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAnonymousPollDialogFragment
+import com.likeminds.feed.android.core.utils.LMFeedAndroidUtils
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
+import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
+import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
+import com.likeminds.feed.android.core.utils.LMFeedProgressBarHelper
+import com.likeminds.feed.android.core.utils.LMFeedRoute
+import com.likeminds.feed.android.core.utils.LMFeedShareUtils
+import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
@@ -68,7 +89,9 @@ import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWorker
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
-import com.likeminds.feed.android.core.utils.user.*
+import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
+import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
+import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -325,23 +348,23 @@ open class LMFeedSocialFeedFragment :
                     val post = pair.second
                     val index = pair.first
 
-                    val footerData = post.actionViewData
+                    val postActionData = post.actionViewData
 
-                    val newLikesCount = if (footerData.isLiked) {
-                        footerData.likesCount - 1
+                    val newLikesCount = if (postActionData.isLiked) {
+                        postActionData.likesCount - 1
                     } else {
-                        footerData.likesCount + 1
+                        postActionData.likesCount + 1
                     }
 
-                    val updatedIsLiked = !footerData.isLiked
+                    val updatedIsLiked = !postActionData.isLiked
 
-                    val updatedFooterData = footerData.toBuilder()
+                    val updatedActionViewData = postActionData.toBuilder()
                         .isLiked(updatedIsLiked)
                         .likesCount(newLikesCount)
                         .build()
 
                     val updatedPostData = post.toBuilder()
-                        .actionViewData(updatedFooterData)
+                        .actionViewData(updatedActionViewData)
                         .fromPostLiked(true)
                         .build()
 
@@ -387,14 +410,14 @@ open class LMFeedSocialFeedFragment :
                         val post = pair.second
                         val index = pair.first
 
-                        //update footer view data
-                        val updatedFooterViewData = post.actionViewData.toBuilder()
+                        //update action view data
+                        val updatedActionView = post.actionViewData.toBuilder()
                             .isSaved(!post.actionViewData.isSaved)
                             .build()
 
                         //update post view data
                         val updatedPostViewData = post.toBuilder()
-                            .actionViewData(updatedFooterViewData)
+                            .actionViewData(updatedActionView)
                             .fromPostSaved(true)
                             .build()
 
@@ -772,13 +795,10 @@ open class LMFeedSocialFeedFragment :
     //updates [alreadySeenFullContent] for the post
     override fun onPostContentSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
         binding.rvSocial.apply {
+            val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
 
-            binding.rvSocial.apply {
-                val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
-
-                //update recycler
-                updatePostItem(adapterPosition, postViewData)
-            }
+            //update recycler
+            updatePostItem(adapterPosition, postViewData)
         }
     }
 

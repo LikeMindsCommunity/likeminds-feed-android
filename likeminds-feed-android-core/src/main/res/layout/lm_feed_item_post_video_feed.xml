@@ -47,9 +47,10 @@
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_post_content"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
+            android:layout_marginStart="@dimen/lm_feed_large_margin"
+            android:layout_marginEnd="@dimen/lm_feed_extra_extra_large_margin"
             android:layout_marginBottom="@dimen/lm_feed_large_margin"
             android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -64,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/lm_feed_large_margin"
-            android:layout_marginBottom="@dimen/lm_feed_vertical_footer_bottom_margin"
+            android:layout_marginBottom="@dimen/lm_feed_vertical_post_action_bottom_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

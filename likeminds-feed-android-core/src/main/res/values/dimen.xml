@@ -164,6 +164,6 @@
     <dimen name="lm_feed_poll_option_submit_button_horizontal_padding">48dp</dimen>
     <dimen name="lm_feed_poll_option_submit_button_corner_radius">24dp</dimen>
 
-    <!--    Vertical footer -->
-    <dimen name="lm_feed_vertical_footer_bottom_margin">10dp</dimen>
+    <!--    Vertical post action -->
+    <dimen name="lm_feed_vertical_post_action_bottom_margin">10dp</dimen>
 </resources>

@@ -3,7 +3,9 @@ package com.likeminds.feed.android.core.post.detail.view
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -11,40 +13,80 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.likeminds.feed.android.core.*
+import com.likeminds.feed.android.core.LMFeedCore
+import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentPostDetailBinding
-import com.likeminds.feed.android.core.delete.model.*
-import com.likeminds.feed.android.core.delete.view.*
-import com.likeminds.feed.android.core.likes.model.*
+import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_COMMENT
+import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
+import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
+import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogListener
+import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogListener
+import com.likeminds.feed.android.core.likes.model.COMMENT
+import com.likeminds.feed.android.core.likes.model.LMFeedLikesScreenExtras
+import com.likeminds.feed.android.core.likes.model.POST
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity
-import com.likeminds.feed.android.core.overflowmenu.model.*
-import com.likeminds.feed.android.core.poll.result.model.*
+import com.likeminds.feed.android.core.overflowmenu.model.DELETE_COMMENT_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.DELETE_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.EDIT_COMMENT_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.EDIT_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.PIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.REPORT_COMMENT_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.REPORT_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.overflowmenu.model.UNPIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.poll.result.model.LMFeedPollOptionViewData
+import com.likeminds.feed.android.core.poll.result.model.LMFeedPollResultsExtras
+import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
 import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsActivity
 import com.likeminds.feed.android.core.post.detail.adapter.LMFeedPostDetailAdapterListener
 import com.likeminds.feed.android.core.post.detail.adapter.LMFeedReplyAdapterListener
-import com.likeminds.feed.android.core.post.detail.model.*
+import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
+import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountViewData
+import com.likeminds.feed.android.core.post.detail.model.LMFeedNoCommentsViewData
+import com.likeminds.feed.android.core.post.detail.model.LMFeedPostDetailExtras
+import com.likeminds.feed.android.core.post.detail.model.LMFeedViewMoreReplyViewData
 import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailActivity.Companion.LM_FEED_POST_DETAIL_EXTRAS
 import com.likeminds.feed.android.core.post.detail.viewmodel.LMFeedPostDetailViewModel
 import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
-import com.likeminds.feed.android.core.report.model.*
-import com.likeminds.feed.android.core.report.view.*
+import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
+import com.likeminds.feed.android.core.report.model.LMFeedReportType
+import com.likeminds.feed.android.core.report.model.REPORT_TYPE_COMMENT
+import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
+import com.likeminds.feed.android.core.report.model.REPORT_TYPE_REPLY
+import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
+import com.likeminds.feed.android.core.report.view.LMFeedReportFragment
+import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.view.LMFeedCommentComposerView
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
-import com.likeminds.feed.android.core.ui.widgets.poll.view.*
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
-import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
-import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetFragment
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetListener
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAnonymousPollDialogFragment
+import com.likeminds.feed.android.core.utils.LMFeedAndroidUtils
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
+import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
+import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
+import com.likeminds.feed.android.core.utils.LMFeedProgressBarHelper
+import com.likeminds.feed.android.core.utils.LMFeedRoute
+import com.likeminds.feed.android.core.utils.LMFeedShareUtils
+import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
+import com.likeminds.feed.android.core.utils.emptyExtrasException
 import com.likeminds.feed.android.core.utils.membertagging.MemberTaggingUtil
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
@@ -384,14 +426,14 @@ open class LMFeedPostDetailFragment :
             // gets post from adapter
             var post = getItem(postDataPosition) as LMFeedPostViewData
 
-            //update the footer view data
-            val updatedFooterView = post.actionViewData.toBuilder()
+            //update the action view data
+            val updatedActionViewData = post.actionViewData.toBuilder()
                 .commentsCount(post.actionViewData.commentsCount + 1)
                 .build()
 
             //updated the post
             post = post.toBuilder()
-                .actionViewData(updatedFooterView)
+                .actionViewData(updatedActionViewData)
                 .build()
 
             // notifies the subscribers about the change in post data
@@ -855,14 +897,14 @@ open class LMFeedPostDetailFragment :
 
             var post = getItem(postDataPosition) as LMFeedPostViewData
 
-            //update the footer view data
-            val updatedFooterView = post.actionViewData.toBuilder()
+            //update the action view data
+            val updatedActionViewData = post.actionViewData.toBuilder()
                 .commentsCount(newCommentsCountViewData.commentsCount)
                 .build()
 
             //updated the post
             post = post.toBuilder()
-                .actionViewData(updatedFooterView)
+                .actionViewData(updatedActionViewData)
                 .build()
 
             // notifies the subscribers about the change in post data

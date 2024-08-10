@@ -1,6 +1,7 @@
 package com.likeminds.feed.android.core.utils.video
 
 import android.net.Uri
+import android.util.Log
 import com.likeminds.feed.android.core.ui.base.views.LMFeedVideoView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVideoMediaView
@@ -68,9 +69,11 @@ class LMFeedPostVideoPreviewAutoPlayHelper {
         }
 
         if (lastPlayerView == null || lastPlayerView != videoPost.videoView) {
+            Log.d("PUI", "videoPost: ")
+
             videoPost.playVideo(
                 Uri.parse(url),
-                true,
+                false,
                 LMFeedViewUtils.getShimmer()
             )
 

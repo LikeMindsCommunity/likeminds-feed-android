@@ -14,8 +14,7 @@ import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_VIDEO_FEED
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 
 class LMFeedItemPostVideoFeedViewDataBinder(
-    private val postAdapterListener: LMFeedPostAdapterListener,
-    private val postVideoPreviewAutoPlayHelper: LMFeedPostVideoPreviewAutoPlayHelper
+    private val postAdapterListener: LMFeedPostAdapterListener
 ) : LMFeedViewDataBinder<LmFeedItemPostVideoFeedBinding, LMFeedPostViewData>() {
 
     override val viewType: Int
@@ -29,72 +28,11 @@ class LMFeedItemPostVideoFeedViewDataBinder(
         )
 
         binding.apply {
-            val postViewStyle = LMFeedStyleTransformer.postViewStyle
-            val postHeaderViewStyle = postViewStyle.postHeaderViewStyle
+            LMFeedPostBinderUtils.customizePostHeaderView(postHeader)
 
-            val verticalVideoPostHeaderViewStyle = postHeaderViewStyle.toBuilder()
-                .authorNameViewStyle(
-                    postHeaderViewStyle.authorNameViewStyle.toBuilder()
-                        .textColor(R.color.lm_feed_white)
-                        .build()
-                )
-                .postEditedTextStyle(
-                    postHeaderViewStyle.postEditedTextStyle?.toBuilder()
-                        ?.textColor(R.color.lm_feed_white)
-                        ?.build()
-                )
-                .timestampTextStyle(
-                    postHeaderViewStyle.timestampTextStyle?.toBuilder()
-                        ?.textColor(R.color.lm_feed_white)
-                        ?.build()
-                )
-                .backgroundColor(android.R.color.transparent)
-                .menuIconStyle(null)
-                .pinIconStyle(null)
-                .build()
+            LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
-            LMFeedPostBinderUtils.customizePostHeaderView(
-                postHeader,
-                verticalVideoPostHeaderViewStyle
-            )
-
-            val verticalVideoPostContentTextStyle = postViewStyle.postContentTextStyle.toBuilder()
-                .textColor(R.color.lm_feed_white)
-                // todo: this needs to be handle properly
-                .maxLines(1)
-                .build()
-
-            LMFeedPostBinderUtils.customizePostContentView(
-                tvPostContent,
-                verticalVideoPostContentTextStyle
-            )
-
-            val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
-
-            val verticalPostActionViewStyle = postActionViewStyle.toBuilder()
-                .commentTextStyle(null)
-                .shareIconStyle(null)
-                .likeIconStyle(
-                    postActionViewStyle.likeIconStyle.toBuilder()
-                        .inActiveSrc(R.drawable.lm_feed_ic_like_white)
-                        .build()
-                )
-                .likeTextStyle(
-                    postActionViewStyle.likeTextStyle?.toBuilder()
-                        ?.textColor(R.color.lm_feed_white)
-                        ?.build()
-                )
-                .menuIconStyle(
-                    LMFeedIconStyle.Builder()
-                        .inActiveSrc(R.drawable.lm_feed_ic_overflow_menu_white)
-                        .build()
-                )
-                .build()
-
-            LMFeedPostBinderUtils.customizePostActionVerticalView(
-                postActionView,
-                verticalPostActionViewStyle
-            )
+            LMFeedPostBinderUtils.customizePostActionVerticalView(postActionView)
 
             //set video media style to post video view
             val postVerticalVideoMediaStyle =

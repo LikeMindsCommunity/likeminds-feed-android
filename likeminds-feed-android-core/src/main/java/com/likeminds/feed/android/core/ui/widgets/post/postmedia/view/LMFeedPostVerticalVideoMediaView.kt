@@ -3,11 +3,15 @@ package com.likeminds.feed.android.core.ui.widgets.post.postmedia.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.databinding.LmFeedPostVerticalVideoMediaViewBinding
-import com.likeminds.feed.android.core.ui.base.styles.*
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedImageStyle
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedProgressBarStyle
+import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostVideoMediaViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
@@ -190,6 +194,8 @@ class LMFeedPostVerticalVideoMediaView : ConstraintLayout {
     ) {
         binding.apply {
             if (isVideoLocal) {
+                Log.d("PUI", "startPlayingLocalUri: ")
+
                 videoView.startPlayingLocalUri(
                     uri,
                     pbVideoLoader,
@@ -197,6 +203,8 @@ class LMFeedPostVerticalVideoMediaView : ConstraintLayout {
                     thumbnailSrc
                 )
             } else {
+                Log.d("PUI", "startRemote: ")
+
                 videoView.startPlayingRemoteUri(
                     uri,
                     pbVideoLoader,

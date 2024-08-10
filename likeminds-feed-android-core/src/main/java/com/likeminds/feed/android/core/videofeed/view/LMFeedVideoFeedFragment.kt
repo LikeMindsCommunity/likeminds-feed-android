@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.videofeed.view
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +16,17 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.cache.CacheWriter
 import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentVideoFeedBinding
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.utils.LMFeedRoute
+import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
+import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
@@ -28,6 +34,7 @@ import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 open class LMFeedVideoFeedFragment :
@@ -71,7 +78,69 @@ open class LMFeedVideoFeedFragment :
             }
         }
 
+        setVerticalVideoPostViewStyle()
+
         return binding.root
+    }
+
+    private fun setVerticalVideoPostViewStyle() {
+        val postViewStyle = LMFeedStyleTransformer.postViewStyle
+        val postHeaderViewStyle = postViewStyle.postHeaderViewStyle
+        val postActionViewStyle = postViewStyle.postActionViewStyle
+
+        LMFeedStyleTransformer.postViewStyle = postViewStyle.toBuilder()
+            .postHeaderViewStyle(
+                postHeaderViewStyle.toBuilder()
+                    .authorNameViewStyle(
+                        postHeaderViewStyle.authorNameViewStyle.toBuilder()
+                            .textColor(R.color.lm_feed_white)
+                            .build()
+                    )
+                    .postEditedTextStyle(
+                        postHeaderViewStyle.postEditedTextStyle?.toBuilder()
+                            ?.textColor(R.color.lm_feed_white)
+                            ?.build()
+                    )
+                    .timestampTextStyle(
+                        postHeaderViewStyle.timestampTextStyle?.toBuilder()
+                            ?.textColor(R.color.lm_feed_white)
+                            ?.build()
+                    )
+                    .backgroundColor(android.R.color.transparent)
+                    .menuIconStyle(null)
+                    .pinIconStyle(null)
+                    .build()
+            )
+            .postContentTextStyle(
+                postViewStyle.postContentTextStyle.toBuilder()
+                    .textColor(R.color.lm_feed_white)
+                    .maxLines(1)
+                    .expandableCTAText("...")
+                    .expandableCTAColor(R.color.lm_feed_white)
+                    .build()
+            )
+            .postActionViewStyle(
+                postActionViewStyle.toBuilder()
+                    .commentTextStyle(null)
+                    .shareIconStyle(null)
+                    .likeIconStyle(
+                        postActionViewStyle.likeIconStyle.toBuilder()
+                            .inActiveSrc(R.drawable.lm_feed_ic_like_white)
+                            .build()
+                    )
+                    .likeTextStyle(
+                        postActionViewStyle.likeTextStyle?.toBuilder()
+                            ?.textColor(R.color.lm_feed_white)
+                            ?.build()
+                    )
+                    .menuIconStyle(
+                        LMFeedIconStyle.Builder()
+                            .inActiveSrc(R.drawable.lm_feed_ic_overflow_menu_white)
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,48 +156,14 @@ open class LMFeedVideoFeedFragment :
     }
 
     fun setAdapter() {
-        videoFeedAdapter = LMFeedVideoFeedAdapter(this, postVideoPreviewAutoPlayHelper)
+        videoFeedAdapter = LMFeedVideoFeedAdapter(this)
 
         binding.vp2VideoFeed.apply {
             registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
 
-                    if (position >= 0 && videoFeedAdapter.items()[position] != null) {
-                        val data = videoFeedAdapter.items()[position] as LMFeedPostViewData
-
-                        val videoFeedBinding =
-                            ((get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position) as? LMFeedDataBoundViewHolder<*>)
-                                ?.binding as? LmFeedItemPostVideoFeedBinding ?: return
-
-                        val url = data.mediaViewData.attachments.first().attachmentMeta.url
-
-                        postVideoPreviewAutoPlayHelper.playVideoInView(
-                            videoFeedBinding.postVideoView,
-                            url
-                        )
-
-                        //todo: not working properly have to check.
-//                        val uri = Uri.parse(url)
-//                        // factory which is used to generate "content key" for uri.
-//                        // content keys are not always equal to urL
-//                        // in complex cases the factory may be different from default implementation
-//                        val cacheKeyFactory =
-//                            LMFeedVideoCache.getInstance(requireContext().applicationContext).cacheKeyFactory
-//                        // content key used to retrieve metadata for cache entry
-//                        val contentKey = cacheKeyFactory.buildCacheKey(DataSpec(uri))
-//                        val contentMetadata =
-//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
-//                                .getContentMetadata(contentKey)
-//                        val contentLength = ContentMetadata.getContentLength(contentMetadata)
-//                        // this is summary for all cache spans, cached by exoplayer, which belongs to given urL.
-//                        // each span is a chunk of content, which may be randomly downloaded
-//                        val cachedLength =
-//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
-//                                .getCachedBytes(contentKey, 0L, contentLength)
-
-//                        cache(position + 1)
-                    }
+                    playVideoInViewPager(position)
                 }
 
                 override fun onPageScrollStateChanged(state: Int) {
@@ -153,22 +188,68 @@ open class LMFeedVideoFeedFragment :
         }
     }
 
-    private fun cache(url: String) {
+    private fun playVideoInViewPager(position: Int) {
+        binding.vp2VideoFeed.apply {
+            if (position >= 0 && videoFeedAdapter.items()[position] != null) {
+                val data = videoFeedAdapter.items()[position] as LMFeedPostViewData
+
+                val videoFeedBinding =
+                    ((get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position) as? LMFeedDataBoundViewHolder<*>)
+                        ?.binding as? LmFeedItemPostVideoFeedBinding ?: return
+
+                val url = data.mediaViewData.attachments.first().attachmentMeta.url
+
+                postVideoPreviewAutoPlayHelper.playVideoInView(
+                    videoFeedBinding.postVideoView,
+                    url
+                )
+
+                //todo: not working properly have to check.
+
+//                        val uri = Uri.parse(url)
+//                        // factory which is used to generate "content key" for uri.
+//                        // content keys are not always equal to urL
+//                        // in complex cases the factory may be different from default implementation
+//                        val cacheKeyFactory =
+//                            LMFeedVideoCache.getInstance(requireContext().applicationContext).cacheKeyFactory
+//                        // content key used to retrieve metadata for cache entry
+//                        val contentKey = cacheKeyFactory.buildCacheKey(DataSpec(uri))
+//                        val contentMetadata =
+//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
+//                                .getContentMetadata(contentKey)
+//                        val contentLength = ContentMetadata.getContentLength(contentMetadata)
+//                        // this is summary for all cache spans, cached by exoplayer, which belongs to given urL.
+//                        // each span is a chunk of content, which may be randomly downloaded
+//                        val cachedLength =
+//                            LMFeedVideoCache.getCache(requireContext().applicationContext)
+//                                .getCachedBytes(contentKey, 0L, contentLength)
+
+                cache(position + 1)
+            }
+        }
+    }
+
+    private fun cache(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-//            if (videoFeedAdapter.itemCount <= po?
-//            val url =
-//                (videoFeedAdapter.items()[position] as LMFeedPostViewData).mediaViewData.attachments.first().attachmentMeta.url
+            if (videoFeedAdapter.itemCount <= position) {
+                return@launch
+            }
+            val url =
+                (videoFeedAdapter.items()[position] as LMFeedPostViewData).mediaViewData.attachments.first().attachmentMeta.url
             CacheWriter(
                 LMFeedVideoCache.getInstance(requireContext().applicationContext)
                     .createDataSource(),
                 DataSpec(
                     Uri.parse(url),
                     0,
-                    100 * 1024 * 1024
+                    5 * 1024 * 1024
                 ),
                 null
             ) { requestLength, bytesCached, newBytesCached ->
-//                Log.d("PUI", "cache: ${requestLength/(1024 * 1024)}::::::${bytesCached/(1024 * 1024)}::::::${newBytesCached/(1024)}:::::$url ")
+                Log.d(
+                    "PUIII",
+                    "cache: ${requestLength / (1024 * 1024)}::::::${bytesCached / (1024 * 1024)}::::::${newBytesCached / (1024)}:::::$url "
+                )
             }.cache()
         }
     }
@@ -186,18 +267,61 @@ open class LMFeedVideoFeedFragment :
                 videoFeedAdapter.addAll(posts)
             }
         }
+
+        videoFeedViewModel.errorMessageEventFlow.onEach { response ->
+            when (response) {
+                is LMFeedVideoFeedViewModel.ErrorMessageEvent.LikePost -> {
+                    val postId = response.postId
+
+                    //get post and index
+                    val pair = getIndexAndPostFromAdapter(postId) ?: return@onEach
+                    val post = pair.second
+                    val index = pair.first
+
+                    val postActionData = post.actionViewData
+
+                    val newLikesCount = if (postActionData.isLiked) {
+                        postActionData.likesCount - 1
+                    } else {
+                        postActionData.likesCount + 1
+                    }
+
+                    val updatedIsLiked = !postActionData.isLiked
+
+                    val updatedActionViewData = postActionData.toBuilder()
+                        .isLiked(updatedIsLiked)
+                        .likesCount(newLikesCount)
+                        .build()
+
+                    val updatedPostData = post.toBuilder()
+                        .actionViewData(updatedActionViewData)
+                        .fromPostLiked(true)
+                        .build()
+
+                    videoFeedAdapter.update(index, updatedPostData)
+
+                    //show error message
+                    LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
+                }
+
+                is LMFeedVideoFeedViewModel.ErrorMessageEvent.VideoFeed -> {
+                    val errorMessage = response.errorMessage
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+            }
+        }.observeInLifecycle(viewLifecycleOwner)
     }
 
     override fun onResume() {
         super.onResume()
 
-        val position = binding.vp2VideoFeed.currentItem
+        val currentItem = binding.vp2VideoFeed.currentItem
 
-        if (position >= 0
-            && videoFeedAdapter.itemCount > position
-            && videoFeedAdapter.items()[position] != null
+        if (currentItem >= 0
+            && videoFeedAdapter.itemCount > currentItem
+            && videoFeedAdapter.items()[currentItem] != null
         ) {
-            binding.vp2VideoFeed.currentItem = position
+            playVideoInViewPager(currentItem)
         }
     }
 
@@ -223,6 +347,25 @@ open class LMFeedVideoFeedFragment :
             loggedInUUID
         )
 
+        val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
+
+        //update view pager item
+        videoFeedAdapter.update(adapterPosition, postViewData)
+    }
+
+    //updates the fromPostLiked/fromPostSaved variables and updates the rv list
+    override fun updateFromLikedSaved(position: Int, postViewData: LMFeedPostViewData) {
+        val updatedPostData = postViewData.toBuilder()
+            .fromPostLiked(false)
+            .fromPostSaved(false)
+            .build()
+
+        //update view pager item without notifying
+        videoFeedAdapter.updateWithoutNotifyingRV(position, updatedPostData)
+    }
+
+    //updates [alreadySeenFullContent] for the post
+    override fun onPostContentSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
         val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
 
         //update view pager item
@@ -270,7 +413,7 @@ open class LMFeedVideoFeedFragment :
      * Adapter Util Block
      **/
 
-    //get index and post from the adapter using postId
+//get index and post from the adapter using postId
     private fun getIndexAndPostFromAdapter(postId: String): Pair<Int, LMFeedPostViewData>? {
         val index = videoFeedAdapter.items().indexOfFirst {
             (it is LMFeedPostViewData) && (it.id == postId)

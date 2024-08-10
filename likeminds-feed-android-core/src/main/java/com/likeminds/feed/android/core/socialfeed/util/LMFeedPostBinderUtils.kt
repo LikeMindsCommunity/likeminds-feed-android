@@ -9,6 +9,7 @@ import android.text.TextUtils
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.text.util.LinkifyCompat
@@ -23,17 +24,14 @@ import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostActionViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostHeaderViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
-import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionVerticalView
-import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostDocumentView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostDocumentsMediaView
@@ -43,6 +41,7 @@ import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPost
 import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
 import com.likeminds.feed.android.core.utils.LMFeedSeeMoreUtil
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getFormatedNumber
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
@@ -54,35 +53,29 @@ import com.likeminds.usertagging.util.UserTaggingDecoder
 object LMFeedPostBinderUtils {
 
     // customizes the header view of the post
-    fun customizePostHeaderView(
-        postHeaderView: LMFeedPostHeaderView,
-        postHeaderViewStyle: LMFeedPostHeaderViewStyle = LMFeedStyleTransformer.postViewStyle.postHeaderViewStyle
-    ) {
+    fun customizePostHeaderView(postHeaderView: LMFeedPostHeaderView) {
+        val postHeaderViewStyle = LMFeedStyleTransformer.postViewStyle.postHeaderViewStyle
         postHeaderView.setStyle(postHeaderViewStyle)
     }
 
     // customizes the content view of the post
     fun customizePostContentView(
         postContent: LMFeedTextView,
-        postContentTextStyle: LMFeedTextStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
     ) {
+        val postContentTextStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
         postContent.setStyle(postContentTextStyle)
     }
 
     // customizes the horizontal post action view
-    fun customizePostActionHorizontalView(
-        postActionHorizontalView: LMFeedPostActionHorizontalView,
-        postActionHorizontalViewStyle: LMFeedPostActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
-    ) {
-        postActionHorizontalView.setStyle(postActionHorizontalViewStyle)
+    fun customizePostActionHorizontalView(postActionHorizontalView: LMFeedPostActionHorizontalView) {
+        val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+        postActionHorizontalView.setStyle(postActionViewStyle)
     }
 
     // customizes the vertical post action view
-    fun customizePostActionVerticalView(
-        postActionVerticalView: LMFeedPostActionVerticalView,
-        postActionVerticalViewStyle: LMFeedPostActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
-    ) {
-        postActionVerticalView.setStyle(postActionVerticalViewStyle)
+    fun customizePostActionVerticalView(postActionVerticalView: LMFeedPostActionVerticalView) {
+        val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+        postActionVerticalView.setStyle(postActionViewStyle)
     }
 
     // customizes the topics view of the post
@@ -160,13 +153,14 @@ object LMFeedPostBinderUtils {
         contentView: LMFeedTextView,
         postViewData: LMFeedPostViewData,
         postAdapterListener: LMFeedPostAdapterListener,
-        position: Int,
+        position: Int
     ) {
         contentView.apply {
             val contentViewData = postViewData.contentViewData
             val postContent = contentViewData.text ?: return
-            val maxLines = (LMFeedStyleTransformer.postViewStyle.postContentTextStyle.maxLines
-                ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
+
+            val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
+            val maxLines = (postContentStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
 
             /**
              * Text is modified as Linkify doesn't accept texts with these specific unicode characters
@@ -181,29 +175,6 @@ object LMFeedPostBinderUtils {
                 return
             } else {
                 show()
-            }
-
-            val seeMoreColor = ContextCompat.getColor(context, R.color.lm_feed_brown_grey)
-            val seeMore = SpannableStringBuilder(context.getString(R.string.lm_feed_see_more))
-            seeMore.setSpan(
-                ForegroundColorSpan(seeMoreColor),
-                0,
-                seeMore.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            val seeMoreClickableSpan = object : ClickableSpan() {
-                override fun onClick(view: View) {
-                    setOnClickListener {
-                        return@setOnClickListener
-                    }
-                    alreadySeenFullContent = true
-                    val updatedPost = updatePostForSeeFullContent(postViewData)
-                    postAdapterListener.onPostContentSeeMoreClicked(position, updatedPost)
-                }
-
-                override fun updateDrawState(textPaint: TextPaint) {
-                    textPaint.isUnderlineText = false
-                }
             }
 
             // post is used here to get lines count in the text view
@@ -245,13 +216,45 @@ object LMFeedPostBinderUtils {
                     }
 
                 val seeMoreSpannableStringBuilder = SpannableStringBuilder()
-                if (!alreadySeenFullContent && !shortText.isNullOrEmpty()) {
-                    seeMoreSpannableStringBuilder.append("...")
-                    seeMoreSpannableStringBuilder.append(seeMore)
+                val expandableText = postContentStyle.expandableCTAText
+
+                if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
+
+                    val expandableTextColor = ContextCompat.getColor(
+                        context,
+                        postContentStyle.expandableCTAColor ?: R.color.lm_feed_brown_grey
+                    )
+                    val expandSpannable = SpannableStringBuilder(expandableText)
+                    expandSpannable.setSpan(
+                        ForegroundColorSpan(expandableTextColor),
+                        0,
+                        expandSpannable.length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    val seeMoreClickableSpan = object : ClickableSpan() {
+                        override fun onClick(view: View) {
+                            Log.d("PUI", "onClick: ")
+                            setOnClickListener {
+                                Log.d("PUI", "setOnClickListener: ")
+                                return@setOnClickListener
+                            }
+                            Log.d("PUI", "setOnClickListener: ")
+                            alreadySeenFullContent = true
+                            val updatedPost = updatePostForSeeFullContent(postViewData)
+                            postAdapterListener.onPostContentSeeMoreClicked(position, updatedPost)
+                        }
+
+                        override fun updateDrawState(textPaint: TextPaint) {
+                            textPaint.isUnderlineText = false
+                        }
+                    }
+
+                    seeMoreSpannableStringBuilder.append(expandSpannable)
                     seeMoreSpannableStringBuilder.setSpan(
                         seeMoreClickableSpan,
-                        3,
-                        seeMore.length + 3,
+                        0,
+                        expandSpannable.length,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
                 }
@@ -285,24 +288,28 @@ object LMFeedPostBinderUtils {
             setLikesIcon(postActionViewData.isLiked)
             setSaveIcon(postActionViewData.isSaved)
 
-            val likesCountText = if (postActionViewData.likesCount == 0) {
+            val likesCount = postActionViewData.likesCount
+
+            val likesCountText = if (likesCount == 0) {
                 context.getString(R.string.lm_feed_like)
             } else {
                 context.resources.getQuantityString(
                     R.plurals.lm_feed_likes,
-                    postActionViewData.likesCount,
-                    postActionViewData.likesCount
+                    likesCount,
+                    likesCount
                 )
             }
             setLikesCount(likesCountText)
 
-            val commentsCountText = if (postActionViewData.commentsCount == 0) {
+            val commentsCount = postActionViewData.commentsCount
+
+            val commentsCountText = if (commentsCount == 0) {
                 context.getString(R.string.lm_feed_add_comment)
             } else {
                 context.resources.getQuantityString(
                     R.plurals.lm_feed_comments,
-                    postActionViewData.commentsCount,
-                    postActionViewData.commentsCount
+                    commentsCount,
+                    commentsCount
                 )
             }
             setCommentsCount(commentsCountText)
@@ -317,14 +324,12 @@ object LMFeedPostBinderUtils {
         verticalActionView.apply {
             setLikesIcon(postActionViewData.isLiked)
 
-            val likesCountText = if (postActionViewData.likesCount == 0) {
+            val likesCount = postActionViewData.likesCount
+
+            val likesCountText = if (likesCount == 0) {
                 context.getString(R.string.lm_feed_like)
             } else {
-                context.resources.getQuantityString(
-                    R.plurals.lm_feed_likes,
-                    postActionViewData.likesCount,
-                    postActionViewData.likesCount
-                )
+                likesCount.toLong().getFormatedNumber()
             }
 
             setLikesCount(likesCountText)
@@ -351,16 +356,16 @@ object LMFeedPostBinderUtils {
 
     // update post object for a like action
     fun updatePostForLike(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
-        val footerData = oldPostViewData.actionViewData
-        val newLikesCount = if (footerData.isLiked) {
-            footerData.likesCount - 1
+        val postActionData = oldPostViewData.actionViewData
+        val newLikesCount = if (postActionData.isLiked) {
+            postActionData.likesCount - 1
         } else {
-            footerData.likesCount + 1
+            postActionData.likesCount + 1
         }
 
-        val updatedIsLiked = !footerData.isLiked
+        val updatedIsLiked = !postActionData.isLiked
 
-        val updatedFooterData = footerData.toBuilder()
+        val updatedFooterData = postActionData.toBuilder()
             .isLiked(updatedIsLiked)
             .likesCount(newLikesCount)
             .build()
@@ -373,9 +378,9 @@ object LMFeedPostBinderUtils {
 
     // update post object for a save action
     fun updatePostForSave(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
-        val footerData = oldPostViewData.actionViewData
-        val updatedFooterData = footerData.toBuilder()
-            .isSaved(!footerData.isSaved)
+        val postActionData = oldPostViewData.actionViewData
+        val updatedFooterData = postActionData.toBuilder()
+            .isSaved(!postActionData.isSaved)
             .build()
 
         return oldPostViewData.toBuilder()
