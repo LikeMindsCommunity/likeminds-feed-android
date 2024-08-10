@@ -58,6 +58,7 @@ class LMFeedUniversalFeedAdapter(
         return items().getItemInList(position)
     }
 
+    //to replace the post provided by the customer
     fun replaceViewDataBinder(viewType: Int, viewDataBinder: LMFeedViewDataBinder<*, *>) {
         supportedViewBinderResolverMap.put(viewType, viewDataBinder)
     }

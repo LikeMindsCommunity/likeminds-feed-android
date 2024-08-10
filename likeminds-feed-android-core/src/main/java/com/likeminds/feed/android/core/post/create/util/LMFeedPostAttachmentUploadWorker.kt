@@ -75,6 +75,7 @@ class LMFeedPostAttachmentUploadWorker(
                 failedIndex.contains(index)
             }
         } else {
+            //upload only media attachments
             postWithAttachments.attachments?.filter {
                 it.attachmentType != CUSTOM_WIDGET
             }

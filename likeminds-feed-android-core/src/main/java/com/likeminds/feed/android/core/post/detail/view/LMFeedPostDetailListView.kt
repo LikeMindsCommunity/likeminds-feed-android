@@ -2,7 +2,6 @@ package com.likeminds.feed.android.core.post.detail.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.post.detail.adapter.*
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
@@ -63,17 +62,20 @@ class LMFeedPostDetailListView @JvmOverloads constructor(
         }
     }
 
-    //sets the adapter with the provided listeners to the post detail recycler view
-    fun setAdapter(
+    fun initAdapterAndSetListeners(
         universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
         postDetailAdapterListener: LMFeedPostDetailAdapterListener,
         replyAdapterListener: LMFeedReplyAdapterListener
-    ) {
+    ){
         postDetailAdapter = LMFeedPostDetailAdapter(
             universalFeedAdapterListener,
             postDetailAdapterListener,
             replyAdapterListener
         )
+    }
+
+    //sets the adapter with the provided listeners to the post detail recycler view
+    fun setAdapter() {
         adapter = postDetailAdapter
     }
 

@@ -71,7 +71,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
-import org.json.JSONObject
 
 open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterListener {
     private lateinit var binding: LmFeedFragmentCreatePostBinding
@@ -571,12 +570,6 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                 val updatedText = memberTagging.replaceSelectedMembers(text).trim()
                 LMFeedViewUtils.hideKeyboard(binding.root)
 
-                //todo removed
-                val metadata = JSONObject().apply {
-                    put("abc", "abc")
-                    put("787", "9090")
-                }
-
                 when {
                     selectedMediaUris.isNotEmpty() -> {
                         headerViewCreatePost.setSubmitButtonEnabled(
@@ -590,7 +583,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
                             poll = poll,
-                            metadata = metadata
+                            metadata = null
                         )
                     }
 
@@ -605,7 +598,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
                             poll = poll,
-                            metadata = metadata
+                            metadata = null
                         )
                     }
 
@@ -620,7 +613,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedUniversalFeedAdapterList
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
                             poll = poll,
-                            metadata = metadata
+                            metadata = null
                         )
                     }
                 }

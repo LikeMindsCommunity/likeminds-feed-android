@@ -318,6 +318,7 @@ open class LMFeedEditPostFragment :
             val updatedText = memberTagging.replaceSelectedMembers(text).trim()
             val topics = selectedTopic.values
 
+            //get media attachments from post
             val mediaAttachments = postMediaViewData?.attachments?.filter {
                 it.attachmentType != CUSTOM_WIDGET
             }
@@ -487,10 +488,12 @@ open class LMFeedEditPostFragment :
             val mediaViewData = post.mediaViewData
             val topics = post.topicsViewData
 
+            //get custom widget attachment
             val customWidgetAttachment = mediaViewData.attachments.firstOrNull {
                 it.attachmentType == CUSTOM_WIDGET
             }?.attachmentMeta?.widgetViewData
 
+            //get widget data id and metadata
             widgetData = if (customWidgetAttachment != null) {
                 val entityId = customWidgetAttachment.id
                 val data = customWidgetAttachment.metadata.optJSONObject("meta") ?: JSONObject()

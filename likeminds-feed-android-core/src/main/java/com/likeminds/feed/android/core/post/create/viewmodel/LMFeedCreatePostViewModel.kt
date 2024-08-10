@@ -229,6 +229,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 }
 
                 when {
+                    //attachment for link
                     ogTags != null -> {
                         requestBuilder.attachments(
                             LMFeedViewDataConvertor.convertAttachments(
@@ -238,12 +239,14 @@ class LMFeedCreatePostViewModel : ViewModel() {
                         )
                     }
 
+                    //attachment for poll
                     poll != null -> {
                         val pollAttachment =
                             LMFeedViewDataConvertor.convertPoll(poll, Pair(null, metadata))
                         requestBuilder.attachments(pollAttachment)
                     }
 
+                    //attachment for custom widget
                     metadata != null -> {
                         val customAttachment =
                             listOf(LMFeedViewDataConvertor.convertCustomWidget(null, metadata))
@@ -294,6 +297,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
 
             when (fileUploadViewData.fileType) {
                 IMAGE -> {
+                    //get height and width of the image
                     val dimensions = FileUtil.getImageDimensions(context, fileUploadViewData.uri)
                     builder.width(dimensions.first)
                         .thumbnailUri(fileUploadViewData.uri)
@@ -302,9 +306,11 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 }
 
                 VIDEO -> {
+                    //get thumbnail for the video
                     val thumbnailUri =
                         FileUtil.getVideoThumbnailUri(context, fileUploadViewData.uri)
 
+                    //get height and width of the video
                     val dimensions = FileUtil.getVideoDimensions(context, fileUploadViewData.uri)
                     builder.height(dimensions.second).width(dimensions.first)
 
@@ -316,6 +322,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 }
 
                 else -> {
+                    //get file extension
                     val format = FileUtil.getFileExtensionFromFileName(fileUploadViewData.mediaName)
                     builder
                         .format(format)

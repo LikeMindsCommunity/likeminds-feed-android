@@ -109,8 +109,11 @@ open class LMFeedPostDetailFragment :
         savedInstanceState: Bundle?
     ): View {
         binding = LmFeedFragmentPostDetailBinding.inflate(layoutInflater)
+        binding.rvPostDetails.initAdapterAndSetListeners(this, this, this)
+
         customizePostDetailHeaderView(binding.headerViewPostDetail)
         customizeCommentComposer(binding.commentComposer)
+        customizePostDetailListView(binding.rvPostDetails)
         return binding.root
     }
 
@@ -160,6 +163,10 @@ open class LMFeedPostDetailFragment :
         }
     }
 
+    protected open fun customizePostDetailListView(rvPostDetailListView: LMFeedPostDetailListView) {
+
+    }
+
     private fun receiveExtras() {
         postDetailExtras = LMFeedExtrasUtil.getParcelable(
             arguments,
@@ -177,11 +184,7 @@ open class LMFeedPostDetailFragment :
     private fun initPostDetailRecyclerView() {
         fetchPostData()
         binding.rvPostDetails.apply {
-            setAdapter(
-                this@LMFeedPostDetailFragment,
-                this@LMFeedPostDetailFragment,
-                this@LMFeedPostDetailFragment
-            )
+            setAdapter()
 
             //set scroll listener
             val paginationScrollListener =

@@ -1,16 +1,12 @@
 package com.likeminds.feed.android.core.post.detail.adapter
 
 import android.view.View
-import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedItemCommentViewDataBinder
-import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedItemCommentsCountViewDataBinder
-import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedItemNoCommentsFoundViewDataBinder
+import com.likeminds.feed.android.core.post.detail.adapter.databinders.*
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
 import com.likeminds.feed.android.core.universalfeed.adapter.databinders.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getItemInList
-import com.likeminds.feed.android.core.utils.base.LMFeedBaseRecyclerAdapter
-import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
-import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
+import com.likeminds.feed.android.core.utils.base.*
 
 class LMFeedPostDetailAdapter(
     private val universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
@@ -60,10 +56,18 @@ class LMFeedPostDetailAdapter(
             LMFeedItemPostPollViewDataBinder(universalFeedAdapterListener)
         viewDataBinders.add(itemPostPollViewDataBinder)
 
+        val itemPostCustomWidgetViewDataBinder =
+            LMFeedItemPostCustomWidgetViewDataBinder(universalFeedAdapterListener)
+        viewDataBinders.add(itemPostCustomWidgetViewDataBinder)
+
         val itemNoCommentsFoundBinder = LMFeedItemNoCommentsFoundViewDataBinder()
         viewDataBinders.add(itemNoCommentsFoundBinder)
 
         return viewDataBinders
+    }
+
+    fun replaceViewDataBinder(viewType: Int, viewDataBinder: LMFeedViewDataBinder<*, *>) {
+        supportedViewBinderResolverMap.put(viewType, viewDataBinder)
     }
 
     operator fun get(position: Int): LMFeedBaseViewType? {
