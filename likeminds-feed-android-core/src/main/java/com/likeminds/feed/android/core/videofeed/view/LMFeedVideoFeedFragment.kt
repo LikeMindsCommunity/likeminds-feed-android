@@ -31,6 +31,7 @@ import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
+import com.likeminds.feed.android.core.videofeed.model.LMFeedCaughtUpViewData
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -164,6 +165,12 @@ open class LMFeedVideoFeedFragment :
                     super.onPageSelected(position)
 
                     playVideoInViewPager(position)
+
+                    if (position == videoFeedAdapter.itemCount - 1
+                        && (videoFeedAdapter.items().lastOrNull() !is LMFeedCaughtUpViewData)
+                    ) {
+                        videoFeedAdapter.add(LMFeedCaughtUpViewData.Builder().build())
+                    }
                 }
 
                 override fun onPageScrollStateChanged(state: Int) {
@@ -177,8 +184,6 @@ open class LMFeedVideoFeedFragment :
                             pageToCall++
                             previousTotal = videoFeedAdapter.itemCount
                             videoFeedViewModel.getFeed(pageToCall)
-                        } else {
-                            // todo: add that you have reached end
                         }
                     }
                 }
@@ -191,7 +196,11 @@ open class LMFeedVideoFeedFragment :
     private fun playVideoInViewPager(position: Int) {
         binding.vp2VideoFeed.apply {
             if (position >= 0 && videoFeedAdapter.items()[position] != null) {
-                val data = videoFeedAdapter.items()[position] as LMFeedPostViewData
+                val data = videoFeedAdapter.items()[position]
+                if (data !is LMFeedPostViewData) {
+                    postVideoPreviewAutoPlayHelper.removePlayer()
+                    return
+                }
 
                 val videoFeedBinding =
                     ((get(0) as? RecyclerView)?.findViewHolderForAdapterPosition(position) as? LMFeedDataBoundViewHolder<*>)
@@ -225,6 +234,9 @@ open class LMFeedVideoFeedFragment :
 //                                .getCachedBytes(contentKey, 0L, contentLength)
 
                 cache(position + 1)
+            } else {
+                Log.d("PUI", "playVideoInViewPager: $position")
+                postVideoPreviewAutoPlayHelper.removePlayer()
             }
         }
     }
@@ -234,8 +246,15 @@ open class LMFeedVideoFeedFragment :
             if (videoFeedAdapter.itemCount <= position) {
                 return@launch
             }
+
+            val data = (videoFeedAdapter.items()[position])
+
+            if (data !is LMFeedPostViewData) {
+                return@launch
+            }
+
             val url =
-                (videoFeedAdapter.items()[position] as LMFeedPostViewData).mediaViewData.attachments.first().attachmentMeta.url
+                data.mediaViewData.attachments.first().attachmentMeta.url
             CacheWriter(
                 LMFeedVideoCache.getInstance(requireContext().applicationContext)
                     .createDataSource(),
@@ -259,10 +278,8 @@ open class LMFeedVideoFeedFragment :
             val page = response.first
             val posts = response.second
 
-            //todo:
             if (page == 1) {
-                videoFeedAdapter.replace(posts)
-//                checkPostsAndReplace(posts)
+                checkPostsAndReplace(posts)
             } else {
                 videoFeedAdapter.addAll(posts)
             }
@@ -310,6 +327,14 @@ open class LMFeedVideoFeedFragment :
                 }
             }
         }.observeInLifecycle(viewLifecycleOwner)
+    }
+
+    private fun checkPostsAndReplace(posts: List<LMFeedPostViewData>) {
+        if (posts.isEmpty()) {
+            videoFeedAdapter.add(LMFeedCaughtUpViewData.Builder().build())
+        } else {
+            videoFeedAdapter.replace(posts)
+        }
     }
 
     override fun onResume() {
@@ -386,6 +411,19 @@ open class LMFeedVideoFeedFragment :
         }
     }
 
+    override fun onPostVideoFeedCaughtUpClicked() {
+        super.onPostVideoFeedCaughtUpClicked()
+
+        binding.vp2VideoFeed.setCurrentItem(0, true)
+    }
+
+    //callback when the user clicks on the post menu icon in the post action view
+    override fun onPostActionMenuClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostActionMenuClicked(position, postViewData)
+
+        //todo:
+    }
+
     //callback when the user clicks on the post author header
     override fun onPostAuthorHeaderClicked(position: Int, postViewData: LMFeedPostViewData) {
         super.onPostAuthorHeaderClicked(position, postViewData)
@@ -402,18 +440,11 @@ open class LMFeedVideoFeedFragment :
         coreCallback?.openProfileWithUUID(uuid)
     }
 
-    //callback when the user clicks on the post menu icon in the post action view
-    override fun onPostActionMenuClicked(position: Int, postViewData: LMFeedPostViewData) {
-        super.onPostActionMenuClicked(position, postViewData)
-
-        //todo:
-    }
-
     /**
      * Adapter Util Block
      **/
 
-//get index and post from the adapter using postId
+    //get index and post from the adapter using postId
     private fun getIndexAndPostFromAdapter(postId: String): Pair<Int, LMFeedPostViewData>? {
         val index = videoFeedAdapter.items().indexOfFirst {
             (it is LMFeedPostViewData) && (it.id == postId)

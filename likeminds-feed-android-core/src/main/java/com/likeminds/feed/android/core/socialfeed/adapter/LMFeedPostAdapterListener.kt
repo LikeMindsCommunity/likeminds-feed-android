@@ -146,4 +146,8 @@ interface LMFeedPostAdapterListener {
     fun onPostActionMenuClicked(position: Int, postViewData: LMFeedPostViewData) {
         //triggered when the post action menu is clicked
     }
+
+    fun onPostVideoFeedCaughtUpClicked() {
+        //triggered when the user clicks on the cta on video feed caught up screen
+    }
 }

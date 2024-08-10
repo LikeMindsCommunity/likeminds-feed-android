@@ -166,4 +166,8 @@
 
     <!--    Vertical post action -->
     <dimen name="lm_feed_vertical_post_action_bottom_margin">10dp</dimen>
+
+    <!--    Video feed caught up -->
+    <dimen name="lm_feed_video_feed_caught_up_title_top_margin">28dp</dimen>
+    <dimen name="lm_feed_video_feed_caught_up_title_size">20sp</dimen>
 </resources>

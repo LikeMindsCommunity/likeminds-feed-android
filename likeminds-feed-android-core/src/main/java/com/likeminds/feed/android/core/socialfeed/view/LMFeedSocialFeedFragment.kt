@@ -688,17 +688,17 @@ open class LMFeedSocialFeedFragment :
     }
 
     private fun checkForNoPost(feed: List<LMFeedBaseViewType>) {
-        if (feed.isNotEmpty()) {
-            binding.apply {
+        binding.apply {
+            if (feed.isNotEmpty()) {
                 layoutNoPost.hide()
                 fabNewPost.show()
                 rvSocial.show()
-            }
-        } else {
-            binding.apply {
-                layoutNoPost.show()
-                fabNewPost.hide()
-                rvSocial.hide()
+            } else {
+                binding.apply {
+                    layoutNoPost.show()
+                    fabNewPost.hide()
+                    rvSocial.hide()
+                }
             }
         }
     }
