@@ -1,20 +1,27 @@
 package com.likeminds.feed.android.core.postmenu.view
 
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.likeminds.feed.android.core.databinding.LmFeedPostMenuBottomSheetFragmentBinding
+import com.likeminds.feed.android.core.postmenu.adapter.LMFeedPostMenuAdapterListener
 import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuExtras
 import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
 import com.likeminds.feed.android.core.utils.emptyExtrasException
 
-open class LMFeedPostMenuBottomSheetFragment : BottomSheetDialogFragment() {
+open class LMFeedPostMenuBottomSheetFragment :
+    BottomSheetDialogFragment(),
+    LMFeedPostMenuAdapterListener {
 
     private lateinit var postMenuExtras: LMFeedPostMenuExtras
 
     private var postMenuListener: LMFeedPostMenuBottomSheetListener? = null
+
+    private lateinit var binding: LmFeedPostMenuBottomSheetFragmentBinding
 
     companion object {
         private const val TAG = "LMFeedPostMenuBottomSheetFragment"
@@ -32,8 +39,6 @@ open class LMFeedPostMenuBottomSheetFragment : BottomSheetDialogFragment() {
             }.show(fragmentManager, TAG)
         }
     }
-
-    private lateinit var binding: LmFeedPostMenuBottomSheetFragmentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +70,7 @@ open class LMFeedPostMenuBottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initUI()
-        initListeners()
+        initMenuList()
     }
 
     private fun initUI() {
@@ -74,17 +79,24 @@ open class LMFeedPostMenuBottomSheetFragment : BottomSheetDialogFragment() {
         } catch (e: Exception) {
             throw ClassCastException("Calling fragment must implement LMFeedPostMenuBottomSheetListener interface")
         }
+
+        (binding.root.parent as View).setBackgroundColor(Color.TRANSPARENT)
     }
 
-    private fun initListeners() {
-        //onPostMenuClicked()
+    //initializes the menu list
+    private fun initMenuList() {
+        binding.rvMenu.apply {
+            Log.d("PUI", "initMenuList: ${postMenuExtras.menuItems.size}")
+            setAdapter(this@LMFeedPostMenuBottomSheetFragment)
+            replaceMenuItems(postMenuExtras.menuItems)
+        }
     }
 
-    protected open fun onPostMenuClicked(position: Int) {
-        postMenuListener?.onPostMenuItemClicked(
-            postMenuExtras.postId,
-            postMenuExtras.menuItems[position]
-        )
+    //callback when user clicks on one of the menu item
+    override fun onPostMenuItemClicked(position: Int, menuItem: LMFeedPostMenuItemViewData) {
+        super.onPostMenuItemClicked(position, menuItem)
+
+        postMenuListener?.onPostMenuItemClicked(postMenuExtras.postId, menuItem)
         dismiss()
     }
 }

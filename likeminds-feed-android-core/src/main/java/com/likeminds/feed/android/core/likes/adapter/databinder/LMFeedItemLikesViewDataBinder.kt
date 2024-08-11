@@ -45,6 +45,7 @@ class LMFeedItemLikesViewDataBinder(
         }
     }
 
+    //sets click listeners to the likes view
     private fun setClickListeners(binding: LmFeedItemLikesBinding) {
         binding.apply {
             root.setOnClickListener {
