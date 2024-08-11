@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.likeminds.feed.android.core.universalfeed.view.LMFeedDocumentListView
+        <com.likeminds.feed.android.core.socialfeed.view.LMFeedDocumentListView
             android:id="@+id/rv_documents"
             android:layout_width="@dimen/lm_feed_zero_dp"
             android:layout_height="wrap_content"

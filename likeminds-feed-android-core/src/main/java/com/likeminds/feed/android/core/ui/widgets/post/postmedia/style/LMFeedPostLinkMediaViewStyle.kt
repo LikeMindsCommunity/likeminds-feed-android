@@ -9,7 +9,7 @@ import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
- * [LMFeedPostLinkMediaViewStyle] helps you to customize the universal feed fragment [LMFeedPostLinkMediaView]
+ * [LMFeedPostLinkMediaViewStyle] helps you to customize the post link media view [LMFeedPostLinkMediaView]
  *
  * @property linkTitleStyle : [LMFeedTextStyle] this will help you to customize the title text in the link media view
  * @property linkDescriptionStyle : [LMFeedTextStyle] this will help you to customize the description text in the link media view

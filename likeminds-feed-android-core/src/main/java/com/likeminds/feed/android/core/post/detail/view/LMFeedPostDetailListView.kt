@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.post.detail.adapter.*
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
@@ -64,12 +64,12 @@ class LMFeedPostDetailListView @JvmOverloads constructor(
 
     //create the adapter instance and then set the listeners
     fun initAdapterAndSetListeners(
-        universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
+        postAdapterListener: LMFeedPostAdapterListener,
         postDetailAdapterListener: LMFeedPostDetailAdapterListener,
         replyAdapterListener: LMFeedReplyAdapterListener
     ){
         postDetailAdapter = LMFeedPostDetailAdapter(
-            universalFeedAdapterListener,
+            postAdapterListener,
             postDetailAdapterListener,
             replyAdapterListener
         )
@@ -80,7 +80,7 @@ class LMFeedPostDetailListView @JvmOverloads constructor(
         adapter = postDetailAdapter
     }
 
-    //sets the pagination scroll listener to the universal feed recycler view
+    //sets the pagination scroll listener to the social feed recycler view
     fun setPaginationScrollListener(scrollListener: LMFeedEndlessRecyclerViewScrollListener) {
         paginationScrollListener = scrollListener
         addOnScrollListener(scrollListener)

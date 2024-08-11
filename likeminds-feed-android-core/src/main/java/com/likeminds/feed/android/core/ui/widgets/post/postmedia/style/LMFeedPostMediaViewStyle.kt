@@ -25,7 +25,9 @@ class LMFeedPostMediaViewStyle private constructor(
     //style for multiple media carousel in a post
     val postMultipleMediaStyle: LMFeedPostMultipleMediaViewStyle?,
     //style for poll media in a post
-    val postPollMediaStyle: LMFeedPostPollViewStyle?
+    val postPollMediaStyle: LMFeedPostPollViewStyle?,
+    //style for vertical video media in a post
+    val postVerticalVideoMediaStyle: LMFeedPostVideoMediaViewStyle?
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -40,6 +42,8 @@ class LMFeedPostMediaViewStyle private constructor(
         private var postMultipleMediaStyle: LMFeedPostMultipleMediaViewStyle? = null
 
         private var postPollMediaStyle: LMFeedPostPollViewStyle? = null
+
+        private var postVerticalVideoMediaStyle: LMFeedPostVideoMediaViewStyle? = null
 
         fun postImageMediaStyle(postImageMediaStyle: LMFeedPostImageMediaViewStyle?) = apply {
             this.postImageMediaStyle = postImageMediaStyle
@@ -67,13 +71,19 @@ class LMFeedPostMediaViewStyle private constructor(
             this.postPollMediaStyle = postPollMediaStyle
         }
 
+        fun postVerticalVideoMediaStyle(postVerticalVideoMediaStyle: LMFeedPostVideoMediaViewStyle?) =
+            apply {
+                this.postVerticalVideoMediaStyle = postVerticalVideoMediaStyle
+            }
+
         fun build() = LMFeedPostMediaViewStyle(
             postImageMediaStyle,
             postVideoMediaStyle,
             postLinkStyle,
             postDocumentsMediaStyle,
             postMultipleMediaStyle,
-            postPollMediaStyle
+            postPollMediaStyle,
+            postVerticalVideoMediaStyle
         )
     }
 
@@ -84,5 +94,6 @@ class LMFeedPostMediaViewStyle private constructor(
             .postDocumentsMediaStyle(postDocumentsMediaStyle)
             .postMultipleMediaStyle(postMultipleMediaStyle)
             .postPollMediaStyle(postPollMediaStyle)
+            .postVerticalVideoMediaStyle(postVerticalVideoMediaStyle)
     }
 }

@@ -1,6 +1,6 @@
 package com.likeminds.feed.android.core.post.util
 
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 
 // to trigger post change events and notify observers
 class LMFeedPostEvent {

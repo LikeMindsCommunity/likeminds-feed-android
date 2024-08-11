@@ -8,8 +8,8 @@ import com.likeminds.feed.android.core.databinding.LmFeedPostDocumentsMediaViewB
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostDocumentsMediaViewStyle
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedMediaViewData
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
 
@@ -49,7 +49,7 @@ class LMFeedPostDocumentsMediaView : ConstraintLayout {
     fun setAdapter(
         parentPosition: Int,
         mediaData: LMFeedMediaViewData,
-        listener: LMFeedUniversalFeedAdapterListener,
+        listener: LMFeedPostAdapterListener,
         isMediaRemovable: Boolean = false
     ) {
         binding.apply {

@@ -200,6 +200,8 @@
         <item>9 options</item>
         <item>10 options</item>
     </string-array>
+    <string name="lm_feed_you_re_all_caught_up">You’re All Caught Up</string>
+    <string name="lm_feed_view_older_posts">View older posts</string>
 
     <!-- Add sample strings here-->
     <string name="lm_feed_sample_name">Sahil Garg</string>

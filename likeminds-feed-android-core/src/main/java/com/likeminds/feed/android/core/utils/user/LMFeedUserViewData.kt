@@ -1,7 +1,7 @@
 package com.likeminds.feed.android.core.utils.user
 
 import android.os.Parcelable
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedSDKClientInfoViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedSDKClientInfoViewData
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.base.model.ITEM_USER
 import kotlinx.parcelize.Parcelize

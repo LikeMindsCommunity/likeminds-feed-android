@@ -6,7 +6,7 @@ import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityEntityVi
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.delete.model.LMFeedReasonChooseViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
-import com.likeminds.feed.android.core.overflowmenu.model.LMFeedOverflowMenuItemViewData
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.post.create.model.LMFeedFileUploadViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
@@ -14,7 +14,7 @@ import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountView
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportTagViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
-import com.likeminds.feed.android.core.universalfeed.model.*
+import com.likeminds.feed.android.core.socialfeed.model.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
@@ -177,8 +177,8 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
-    // converts response of the universal feed post to list of LMFeedPostViewData
-    fun convertUniversalFeedPosts(
+    // converts response of the get feed post to list of LMFeedPostViewData
+    fun convertGetFeedPosts(
         posts: List<Post>,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
@@ -254,8 +254,8 @@ object LMFeedViewDataConvertor {
             )
             .build()
 
-        //post footer view data
-        val postFooterViewData = LMFeedPostFooterViewData.Builder()
+        //post action view data
+        val postActionViewData = LMFeedPostActionViewData.Builder()
             .likesCount(post.likesCount)
             .commentsCount(post.commentsCount)
             .isSaved(post.isSaved)
@@ -275,7 +275,7 @@ object LMFeedViewDataConvertor {
             .headerViewData(postHeaderViewData)
             .contentViewData(postContentViewData)
             .mediaViewData(postMediaViewData)
-            .footerViewData(postFooterViewData)
+            .actionViewData(postActionViewData)
             .topicsViewData(topicsViewData)
             .build()
     }
@@ -328,14 +328,14 @@ object LMFeedViewDataConvertor {
     }
 
     /**
-     * convert list of [MenuItem] to [LMFeedOverflowMenuItemViewData]
+     * convert list of [MenuItem] to [LMFeedPostMenuItemViewData]
      * @param menuItems: list of [MenuItem]
      * */
     private fun convertOverflowMenuItems(
         menuItems: List<MenuItem>
-    ): List<LMFeedOverflowMenuItemViewData> {
+    ): List<LMFeedPostMenuItemViewData> {
         return menuItems.map { menuItem ->
-            LMFeedOverflowMenuItemViewData.Builder()
+            LMFeedPostMenuItemViewData.Builder()
                 .id(menuItem.id)
                 .title(menuItem.title)
                 .build()

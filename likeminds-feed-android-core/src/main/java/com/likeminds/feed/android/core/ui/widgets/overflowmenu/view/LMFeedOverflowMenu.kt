@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.Menu
 import android.view.View
 import android.widget.PopupMenu
-import com.likeminds.feed.android.core.overflowmenu.model.LMFeedOverflowMenuItemViewData
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.utils.listeners.LMFeedMenuItemClickListener
 
 class LMFeedOverflowMenu(context: Context, view: View) : PopupMenu(context, view) {
@@ -24,10 +24,10 @@ class LMFeedOverflowMenu(context: Context, view: View) : PopupMenu(context, view
     /**
      * Sets menu items to the popup menu
      *
-     * @param menuItems list of [LMFeedOverflowMenuItemViewData]
+     * @param menuItems list of [LMFeedPostMenuItemViewData]
      */
     fun addMenuItems(
-        menuItems: List<LMFeedOverflowMenuItemViewData>
+        menuItems: List<LMFeedPostMenuItemViewData>
     ) {
         menuItems.forEach { menuItem ->
             menu.add(

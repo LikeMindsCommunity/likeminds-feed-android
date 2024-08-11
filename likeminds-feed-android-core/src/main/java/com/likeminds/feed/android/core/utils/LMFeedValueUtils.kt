@@ -6,6 +6,7 @@ import com.likeminds.feed.android.core.utils.pluralize.LMFeedPluralize.pluralize
 import com.likeminds.feed.android.core.utils.pluralize.LMFeedPluralize.singularize
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import org.json.JSONObject
+import kotlin.math.abs
 
 object LMFeedValueUtils {
 
@@ -101,6 +102,17 @@ object LMFeedValueUtils {
             this > -1 && this < items.size
         } else {
             this > -1
+        }
+    }
+
+    //to get formatted number (1000 -> 1k)
+    fun Long.getFormatedNumber(): String {
+        return if (abs(this / 1000000) > 1) {
+            (this / 1000000).toString() + "M"
+        } else if (abs(this / 1000) > 1) {
+            (this / 1000).toString() + "K"
+        } else {
+            this.toString()
         }
     }
 

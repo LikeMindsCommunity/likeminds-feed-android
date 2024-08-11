@@ -5,19 +5,20 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultAllocator
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.util.Util
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
-import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostVideoMediaViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
-import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
+import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 
 /**
  * Represents a video view
@@ -34,23 +35,6 @@ class LMFeedVideoView @JvmOverloads constructor(
     private var thumbnailView: LMFeedImageView? = null
 
     private var lastPos: Long = 0
-
-    // creates an instance with DataSourceFactory for reading and writing cache
-    private val cacheDataSourceFactory by lazy {
-        CacheDataSource.Factory()
-            .setCache(LMFeedVideoCache.getInstance(context))
-            .setUpstreamDataSourceFactory(
-                DefaultHttpDataSource.Factory()
-                    .setUserAgent(
-                        Util.getUserAgent(
-                            context, context.getString(
-                                R.string.lm_feed_app_name
-                            )
-                        )
-                    )
-            )
-            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-    }
 
     init {
         descendantFocusability = FOCUS_AFTER_DESCENDANTS
@@ -127,13 +111,45 @@ class LMFeedVideoView @JvmOverloads constructor(
 
         setThumbnail(thumbnailView, thumbnailSrc)
 
-        val mediaSource =
-            ProgressiveMediaSource.Factory(cacheDataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(videoUri))
+        val mediaSource = createCachedMediaSource(context.applicationContext, videoUri)
         exoPlayer.setMediaSource(mediaSource)
         exoPlayer.seekTo(lastPos)
         exoPlayer.playWhenReady = true
         exoPlayer.prepare()
+    }
+
+    private fun createCachedMediaSource(context: Context, uri: Uri): MediaSource {
+        val type = inferContentType(uri)
+        return when (type) {
+            C.CONTENT_TYPE_DASH ->
+                DashMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
+                    .createMediaSource(MediaItem.fromUri(uri))
+
+            C.CONTENT_TYPE_SS ->
+                SsMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
+                    .createMediaSource(MediaItem.fromUri(uri))
+
+            C.CONTENT_TYPE_HLS ->
+                HlsMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
+                    .createMediaSource(MediaItem.fromUri(uri))
+
+            else -> {
+                return ProgressiveMediaSource.Factory(
+                    LMFeedVideoCache.getCacheDataSourceFactory(
+                        context
+                    )
+                )
+                    .createMediaSource(MediaItem.fromUri(uri))
+            }
+        }
+    }
+
+    private fun inferContentType(uri: Uri): Int {
+        val fileName: String = (uri.toString())
+        if (fileName.endsWith(".m3u8")) {
+            return C.CONTENT_TYPE_HLS
+        }
+        return Util.inferContentType(uri)
     }
 
     /**

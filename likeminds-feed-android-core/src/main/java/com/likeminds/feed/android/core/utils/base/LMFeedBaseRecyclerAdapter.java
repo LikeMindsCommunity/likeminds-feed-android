@@ -11,7 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBinding;
 import com.likeminds.feed.android.core.utils.base.model.LMFeedViewType;
+import com.likeminds.feed.android.core.videofeed.adapter.databinders.LMFeedItemPostVideoFeedViewDataBinder;
 
 import java.util.ArrayList;
 import java.util.List;

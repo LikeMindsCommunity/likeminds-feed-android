@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.poll.util.LMFeedPollUtil
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
@@ -540,7 +540,7 @@ class LMFeedPostDetailViewModel : ViewModel() {
                 LMFeedAnalytics.sendPostSavedEvent(
                     uuid = postViewData.headerViewData.user.sdkClientInfoViewData.uuid,
                     postId = postViewData.id,
-                    postSaved = postViewData.footerViewData.isSaved
+                    postSaved = postViewData.actionViewData.isSaved
                 )
 
                 _postSavedResponse.postValue(postViewData)

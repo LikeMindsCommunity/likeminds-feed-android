@@ -17,7 +17,6 @@ import com.likeminds.feed.android.core.delete.model.*
 import com.likeminds.feed.android.core.delete.view.*
 import com.likeminds.feed.android.core.likes.model.*
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity
-import com.likeminds.feed.android.core.overflowmenu.model.*
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsActivity
 import com.likeminds.feed.android.core.post.detail.adapter.LMFeedPostDetailAdapterListener
@@ -29,17 +28,18 @@ import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
+import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.report.model.*
 import com.likeminds.feed.android.core.report.view.*
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.view.LMFeedCommentComposerView
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
 import com.likeminds.feed.android.core.ui.widgets.poll.view.*
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
-import com.likeminds.feed.android.core.universalfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
@@ -59,7 +59,7 @@ import kotlinx.coroutines.flow.onEach
 
 open class LMFeedPostDetailFragment :
     Fragment(),
-    LMFeedUniversalFeedAdapterListener,
+    LMFeedPostAdapterListener,
     LMFeedPostDetailAdapterListener,
     LMFeedReplyAdapterListener,
     LMFeedAdminDeleteDialogListener,
@@ -390,21 +390,21 @@ open class LMFeedPostDetailFragment :
             // gets post from adapter
             var post = getItem(postDataPosition) as LMFeedPostViewData
 
-            //update the footer view data
-            val updatedFooterView = post.footerViewData.toBuilder()
-                .commentsCount(post.footerViewData.commentsCount + 1)
+            //update the action view data
+            val updatedActionViewData = post.actionViewData.toBuilder()
+                .commentsCount(post.actionViewData.commentsCount + 1)
                 .build()
 
             //updated the post
             post = post.toBuilder()
-                .footerViewData(updatedFooterView)
+                .actionViewData(updatedActionViewData)
                 .build()
 
             // notifies the subscribers about the change in post data
             postEvent.notify(Pair(post.id, post))
 
             // updates comments count on header
-            updateCommentsCount(post.footerViewData.commentsCount)
+            updateCommentsCount(post.actionViewData.commentsCount)
 
             //adds new comment to adapter
             addItem(commentsStartPosition, commentViewData)
@@ -590,7 +590,7 @@ open class LMFeedPostDetailFragment :
             postEvent.notify(Pair(post.id, post))
 
             // update the comments count
-            updateCommentsCount(post.footerViewData.commentsCount)
+            updateCommentsCount(post.actionViewData.commentsCount)
 
             //if pull to refresh is called
             if (mSwipeRefreshLayout.isRefreshing) {
@@ -634,7 +634,7 @@ open class LMFeedPostDetailFragment :
         //observes postSavedResponse LiveData
         postDetailViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
             //create toast message
-            val toastMessage = if (postViewData.footerViewData.isSaved) {
+            val toastMessage = if (postViewData.actionViewData.isSaved) {
                 getString(
                     R.string.lm_feed_s_saved,
                     LMFeedCommunityUtil.getPostVariable()
@@ -678,7 +678,7 @@ open class LMFeedPostDetailFragment :
             // adds the post data at [postDataPosition]
             postDetailList.add(postDataPosition, post)
 
-            if (post.footerViewData.commentsCount == 0) {
+            if (post.actionViewData.commentsCount == 0) {
                 // adds no comments view data
                 val noCommentViewData = LMFeedNoCommentsViewData.Builder().build()
                 postDetailList.add(noCommentViewData)
@@ -686,11 +686,11 @@ open class LMFeedPostDetailFragment :
                 // adds commentsCountViewData if comments are present
                 postDetailList.add(
                     commentsCountPosition,
-                    LMFeedViewDataConvertor.convertCommentsCount(post.footerViewData.commentsCount)
+                    LMFeedViewDataConvertor.convertCommentsCount(post.actionViewData.commentsCount)
                 )
             }
 
-            val comments = post.footerViewData.replies.toList()
+            val comments = post.actionViewData.replies.toList()
             // adds all the comments to the [postDetailList]
             postDetailList.addAll(comments)
             replaceItems(postDetailList)
@@ -724,7 +724,7 @@ open class LMFeedPostDetailFragment :
             // updates the post
             updateItem(postDataPosition, post)
             // adds the paginated comments
-            addItems(post.footerViewData.replies.toList())
+            addItems(post.actionViewData.replies.toList())
         }
     }
 
@@ -861,14 +861,14 @@ open class LMFeedPostDetailFragment :
 
             var post = getItem(postDataPosition) as LMFeedPostViewData
 
-            //update the footer view data
-            val updatedFooterView = post.footerViewData.toBuilder()
+            //update the action view data
+            val updatedActionViewData = post.actionViewData.toBuilder()
                 .commentsCount(newCommentsCountViewData.commentsCount)
                 .build()
 
             //updated the post
             post = post.toBuilder()
-                .footerViewData(updatedFooterView)
+                .actionViewData(updatedActionViewData)
                 .build()
 
             // notifies the subscribers about the change in post data
@@ -1062,14 +1062,14 @@ open class LMFeedPostDetailFragment :
                         val post = getItem(postDataPosition) as LMFeedPostViewData
 
                         //update footer view data
-                        val updatedFooterView = post.footerViewData.toBuilder()
+                        val updatedFooterView = post.actionViewData.toBuilder()
                             .isLiked(false)
-                            .likesCount(post.footerViewData.likesCount - 1)
+                            .likesCount(post.actionViewData.likesCount - 1)
                             .build()
 
                         //update post view data
                         val updatedPost = post.toBuilder()
-                            .footerViewData(updatedFooterView)
+                            .actionViewData(updatedFooterView)
                             .fromPostLiked(true)
                             .build()
 
@@ -1088,13 +1088,13 @@ open class LMFeedPostDetailFragment :
                         val post = getItem(postDataPosition) as LMFeedPostViewData
 
                         //update footer view data
-                        val updatedFooter = post.footerViewData.toBuilder()
+                        val updatedFooter = post.actionViewData.toBuilder()
                             .isSaved(false)
                             .build()
 
                         //update post view data
                         val updatedPost = post.toBuilder()
-                            .footerViewData(updatedFooter)
+                            .actionViewData(updatedFooter)
                             .fromPostSaved(true)
                             .build()
 
@@ -1318,7 +1318,7 @@ open class LMFeedPostDetailFragment :
         //call api
         postDetailViewModel.likePost(
             postViewData.id,
-            postViewData.footerViewData.isLiked,
+            postViewData.actionViewData.isLiked,
             loggedInUUID
         )
 
