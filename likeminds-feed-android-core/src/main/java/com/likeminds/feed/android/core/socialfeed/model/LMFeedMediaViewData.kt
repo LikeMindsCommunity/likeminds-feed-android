@@ -50,4 +50,8 @@ class LMFeedMediaViewData private constructor(
             .temporaryId(temporaryId)
             .workerUUID(workerUUID)
     }
+
+    override fun toString(): String {
+        return "LMFeedMediaViewData:(attachments=$attachments, isExpanded=$isExpanded, temporaryId=$temporaryId, workerUUID=$workerUUID)"
+    }
 }

@@ -29,6 +29,7 @@ import com.likeminds.usertagging.util.UserTaggingDecoder
 import com.likeminds.usertagging.util.UserTaggingUtil
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.json.JSONObject
 import kotlin.collections.set
 
 class LMFeedCreatePostViewModel : ViewModel() {
@@ -185,7 +186,8 @@ class LMFeedCreatePostViewModel : ViewModel() {
         fileUris: List<SingleUriData>? = null,
         ogTags: LMFeedLinkOGTagsViewData? = null,
         selectedTopics: ArrayList<LMFeedTopicViewData>? = null,
-        poll: LMFeedPollViewData? = null
+        poll: LMFeedPollViewData? = null,
+        metadata: JSONObject? = null
     ) {
         viewModelScope.launchIO {
             var updatedText = postTextContent?.trim()
@@ -213,26 +215,43 @@ class LMFeedCreatePostViewModel : ViewModel() {
                     uploadData,
                     updatedText,
                     updatedFileUris,
-                    selectedTopics
+                    selectedTopics,
+                    metadata
                 )
             } else {
                 // if the post does not have any upload-able attachments
                 val requestBuilder = AddPostRequest.Builder()
                     .text(updatedText)
 
-                if (ogTags != null) {
-                    // if the post has ogTags
-                    requestBuilder.attachments(LMFeedViewDataConvertor.convertAttachments(ogTags))
-                }
-
                 if (!topicIds.isNullOrEmpty()) {
                     //if user has selected any topics
                     requestBuilder.topicIds(topicIds)
                 }
 
-                if (poll != null) {
-                    val pollAttachment = LMFeedViewDataConvertor.convertPoll(poll)
-                    requestBuilder.attachments(pollAttachment)
+                when {
+                    //attachment for link
+                    ogTags != null -> {
+                        requestBuilder.attachments(
+                            LMFeedViewDataConvertor.convertAttachments(
+                                ogTags,
+                                Pair(null, metadata)
+                            )
+                        )
+                    }
+
+                    //attachment for poll
+                    poll != null -> {
+                        val pollAttachment =
+                            LMFeedViewDataConvertor.convertPoll(poll, Pair(null, metadata))
+                        requestBuilder.attachments(pollAttachment)
+                    }
+
+                    //attachment for custom widget
+                    metadata != null -> {
+                        val customAttachment =
+                            listOf(LMFeedViewDataConvertor.convertCustomWidget(null, metadata))
+                        requestBuilder.attachments(customAttachment)
+                    }
                 }
 
                 val request = requestBuilder.build()
@@ -271,10 +290,14 @@ class LMFeedCreatePostViewModel : ViewModel() {
 
             // generates awsFolderPath to upload the file
             val awsFolderPath = generateAWSFolderPathFromFileName(it.mediaName, loggedInUUID)
-            val builder = fileUploadViewData.toBuilder().localFilePath(it.localFilePath)
+
+            val builder = fileUploadViewData.toBuilder()
+                .localFilePath(it.localFilePath)
                 .awsFolderPath(awsFolderPath)
+
             when (fileUploadViewData.fileType) {
                 IMAGE -> {
+                    //get height and width of the image
                     val dimensions = FileUtil.getImageDimensions(context, fileUploadViewData.uri)
                     builder.width(dimensions.first)
                         .thumbnailUri(fileUploadViewData.uri)
@@ -283,8 +306,14 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 }
 
                 VIDEO -> {
+                    //get thumbnail for the video
                     val thumbnailUri =
                         FileUtil.getVideoThumbnailUri(context, fileUploadViewData.uri)
+
+                    //get height and width of the video
+                    val dimensions = FileUtil.getVideoDimensions(context, fileUploadViewData.uri)
+                    builder.height(dimensions.second).width(dimensions.first)
+
                     if (thumbnailUri != null) {
                         builder.thumbnailUri(thumbnailUri).build()
                     } else {
@@ -293,6 +322,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 }
 
                 else -> {
+                    //get file extension
                     val format = FileUtil.getFileExtensionFromFileName(fileUploadViewData.mediaName)
                     builder
                         .format(format)
@@ -319,7 +349,8 @@ class LMFeedCreatePostViewModel : ViewModel() {
         uploadData: Pair<WorkContinuation, String>,
         text: String?,
         fileUris: List<LMFeedFileUploadViewData>,
-        selectedTopics: ArrayList<LMFeedTopicViewData>?
+        selectedTopics: ArrayList<LMFeedTopicViewData>?,
+        metadata: JSONObject? = null
     ) {
         viewModelScope.launchIO {
             val workerUUID = uploadData.second
@@ -329,7 +360,8 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 temporaryPostId,
                 workerUUID,
                 text,
-                fileUris
+                fileUris,
+                metadata
             )
 
             val topics = LMFeedViewDataConvertor.convertTopicsViewData(selectedTopics?.toList())

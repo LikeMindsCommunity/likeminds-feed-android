@@ -109,8 +109,11 @@ open class LMFeedPostDetailFragment :
         savedInstanceState: Bundle?
     ): View {
         binding = LmFeedFragmentPostDetailBinding.inflate(layoutInflater)
+        binding.rvPostDetails.initAdapterAndSetListeners(this, this, this)
+
         customizePostDetailHeaderView(binding.headerViewPostDetail)
         customizeCommentComposer(binding.commentComposer)
+        customizePostDetailListView(binding.rvPostDetails)
         return binding.root
     }
 
@@ -139,6 +142,7 @@ open class LMFeedPostDetailFragment :
         binding.rvPostDetails.destroyVideoAutoPlayer()
     }
 
+    //customize post detail header view
     protected open fun customizePostDetailHeaderView(headerViewPostDetail: LMFeedHeaderView) {
         headerViewPostDetail.apply {
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle)
@@ -153,11 +157,17 @@ open class LMFeedPostDetailFragment :
         }
     }
 
+    //customize comment composer
     protected open fun customizeCommentComposer(commentComposer: LMFeedCommentComposerView) {
         commentComposer.apply {
             setCommentInputBoxHint(getString(R.string.lm_feed_write_a_comment))
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.commentComposerStyle)
         }
+    }
+
+    //customize post detail list view
+    protected open fun customizePostDetailListView(rvPostDetailListView: LMFeedPostDetailListView) {
+
     }
 
     private fun receiveExtras() {
@@ -177,11 +187,7 @@ open class LMFeedPostDetailFragment :
     private fun initPostDetailRecyclerView() {
         fetchPostData()
         binding.rvPostDetails.apply {
-            setAdapter(
-                this@LMFeedPostDetailFragment,
-                this@LMFeedPostDetailFragment,
-                this@LMFeedPostDetailFragment
-            )
+            setAdapter()
 
             //set scroll listener
             val paginationScrollListener =

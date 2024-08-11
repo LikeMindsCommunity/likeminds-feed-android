@@ -62,17 +62,21 @@ class LMFeedPostDetailListView @JvmOverloads constructor(
         }
     }
 
-    //sets the adapter with the provided listeners to the post detail recycler view
-    fun setAdapter(
+    //create the adapter instance and then set the listeners
+    fun initAdapterAndSetListeners(
         postAdapterListener: LMFeedPostAdapterListener,
         postDetailAdapterListener: LMFeedPostDetailAdapterListener,
         replyAdapterListener: LMFeedReplyAdapterListener
-    ) {
+    ){
         postDetailAdapter = LMFeedPostDetailAdapter(
             postAdapterListener,
             postDetailAdapterListener,
             replyAdapterListener
         )
+    }
+
+    //sets the adapter with the provided listeners to the post detail recycler view
+    fun setAdapter() {
         adapter = postDetailAdapter
     }
 

@@ -5,7 +5,7 @@ import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.base.model.*
 
-class  LMFeedPostViewData private constructor(
+class LMFeedPostViewData private constructor(
     val id: String,
     val headerViewData: LMFeedPostHeaderViewData,
     val contentViewData: LMFeedPostContentViewData,
@@ -18,29 +18,42 @@ class  LMFeedPostViewData private constructor(
     val isPosted: Boolean
 ) : LMFeedBaseViewType {
 
+    private val noOfCustomWidgets =
+        mediaViewData.attachments.filter { it.attachmentType == CUSTOM_WIDGET }.size
+    private val mediaAttachments =
+        mediaViewData.attachments.filter { it.attachmentType != CUSTOM_WIDGET }
+
     override val viewType: Int
         get() = when {
-            (mediaViewData.attachments.size == 1 && mediaViewData.attachments.first().attachmentType == IMAGE) -> {
+            (mediaViewData.attachments.isEmpty()) -> {
+                ITEM_POST_TEXT_ONLY
+            }
+
+            (noOfCustomWidgets == mediaViewData.attachments.size) -> {
+                ITEM_POST_CUSTOM_WIDGET
+            }
+
+            (mediaAttachments.size == 1 && mediaAttachments.first().attachmentType == IMAGE) -> {
                 ITEM_POST_SINGLE_IMAGE
             }
 
-            (mediaViewData.attachments.size == 1 && mediaViewData.attachments.first().attachmentType == VIDEO) -> {
+            (mediaAttachments.size == 1 && mediaAttachments.first().attachmentType == VIDEO) -> {
                 ITEM_POST_SINGLE_VIDEO
             }
 
-            (mediaViewData.attachments.isNotEmpty() && mediaViewData.attachments.first().attachmentType == DOCUMENT) -> {
+            (mediaAttachments.isNotEmpty() && mediaAttachments.first().attachmentType == DOCUMENT) -> {
                 ITEM_POST_DOCUMENTS
             }
 
-            (mediaViewData.attachments.size > 1 && (mediaViewData.attachments.first().attachmentType == IMAGE || mediaViewData.attachments.first().attachmentType == VIDEO)) -> {
+            (mediaAttachments.size > 1 && (mediaAttachments.first().attachmentType == IMAGE || mediaAttachments.first().attachmentType == VIDEO)) -> {
                 ITEM_POST_MULTIPLE_MEDIA
             }
 
-            (mediaViewData.attachments.size == 1 && mediaViewData.attachments.first().attachmentType == LINK) -> {
+            (mediaAttachments.size == 1 && mediaAttachments.first().attachmentType == LINK) -> {
                 ITEM_POST_LINK
             }
 
-            (mediaViewData.attachments.size == 1 && mediaViewData.attachments.first().attachmentType == POLL) -> {
+            (mediaAttachments.size == 1 && mediaAttachments.first().attachmentType == POLL) -> {
                 ITEM_POST_POLL
             }
 
@@ -89,6 +102,7 @@ class  LMFeedPostViewData private constructor(
         fun fromPostSaved(fromPostSaved: Boolean) = apply { this.fromPostSaved = fromPostSaved }
         fun fromVideoAction(fromVideoAction: Boolean) =
             apply { this.fromVideoAction = fromVideoAction }
+
         fun isPosted(isPosted: Boolean) = apply { this.isPosted = isPosted }
 
         fun build() = LMFeedPostViewData(
@@ -117,5 +131,27 @@ class  LMFeedPostViewData private constructor(
             .fromPostSaved(fromPostSaved)
             .fromVideoAction(fromVideoAction)
             .isPosted(isPosted)
+    }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedPostViewData(id='")
+            append(id)
+            append("', headerViewData=")
+            append(headerViewData)
+            append(", contentViewData=")
+            append(contentViewData)
+            append(", mediaViewData=")
+            append(mediaViewData)
+            append(", actionViewData=")
+            append(actionViewData)
+            append(", topicsViewData=")
+            append(topicsViewData)
+            append(", fromPostLiked=")
+            append(fromPostLiked)
+            append(", fromPostSaved=")
+            append(fromPostSaved)
+            append(")")
+        }
     }
 }

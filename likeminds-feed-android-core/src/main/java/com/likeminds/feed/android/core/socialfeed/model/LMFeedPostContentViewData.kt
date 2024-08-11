@@ -29,4 +29,8 @@ class LMFeedPostContentViewData private constructor(
         return Builder().text(text)
             .alreadySeenFullContent(alreadySeenFullContent)
     }
+
+    override fun toString(): String {
+        return "LMFeedPostContentViewData(text=$text, alreadySeenFullContent=$alreadySeenFullContent)"
+    }
 }

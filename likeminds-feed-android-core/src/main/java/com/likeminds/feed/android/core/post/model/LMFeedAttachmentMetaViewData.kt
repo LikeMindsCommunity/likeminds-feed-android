@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.post.model
 
 import android.net.Uri
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
+import com.likeminds.feed.android.core.widget.model.LMFeedWidgetViewData
 
 class LMFeedAttachmentMetaViewData private constructor(
     val name: String?,
@@ -10,12 +11,13 @@ class LMFeedAttachmentMetaViewData private constructor(
     val size: Long?,
     val duration: Int?,
     val pageCount: Int?,
-    val ogTags: LMFeedLinkOGTagsViewData,
+    val ogTags: LMFeedLinkOGTagsViewData?,
     val width: Int?,
     val height: Int?,
     val uri: Uri?,
     val thumbnail: String?,
-    val poll: LMFeedPollViewData?
+    val poll: LMFeedPollViewData?,
+    val widgetViewData: LMFeedWidgetViewData?
 ) {
 
     class Builder {
@@ -25,12 +27,13 @@ class LMFeedAttachmentMetaViewData private constructor(
         private var size: Long? = null
         private var duration: Int? = null
         private var pageCount: Int? = null
-        private var ogTags: LMFeedLinkOGTagsViewData = LMFeedLinkOGTagsViewData.Builder().build()
+        private var ogTags: LMFeedLinkOGTagsViewData? = null
         private var width: Int? = null
         private var height: Int? = null
         private var uri: Uri? = null
         private var thumbnail: String? = null
         private var poll: LMFeedPollViewData? = null
+        private var widgetViewData: LMFeedWidgetViewData? = null
 
         fun name(name: String?) = apply {
             this.name = name
@@ -56,7 +59,7 @@ class LMFeedAttachmentMetaViewData private constructor(
             this.pageCount = pageCount
         }
 
-        fun ogTags(ogTags: LMFeedLinkOGTagsViewData) = apply {
+        fun ogTags(ogTags: LMFeedLinkOGTagsViewData?) = apply {
             this.ogTags = ogTags
         }
 
@@ -80,6 +83,10 @@ class LMFeedAttachmentMetaViewData private constructor(
             this.poll = poll
         }
 
+        fun widgetViewData(widgetViewData: LMFeedWidgetViewData?) = apply {
+            this.widgetViewData = widgetViewData
+        }
+
         fun build() = LMFeedAttachmentMetaViewData(
             name,
             url,
@@ -92,7 +99,8 @@ class LMFeedAttachmentMetaViewData private constructor(
             height,
             uri,
             thumbnail,
-            poll
+            poll,
+            widgetViewData
         )
     }
 
@@ -110,5 +118,38 @@ class LMFeedAttachmentMetaViewData private constructor(
             .uri(uri)
             .thumbnail(thumbnail)
             .poll(poll)
+            .widgetViewData(widgetViewData)
+    }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedAttachmentMetaViewData(name=")
+            append(name)
+            append(", url=")
+            append(url)
+            append(", format=")
+            append(format)
+            append(", size=")
+            append(size)
+            append(", duration=")
+            append(duration)
+            append(", pageCount=")
+            append(pageCount)
+            append(", ogTags=")
+            append(ogTags)
+            append(", width=")
+            append(width)
+            append(", height=")
+            append(height)
+            append(", uri=")
+            append(uri)
+            append(", thumbnail=")
+            append(thumbnail)
+            append(", poll=")
+            append(poll)
+            append(", widgetViewData=")
+            append(widgetViewData)
+            append(")")
+        }
     }
 }

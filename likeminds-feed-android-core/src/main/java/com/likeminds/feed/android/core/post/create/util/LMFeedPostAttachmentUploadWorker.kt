@@ -12,6 +12,7 @@ import com.likeminds.feed.android.core.post.model.IMAGE
 import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWorker
 import com.likeminds.feed.android.core.utils.mediauploader.model.*
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedUploadHelper
+import com.likeminds.likemindsfeed.post.model.AttachmentType.CUSTOM_WIDGET
 import com.likeminds.likemindsfeed.post.model.Post
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -74,7 +75,10 @@ class LMFeedPostAttachmentUploadWorker(
                 failedIndex.contains(index)
             }
         } else {
-            postWithAttachments.attachments
+            //upload only media attachments
+            postWithAttachments.attachments?.filter {
+                it.attachmentType != CUSTOM_WIDGET
+            }
         }
 
         if (attachmentsToUpload.isNullOrEmpty()) {

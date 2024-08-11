@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapter
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapter
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
@@ -25,7 +25,7 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
     val linearLayoutManager: LinearLayoutManager
     private val dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
-    private lateinit var socialFeedAdapter: LMFeedSocialFeedAdapter
+    lateinit var socialFeedAdapter: LMFeedSocialFeedAdapter
     private var postVideoAutoPlayHelper: LMFeedPostVideoAutoPlayHelper? = null
     private lateinit var paginationScrollListener: LMFeedEndlessRecyclerViewScrollListener
 
@@ -80,10 +80,14 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
         }
     }
 
-    //sets the adapter with the provided [listener] to the social feed recycler view
-    fun setAdapter(postAdapterListener: LMFeedPostAdapterListener) {
+    //create the adapter with the provided [listener] to the universal feed recycler view
+    fun initAdapterAndSetListener(listener: LMFeedPostAdapterListener){
+        socialFeedAdapter = LMFeedSocialFeedAdapter(listener)
+    }
+
+    //sets the adapter with the provided [listener] to the universal feed recycler view
+    fun setAdapter() {
         //setting adapter
-        socialFeedAdapter = LMFeedSocialFeedAdapter(postAdapterListener)
         adapter = socialFeedAdapter
     }
 

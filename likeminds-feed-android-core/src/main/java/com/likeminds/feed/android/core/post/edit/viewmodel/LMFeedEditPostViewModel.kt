@@ -13,13 +13,13 @@ import com.likeminds.feed.android.core.utils.membertagging.MemberTaggingUtil
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.LMResponse
 import com.likeminds.likemindsfeed.helper.model.*
-import com.likeminds.likemindsfeed.post.model.EditPostRequest
-import com.likeminds.likemindsfeed.post.model.GetPostRequest
+import com.likeminds.likemindsfeed.post.model.*
 import com.likeminds.likemindsfeed.topic.model.GetTopicRequest
 import com.likeminds.usertagging.model.TagUser
 import com.likeminds.usertagging.util.UserTaggingUtil
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import org.json.JSONObject
 
 class LMFeedEditPostViewModel : ViewModel() {
 
@@ -150,7 +150,8 @@ class LMFeedEditPostViewModel : ViewModel() {
         attachments: List<LMFeedAttachmentViewData>? = null,
         ogTags: LMFeedLinkOGTagsViewData? = null,
         selectedTopics: List<LMFeedTopicViewData>? = null,
-        poll: LMFeedPollViewData? = null
+        poll: LMFeedPollViewData? = null,
+        widgetData: Pair<String, JSONObject>? = null
     ) {
         viewModelScope.launchIO {
             var updatedText = postTextContent?.trim()
@@ -165,10 +166,17 @@ class LMFeedEditPostViewModel : ViewModel() {
             val request =
                 if (attachments != null) {
                     // if the post has any file attachments
+                    val mediaAttachments = mutableListOf<Attachment>().apply {
+                        addAll(LMFeedViewDataConvertor.createAttachments(attachments))
+                        widgetData?.let {
+                            add(LMFeedViewDataConvertor.convertCustomWidget(it.first, it.second))
+                        }
+                    }
+
                     EditPostRequest.Builder()
                         .postId(postId)
                         .text(updatedText)
-                        .attachments(LMFeedViewDataConvertor.createAttachments(attachments))
+                        .attachments(mediaAttachments)
                         .topicIds(topicIds)
                         .build()
                 } else {
@@ -178,13 +186,32 @@ class LMFeedEditPostViewModel : ViewModel() {
                         .text(updatedText)
                         .topicIds(topicIds)
 
-                    if (ogTags != null) {
-                        // if the post has ogTags
-                        requestBuilder.attachments(LMFeedViewDataConvertor.convertAttachments(ogTags))
-                    }
-                    if (poll != null) {
-                        //if the post has poll
-                        requestBuilder.attachments(LMFeedViewDataConvertor.convertPoll(poll))
+                    when {
+                        ogTags != null -> {
+                            // if the post has ogTags
+                            requestBuilder.attachments(
+                                LMFeedViewDataConvertor.convertAttachments(
+                                    ogTags,
+                                    widgetData
+                                )
+                            )
+                        }
+
+                        poll != null -> {
+                            //if the post has poll
+                            requestBuilder.attachments(
+                                LMFeedViewDataConvertor.convertPoll(
+                                    poll,
+                                    widgetData
+                                )
+                            )
+                        }
+
+                        widgetData != null -> {
+                            val customAttachment =
+                                listOf(LMFeedViewDataConvertor.convertCustomWidget(widgetData.first,widgetData.second))
+                            requestBuilder.attachments(customAttachment)
+                        }
                     }
                     requestBuilder.build()
                 }

@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.post.model.DOCUMENT
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedDocumentsAdapter
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
@@ -75,7 +76,9 @@ class LMFeedDocumentListView @JvmOverloads constructor(
         //gets the limit of visible documents
         val visibleDocumentsLimit = postDocumentsMediaStyle.visibleDocumentsLimit
 
-        val documents = mediaViewData.attachments
+        val documents = mediaViewData.attachments.filter {
+            it.attachmentType == DOCUMENT
+        }
 
         //handle show more logic
         if (mediaViewData.isExpanded || documents.size <= visibleDocumentsLimit) {

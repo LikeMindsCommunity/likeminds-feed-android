@@ -61,4 +61,18 @@ class LMFeedAttachmentViewData private constructor(
             .postId(postId)
     }
 
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedAttachmentViewData(attachmentType=")
+            append(attachmentType)
+            append(", attachmentMeta=")
+            append(attachmentMeta)
+            append(", dynamicViewType=")
+            append(dynamicViewType)
+            append(", postId='")
+            append(postId)
+            append("')")
+        }
+    }
+
 }

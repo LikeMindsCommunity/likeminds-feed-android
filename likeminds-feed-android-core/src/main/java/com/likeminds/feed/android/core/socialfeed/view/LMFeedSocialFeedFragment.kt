@@ -103,11 +103,14 @@ open class LMFeedSocialFeedFragment :
         binding = LmFeedFragmentSocialFeedBinding.inflate(layoutInflater)
 
         binding.apply {
+            rvSocial.initAdapterAndSetListener(this@LMFeedSocialFeedFragment)
+
             customizeCreateNewPostButton(fabNewPost)
             customizeSocialFeedHeaderView(headerViewSocial)
             customizeNoPostLayout(layoutNoPost)
             customizePostingLayout(layoutPosting)
             customizeTopicSelectorBar(topicSelectorBar)
+            customizeUniversalFeedListView(rvSocial)
         }
         return binding.root
     }
@@ -115,8 +118,8 @@ open class LMFeedSocialFeedFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fetchData()
         initUI()
+        fetchData()
         initListeners()
         observeResponses()
     }
@@ -604,7 +607,7 @@ open class LMFeedSocialFeedFragment :
     private fun initSocialFeedRecyclerView() {
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
         binding.rvSocial.apply {
-            setAdapter(this@LMFeedSocialFeedFragment)
+            setAdapter()
 
             val paginationScrollListener =
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -1411,6 +1414,10 @@ open class LMFeedSocialFeedFragment :
 
             setTitleText(getString(R.string.lm_feed_feed))
         }
+    }
+
+    //customizes the universal feed list view
+    protected open fun customizeUniversalFeedListView(rvUniversal: LMFeedSocialFeedListView) {
     }
 
     //processes the user profile clicked

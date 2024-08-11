@@ -34,6 +34,9 @@ import com.likeminds.feed.android.core.post.create.view.LMFeedCreatePostActivity
 import com.likeminds.feed.android.core.post.create.viewmodel.LMFeedCreatePostViewModel
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
+import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionResultExtras
@@ -47,9 +50,6 @@ import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostImageMediaViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
-import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getUrlIfExist
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
@@ -71,6 +71,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import org.json.JSONObject
 
 open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private lateinit var binding: LmFeedFragmentCreatePostBinding
@@ -569,6 +570,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                 val text = etPostComposer.text
                 val updatedText = memberTagging.replaceSelectedMembers(text).trim()
                 LMFeedViewUtils.hideKeyboard(binding.root)
+
                 when {
                     selectedMediaUris.isNotEmpty() -> {
                         headerViewCreatePost.setSubmitButtonEnabled(
@@ -581,7 +583,11 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                             fileUris = selectedMediaUris,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll
+                            poll = poll,
+                            metadata = JSONObject().apply {
+                                put("member_tagging", true)
+                                put("is_poll", poll != null)
+                            }
                         )
                     }
 
@@ -595,7 +601,11 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                             postTextContent = updatedText,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll
+                            poll = poll,
+                            metadata = JSONObject().apply {
+                                put("member_tagging", true)
+                                put("is_poll", poll != null)
+                            }
                         )
                     }
 
@@ -609,7 +619,11 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                             postTextContent = updatedText,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll
+                            poll = poll,
+                            metadata = JSONObject().apply {
+                                put("member_tagging", true)
+                                put("is_poll", poll != null)
+                            }
                         )
                     }
                 }

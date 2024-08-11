@@ -22,6 +22,7 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findStringOrDefaul
 import com.likeminds.feed.android.core.utils.base.model.*
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedAWSKeys
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
+import com.likeminds.feed.android.core.widget.model.LMFeedWidgetViewData
 import com.likeminds.likemindsfeed.comment.model.Comment
 import com.likeminds.likemindsfeed.moderation.model.ReportTag
 import com.likeminds.likemindsfeed.notificationfeed.model.Activity
@@ -36,6 +37,7 @@ import com.likeminds.likemindsfeed.sdk.model.SDKClientInfo
 import com.likeminds.likemindsfeed.sdk.model.User
 import com.likeminds.likemindsfeed.topic.model.Topic
 import com.likeminds.likemindsfeed.widgets.model.Widget
+import org.json.JSONObject
 
 object LMFeedViewDataConvertor {
 
@@ -99,6 +101,13 @@ object LMFeedViewDataConvertor {
      * Network Model -> View Data Model
     --------------------------------*/
 
+    /**
+     * converts [Post] to [LMFeedPostViewData] while creating a post
+     * @param post: [Post] instance
+     * @param topics: list of [Topic]
+     *
+     * @return [LMFeedPostViewData]
+     */
     fun convertPost(
         post: Post,
         topics: List<Topic>
@@ -113,10 +122,8 @@ object LMFeedViewDataConvertor {
         val postMediaViewData = LMFeedMediaViewData.Builder()
             .attachments(
                 convertAttachments(
-                    post.attachments,
                     post.id,
-                    emptyMap(),
-                    emptyMap()
+                    post.attachments
                 )
             )
             .workerUUID(post.workerUUID ?: "")
@@ -128,6 +135,45 @@ object LMFeedViewDataConvertor {
             .mediaViewData(postMediaViewData)
             .topicsViewData(convertTopics(topics))
             .isPosted(post.isPosted)
+            .build()
+    }
+
+    // converts list of [Attachment] to list of [LMFeedAttachmentViewData]
+    private fun convertAttachments(
+        postId: String,
+        attachments: List<Attachment>?
+    ): List<LMFeedAttachmentViewData> {
+        if (attachments.isNullOrEmpty()) return emptyList()
+        return attachments.map { attachment ->
+            LMFeedAttachmentViewData.Builder()
+                .postId(postId)
+                .attachmentType(attachment.attachmentType.getAttachmentValue())
+                .attachmentMeta(convertAttachments(attachment.attachmentMeta))
+                .build()
+        }
+    }
+
+    // converts [AttachmentMeta] to [LMFeedAttachmentMetaViewData]
+    private fun convertAttachments(attachmentMeta: AttachmentMeta): LMFeedAttachmentMetaViewData {
+        return LMFeedAttachmentMetaViewData.Builder()
+            .name(attachmentMeta.name)
+            .url(attachmentMeta.url)
+            .format(attachmentMeta.format)
+            .size(attachmentMeta.size)
+            .duration(attachmentMeta.duration)
+            .pageCount(attachmentMeta.pageCount)
+            .thumbnail(attachmentMeta.thumbnailUrl)
+            .height(attachmentMeta.height)
+            .width(attachmentMeta.width)
+            .widgetViewData(convertWidgetViewData(attachmentMeta.meta))
+            .build()
+    }
+
+    // converts [Widget] to [LMFeedWidgetViewData]
+    private fun convertWidgetViewData(meta: JSONObject?): LMFeedWidgetViewData? {
+        if (meta == null) return null
+        return LMFeedWidgetViewData.Builder()
+            .metadata(meta)
             .build()
     }
 
@@ -324,8 +370,12 @@ object LMFeedViewDataConvertor {
     }
 
     /**
-     * converts list of [AttachmentMeta] to list of [LMFeedAttachmentMetaViewData]
+     * converts object of [AttachmentMeta] to object of [LMFeedAttachmentMetaViewData]
      * @param attachmentMeta: instance of [AttachmentMeta]
+     * @param usersMap: Map of [String, User]
+     * @param widgetsMap: Map of [String, Widget]
+     *
+     * @return [LMFeedAttachmentMetaViewData]
      */
     private fun convertAttachmentMeta(
         attachmentMeta: AttachmentMeta?,
@@ -345,6 +395,9 @@ object LMFeedViewDataConvertor {
             .pageCount(attachmentMeta.pageCount)
             .ogTags(convertLinkOGTags(attachmentMeta.ogTags))
             .thumbnail(attachmentMeta.thumbnailUrl)
+            .height(attachmentMeta.height)
+            .width(attachmentMeta.width)
+            .widgetViewData(convertWidget(attachmentMeta.entityId, widgetsMap))
             .poll(
                 convertPoll(
                     attachmentMeta.entityId ?: "",
@@ -359,9 +412,9 @@ object LMFeedViewDataConvertor {
      * convert [LinkOGTags] to [LMFeedLinkOGTagsViewData]
      * @param linkOGTags: object of [LinkOGTags]
      **/
-    fun convertLinkOGTags(linkOGTags: LinkOGTags?): LMFeedLinkOGTagsViewData {
+    fun convertLinkOGTags(linkOGTags: LinkOGTags?): LMFeedLinkOGTagsViewData? {
         if (linkOGTags == null) {
-            return LMFeedLinkOGTagsViewData.Builder().build()
+            return null
         }
 
         return LMFeedLinkOGTagsViewData.Builder()
@@ -770,14 +823,21 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
-    // converts list of Topic network model to list of view data model
+    /**
+     * convert list of [Topic] to list of [LMFeedTopicViewData]
+     * @param topics: list of [Topic]
+     * */
     private fun convertTopics(topics: List<Topic>): List<LMFeedTopicViewData> {
         return topics.map {
             convertTopic(it)
         }
     }
 
-    // converts list of [PollVote] network model and corresponding users map to list of [LMFeedPollVoteViewData]
+    /**
+     * convert list of [PollVote] to [LMFeedPollVoteViewData]
+     * @param votes: list of [PollVote]
+     * @param usersMap: [Map] of String to [User]
+     * */
     fun convertPollVotes(
         votes: List<PollVote>,
         usersMap: Map<String, User>
@@ -796,6 +856,29 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    /**
+     * convert [Widget] to [LMFeedWidgetViewData]
+     * @param entityId: [String]
+     * @param widgetsMap: [Map] of String to [Widget]
+     * @return [LMFeedWidgetViewData]
+     * */
+    private fun convertWidget(
+        entityId: String?,
+        widgetsMap: Map<String, Widget>
+    ): LMFeedWidgetViewData? {
+        if (entityId.isNullOrEmpty()) return null
+        val widget = widgetsMap[entityId] ?: return null
+
+        return LMFeedWidgetViewData.Builder()
+            .id(widget.id)
+            .createdAt(widget.createdAt)
+            .metadata(widget.metadata)
+            .parentEntityId(widget.parentEntityId)
+            .parentEntityType(widget.parentEntityType)
+            .updatedAt(widget.updatedAt)
+            .build()
+    }
+
     /**--------------------------------
      * View Data Model -> Network Model
     --------------------------------*/
@@ -804,14 +887,15 @@ object LMFeedViewDataConvertor {
         temporaryId: String,
         workerUUID: String,
         text: String?,
-        fileUris: List<LMFeedFileUploadViewData>
+        fileUris: List<LMFeedFileUploadViewData>,
+        metadata: JSONObject?,
     ): Post {
         return Post.Builder()
             .tempId(temporaryId)
             .id(temporaryId)
             .workerUUID(workerUUID)
             .text(text ?: "")
-            .attachments(convertAttachments(fileUris))
+            .attachments(convertAttachments(fileUris, Pair(null, metadata)))
             .build()
     }
 
@@ -837,26 +921,40 @@ object LMFeedViewDataConvertor {
     private fun convertAttachmentMeta(
         attachmentMeta: LMFeedAttachmentMetaViewData
     ): AttachmentMeta {
-        return AttachmentMeta.Builder().name(attachmentMeta.name)
+        return AttachmentMeta.Builder()
+            .name(attachmentMeta.name)
             .ogTags(convertOGTags(attachmentMeta.ogTags))
             .url(attachmentMeta.url)
             .size(attachmentMeta.size)
             .duration(attachmentMeta.duration)
             .pageCount(attachmentMeta.pageCount)
             .format(attachmentMeta.format)
+            .height(attachmentMeta.height)
+            .width(attachmentMeta.width)
+            .meta(attachmentMeta.widgetViewData?.metadata)
             .build()
     }
 
     // creates attachment list of Network Model for link attachment
     fun convertAttachments(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
+        linkOGTagsViewData: LMFeedLinkOGTagsViewData,
+        widgetData: Pair<String?, JSONObject?>?
     ): List<Attachment> {
-        return listOf(
+        val attachments = ArrayList<Attachment>()
+
+        //add link attachment
+        attachments.add(
             Attachment.Builder()
                 .attachmentType(AttachmentType.LINK)
                 .attachmentMeta(convertAttachmentMeta(linkOGTagsViewData))
                 .build()
         )
+
+        //add custom widget
+        widgetData?.second?.let {
+            attachments.add(convertCustomWidget(widgetData.first, it))
+        }
+        return attachments
     }
 
     // creates AttachmentMeta Network Model for link attachment meta
@@ -870,8 +968,9 @@ object LMFeedViewDataConvertor {
 
     // converts LinkOGTags view data model to network model
     private fun convertOGTags(
-        linkOGTagsViewData: LMFeedLinkOGTagsViewData
-    ): LinkOGTags {
+        linkOGTagsViewData: LMFeedLinkOGTagsViewData?
+    ): LinkOGTags? {
+        if (linkOGTagsViewData == null) return null
         return LinkOGTags.Builder()
             .title(linkOGTagsViewData.title)
             .image(linkOGTagsViewData.image)
@@ -881,10 +980,27 @@ object LMFeedViewDataConvertor {
     }
 
     // converts list of [LMFeedFileUploadViewData] to list of network [Attachment] model
-    private fun convertAttachments(fileUris: List<LMFeedFileUploadViewData>): List<Attachment> {
-        return fileUris.map {
-            convertAttachment(it)
+    private fun convertAttachments(
+        fileUris: List<LMFeedFileUploadViewData>,
+        widgetData: Pair<String?, JSONObject?>?
+    ): List<Attachment> {
+        val attachments = ArrayList<Attachment>()
+
+        //add media files
+        attachments.addAll(
+            fileUris.map {
+                convertAttachment(it)
+            }
+        )
+
+        //add meta
+        widgetData?.second?.let {
+            attachments.add(
+                convertCustomWidget(widgetData.first, it)
+            )
         }
+
+        return attachments
     }
 
     // converts [LMFeedFileUploadViewData] to network [Attachment] model
@@ -929,6 +1045,8 @@ object LMFeedViewDataConvertor {
             .awsFolderPath(fileUri.awsFolderPath)
             .thumbnailUrl(fileUri.thumbnailUri.toString())
             .duration(fileUri.duration)
+            .height(fileUri.height)
+            .width(fileUri.width)
             .build()
     }
 
@@ -960,13 +1078,26 @@ object LMFeedViewDataConvertor {
     }
 
     // converts [LMFeedPollViewData] to [Attachment]
-    fun convertPoll(poll: LMFeedPollViewData): List<Attachment> {
-        return listOf(
+    fun convertPoll(
+        poll: LMFeedPollViewData,
+        widgetData: Pair<String?, JSONObject?>?
+    ): List<Attachment> {
+        val attachments = ArrayList<Attachment>()
+
+        attachments.add(
             Attachment.Builder()
                 .attachmentType(AttachmentType.POLL)
                 .attachmentMeta(convertPollAttachmentMeta(poll))
                 .build()
         )
+
+        widgetData?.second?.let {
+            attachments.add(
+                convertCustomWidget(widgetData.first, it)
+            )
+        }
+
+        return attachments
     }
 
     // converts [LMFeedPollViewData] to [AttachmentMeta]
@@ -984,4 +1115,22 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    // converts [LMFeedWidgetViewData] to [Attachment]
+    fun convertCustomWidget(entityId: String?, metadata: JSONObject): Attachment {
+        return Attachment.Builder()
+            .attachmentType(AttachmentType.CUSTOM_WIDGET)
+            .attachmentMeta(convertCustomWidgetAttachmentMeta(entityId, metadata))
+            .build()
+    }
+
+    // converts [LMFeedWidgetViewData] to [AttachmentMeta]
+    private fun convertCustomWidgetAttachmentMeta(
+        entityId: String?,
+        metadata: JSONObject
+    ): AttachmentMeta {
+        return AttachmentMeta.Builder()
+            .entityId(entityId)
+            .meta(metadata)
+            .build()
+    }
 }

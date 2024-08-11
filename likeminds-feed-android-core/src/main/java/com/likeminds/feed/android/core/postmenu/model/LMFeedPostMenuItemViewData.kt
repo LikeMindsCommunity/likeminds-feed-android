@@ -41,4 +41,16 @@ class LMFeedPostMenuItemViewData private constructor(
             .title(title)
             .icon(icon)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMOverflowMenuItemViewData(id=")
+            append(id)
+            append(", title='")
+            append(title)
+            append("', icon=")
+            append(icon)
+            append(")")
+        }
+    }
 }

@@ -40,4 +40,20 @@ class LMFeedPostActionViewData private constructor(
             .isLiked(isLiked)
             .replies(replies)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("LMFeedPostFooterViewData(likesCount=")
+            append(likesCount)
+            append(", commentsCount=")
+            append(commentsCount)
+            append(", isSaved=")
+            append(isSaved)
+            append(", isLiked=")
+            append(isLiked)
+            append(", replies=")
+            append(replies)
+            append(")")
+        }
+    }
 }

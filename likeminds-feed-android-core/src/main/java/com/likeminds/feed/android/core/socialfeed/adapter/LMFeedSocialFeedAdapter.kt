@@ -43,6 +43,10 @@ class LMFeedSocialFeedAdapter(
             LMFeedItemPostPollViewDataBinder(postAdapterListener)
         viewDataBinders.add(itemPostPollViewDataBinder)
 
+        val itemPostCustomWidgetViewDataBinder =
+            LMFeedItemPostCustomWidgetViewDataBinder(postAdapterListener)
+        viewDataBinders.add(itemPostCustomWidgetViewDataBinder)
+
         return viewDataBinders
     }
 
@@ -50,14 +54,9 @@ class LMFeedSocialFeedAdapter(
         return items().getItemInList(position)
     }
 
-    fun replaceTextOnlyBinder(viewDataBinder: LMFeedViewDataBinder<*, *>) {
-        val view = viewDataBinder.viewType
-
-        val indexOfViewData = this.supportedViewDataBinder.indexOfFirst {
-            it.viewType == view
-        }
-
-        this.supportedViewDataBinder[indexOfViewData] = viewDataBinder
+    //replace any view data binder provide by the customer
+    fun replaceViewDataBinder(viewType: Int, viewDataBinder: LMFeedViewDataBinder<*, *>) {
+        supportedViewBinderResolverMap.put(viewType, viewDataBinder)
     }
 }
 
