@@ -142,6 +142,7 @@ open class LMFeedPostDetailFragment :
         binding.rvPostDetails.destroyVideoAutoPlayer()
     }
 
+    //customize post detail header view
     protected open fun customizePostDetailHeaderView(headerViewPostDetail: LMFeedHeaderView) {
         headerViewPostDetail.apply {
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle)
@@ -156,6 +157,7 @@ open class LMFeedPostDetailFragment :
         }
     }
 
+    //customize comment composer
     protected open fun customizeCommentComposer(commentComposer: LMFeedCommentComposerView) {
         commentComposer.apply {
             setCommentInputBoxHint(getString(R.string.lm_feed_write_a_comment))
@@ -163,6 +165,7 @@ open class LMFeedPostDetailFragment :
         }
     }
 
+    //customize post detail list view
     protected open fun customizePostDetailListView(rvPostDetailListView: LMFeedPostDetailListView) {
 
     }

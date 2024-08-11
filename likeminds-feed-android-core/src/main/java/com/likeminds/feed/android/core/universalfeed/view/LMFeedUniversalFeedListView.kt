@@ -80,6 +80,7 @@ class LMFeedUniversalFeedListView @JvmOverloads constructor(
         }
     }
 
+    //create the adapter with the provided [listener] to the universal feed recycler view
     fun initAdapterAndSetListener(listener: LMFeedUniversalFeedAdapterListener){
         universalFeedAdapter = LMFeedUniversalFeedAdapter(listener)
     }

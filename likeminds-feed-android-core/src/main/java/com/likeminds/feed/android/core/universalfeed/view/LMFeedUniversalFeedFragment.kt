@@ -1406,6 +1406,7 @@ open class LMFeedUniversalFeedFragment :
         }
     }
 
+    //customizes the universal feed list view
     protected open fun customizeUniversalFeedListView(rvUniversal: LMFeedUniversalFeedListView) {
     }
 

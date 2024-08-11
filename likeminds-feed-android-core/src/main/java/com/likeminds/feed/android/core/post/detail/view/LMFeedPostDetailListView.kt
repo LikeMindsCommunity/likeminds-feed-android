@@ -62,6 +62,7 @@ class LMFeedPostDetailListView @JvmOverloads constructor(
         }
     }
 
+    //create the adapter instance and then set the listeners
     fun initAdapterAndSetListeners(
         universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
         postDetailAdapterListener: LMFeedPostDetailAdapterListener,

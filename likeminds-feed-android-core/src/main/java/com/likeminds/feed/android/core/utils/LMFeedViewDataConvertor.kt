@@ -101,6 +101,13 @@ object LMFeedViewDataConvertor {
      * Network Model -> View Data Model
     --------------------------------*/
 
+    /**
+     * converts [Post] to [LMFeedPostViewData] while creating a post
+     * @param post: [Post] instance
+     * @param topics: list of [Topic]
+     *
+     * @return [LMFeedPostViewData]
+     */
     fun convertPost(
         post: Post,
         topics: List<Topic>
@@ -131,6 +138,7 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    // converts list of [Attachment] to list of [LMFeedAttachmentViewData]
     private fun convertAttachments(
         postId: String,
         attachments: List<Attachment>?
@@ -145,6 +153,7 @@ object LMFeedViewDataConvertor {
         }
     }
 
+    // converts [AttachmentMeta] to [LMFeedAttachmentMetaViewData]
     private fun convertAttachments(attachmentMeta: AttachmentMeta): LMFeedAttachmentMetaViewData {
         return LMFeedAttachmentMetaViewData.Builder()
             .name(attachmentMeta.name)
@@ -160,6 +169,7 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    // converts [Widget] to [LMFeedWidgetViewData]
     private fun convertWidgetViewData(meta: JSONObject?): LMFeedWidgetViewData? {
         if (meta == null) return null
         return LMFeedWidgetViewData.Builder()
@@ -1105,6 +1115,7 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    // converts [LMFeedWidgetViewData] to [Attachment]
     fun convertCustomWidget(entityId: String?, metadata: JSONObject): Attachment {
         return Attachment.Builder()
             .attachmentType(AttachmentType.CUSTOM_WIDGET)
@@ -1112,6 +1123,7 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    // converts [LMFeedWidgetViewData] to [AttachmentMeta]
     private fun convertCustomWidgetAttachmentMeta(
         entityId: String?,
         metadata: JSONObject

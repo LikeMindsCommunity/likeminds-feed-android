@@ -327,7 +327,7 @@ open class LMFeedEditPostFragment :
                 if (disabledTopics.isEmpty()) {
                     //call api as all topics are enabled
                     headerViewEditPost.setSubmitButtonEnabled(isEnabled = true, showProgress = true)
-                    //todo add meta data
+
                     editPostViewModel.editPost(
                         editPostExtras.postId,
                         updatedText,
@@ -344,7 +344,7 @@ open class LMFeedEditPostFragment :
             } else {
                 //call api as no topics are enabled
                 headerViewEditPost.setSubmitButtonEnabled(isEnabled = true, showProgress = true)
-                //todo add meta data
+
                 editPostViewModel.editPost(
                     editPostExtras.postId,
                     updatedText,
