@@ -12,42 +12,43 @@ object LMFeedAnalytics {
     /*
     * Event names variables
     * */
-    object Events {
-        const val POST_CREATION_STARTED = "Post creation started"
-        const val CLICKED_ON_ATTACHMENT = "Clicked on Attachment"
-        const val USER_TAGGED_IN_POST = "User tagged in a post"
-        const val LINK_ATTACHED_IN_POST = "link attached in the post"
-        const val IMAGE_ATTACHED_TO_POST = "Image attached to post"
-        const val VIDEO_ATTACHED_TO_POST = "Video attached to post"
-        const val DOCUMENT_ATTACHED_TO_POST = "Document attached in post"
-        const val POST_CREATION_COMPLETED = "Post creation completed"
-        const val POST_PINNED = "Post pinned"
-        const val POST_UNPINNED = "Post unpinned"
-        const val POST_REPORTED = "Post reported"
-        const val POST_DELETED = "Post deleted"
-        const val FEED_OPENED = "Feed opened"
-        const val LIKE_LIST_OPEN = "Like list open"
-        const val COMMENT_LIST_OPEN = "Comment list open"
-        const val COMMENT_DELETED = "Comment deleted"
-        const val COMMENT_REPORTED = "Comment reported"
-        const val COMMENT_POSTED = "Comment posted"
-        const val REPLY_POSTED = "Reply posted"
-        const val REPLY_DELETED = "Reply deleted"
-        const val REPLY_REPORTED = "Reply reported"
-        const val POST_EDITED = "Post edited"
-        const val POST_SHARED = "Post shared"
-        const val POST_LIKED = "Post Liked"
-        const val POST_UNLIKED = "Post Unliked"
-        const val POST_SAVED = "Post Saved"
-        const val POST_UNSAVED = "Post Unsaved"
-        const val COMMENT_LIKED = "Comment Liked"
-        const val COMMENT_UNLIKED = "Comment Unliked"
-        const val COMMENT_EDITED = "Comment edited"
+    object LMFeedEvents {
+        const val POST_CREATION_STARTED = "post_creation_started"
+        const val CLICKED_ON_ATTACHMENT = "clicked_on_attachment"
+        const val ADD_MORE_ATTACHMENT = "add_more_attachment_clicked"
+        const val USER_TAGGED_IN_POST = "user_tagged_in_a_post"
+        const val LINK_ATTACHED_IN_POST = "link_attached_in_the_post"
+        const val IMAGE_ATTACHED_TO_POST = "image_attached_to_post"
+        const val VIDEO_ATTACHED_TO_POST = "video_attached_to_post"
+        const val DOCUMENT_ATTACHED_TO_POST = "document_attached_in_post"
+        const val POST_CREATION_COMPLETED = "post_creation_completed"
+        const val POST_PINNED = "post_pinned"
+        const val POST_UNPINNED = "post_unpinned"
+        const val POST_REPORTED = "post_reported"
+        const val POST_DELETED = "post_deleted"
+        const val FEED_OPENED = "feed_opened"
+        const val LIKE_LIST_OPEN = "like_list_open"
+        const val COMMENT_LIST_OPEN = "comment_list_open"
+        const val COMMENT_DELETED = "comment_deleted"
+        const val COMMENT_REPORTED = "comment_reported"
+        const val COMMENT_POSTED = "comment_posted"
+        const val REPLY_POSTED = "reply_posted"
+        const val REPLY_DELETED = "reply_deleted"
+        const val REPLY_REPORTED = "reply_reported"
+        const val POST_EDITED = "post_edited"
+        const val POST_SHARED = "post_shared"
+        const val POST_LIKED = "post_liked"
+        const val POST_UNLIKED = "post_unliked"
+        const val POST_SAVED = "post_saved"
+        const val POST_UNSAVED = "post_unsaved"
+        const val COMMENT_LIKED = "comment_liked"
+        const val COMMENT_UNLIKED = "comment_unliked"
+        const val COMMENT_EDITED = "comment_edited"
 
-        const val NOTIFICATION_RECEIVED = "Notification Received"
-        const val NOTIFICATION_CLICKED = "Notification Clicked"
+        const val NOTIFICATION_RECEIVED = "notification_received"
+        const val NOTIFICATION_CLICKED = "notification_clicked"
 
-        const val NOTIFICATION_PAGE_OPENED = "Notification page opened"
+        const val NOTIFICATION_PAGE_OPENED = "notification_page_opened"
     }
 
     /*
@@ -76,6 +77,26 @@ object LMFeedAnalytics {
         const val POST_DETAIL = "post_detail"
     }
 
+    object LMFeedScreenNames {
+        const val UNIVERSAL_FEED = "universalFeed"
+        const val FEEDROOM = "feedroom"
+        const val POST_DETAIL = "postDetailScreen"
+        const val USER_FEED = "userFeed"
+        const val ACTIVITY_FEED = "activityScreen"
+        const val CREATE_POST = "createPostScreen"
+        const val EDIT_POST = "editPostScreen"
+        const val TOPIC_SELECTION = "topicSelectScreen"
+        const val LIKES_SCREEN = "likesScreen"
+        const val MEDIA_PREVIEW = "mediaPreviewScreen"
+        const val REPORT_SCREEN = "reportScreen"
+        const val SEARCH_SCREEN = "searchScreen"
+        const val SAVED_POST = "savedPostScreen"
+        const val USER_CREATED_COMMENTS = "userCreatedCommentScreen"
+        const val USER_PROFILE = "userProfileScreen"
+        const val TOPIC_DETAIL = "topicDetailScreen"
+        const val OTHER = "other"
+    }
+
     /**
      * called to trigger events
      * @param eventName - name of the event to trigger
@@ -102,7 +123,7 @@ object LMFeedAnalytics {
      **/
     fun sendFeedOpenedEvent() {
         track(
-            Events.FEED_OPENED,
+            LMFeedEvents.FEED_OPENED,
             mapOf(
                 "feed_type" to "social_feed"
             )
@@ -112,8 +133,12 @@ object LMFeedAnalytics {
     /**
      * Triggers when the user clicks on New Post button
      **/
-    fun sendPostCreationStartedEvent() {
-        track(Events.POST_CREATION_STARTED)
+    fun sendPostCreationStartedEvent(screenName: String) {
+        track(
+            LMFeedEvents.POST_CREATION_STARTED, mapOf(
+                "screen_name" to screenName
+            )
+        )
     }
 
     /**
@@ -125,9 +150,9 @@ object LMFeedAnalytics {
         postLiked: Boolean
     ) {
         val event = if (postLiked) {
-            Events.POST_LIKED
+            LMFeedEvents.POST_LIKED
         } else {
-            Events.POST_UNLIKED
+            LMFeedEvents.POST_UNLIKED
         }
 
         track(
@@ -148,9 +173,9 @@ object LMFeedAnalytics {
         postSaved: Boolean
     ) {
         val event = if (postSaved) {
-            Events.POST_SAVED
+            LMFeedEvents.POST_SAVED
         } else {
-            Events.POST_UNSAVED
+            LMFeedEvents.POST_UNSAVED
         }
 
         track(
@@ -168,9 +193,9 @@ object LMFeedAnalytics {
     fun sendPostPinnedEvent(post: LMFeedPostViewData) {
         val headerViewData = post.headerViewData
         val event = if (headerViewData.isPinned) {
-            Events.POST_PINNED
+            LMFeedEvents.POST_PINNED
         } else {
-            Events.POST_UNPINNED
+            LMFeedEvents.POST_UNPINNED
         }
 
         track(
@@ -187,7 +212,7 @@ object LMFeedAnalytics {
      * Triggers when the user opens post detail screen
      **/
     fun sendCommentListOpenEvent() {
-        track(Events.COMMENT_LIST_OPEN)
+        track(LMFeedEvents.COMMENT_LIST_OPEN)
     }
 
     /**
@@ -198,7 +223,7 @@ object LMFeedAnalytics {
 
         val postCreatorUUID = post.headerViewData.user.sdkClientInfoViewData.uuid
         track(
-            Events.POST_SHARED,
+            LMFeedEvents.POST_SHARED,
             mapOf(
                 "created_by_uuid" to postCreatorUUID,
                 Keys.POST_ID to post.id,
@@ -214,7 +239,7 @@ object LMFeedAnalytics {
         val postType = LMFeedViewUtils.getPostTypeFromViewType(post.viewType)
         val postCreatorUUID = post.headerViewData.user.sdkClientInfoViewData.uuid
         track(
-            Events.POST_EDITED,
+            LMFeedEvents.POST_EDITED,
             mapOf(
                 "created_by_uuid" to postCreatorUUID,
                 Keys.POST_ID to post.id,
@@ -227,11 +252,12 @@ object LMFeedAnalytics {
      * Triggers when the user attaches link
      * @param link - url of the link
      **/
-    fun sendLinkAttachedEvent(link: String) {
+    fun sendLinkAttachedEvent(link: String, screenName: String) {
         track(
-            Events.LINK_ATTACHED_IN_POST,
+            LMFeedEvents.LINK_ATTACHED_IN_POST,
             mapOf(
-                "link" to link
+                "link" to link,
+                "screen_name" to screenName
             )
         )
     }
@@ -258,7 +284,7 @@ object LMFeedAnalytics {
             "post_type" to LMFeedViewUtils.getPostTypeFromViewType(post.viewType),
         )
         track(
-            Events.POST_DELETED,
+            LMFeedEvents.POST_DELETED,
             map
         )
     }
@@ -274,7 +300,7 @@ object LMFeedAnalytics {
         if (parentCommentId == null) {
             //comment deleted event
             track(
-                Events.COMMENT_DELETED,
+                LMFeedEvents.COMMENT_DELETED,
                 mapOf(
                     Keys.POST_ID to postId,
                     Keys.COMMENT_ID to commentId
@@ -283,7 +309,7 @@ object LMFeedAnalytics {
         } else {
             //reply deleted event
             track(
-                Events.REPLY_DELETED,
+                LMFeedEvents.REPLY_DELETED,
                 mapOf(
                     Keys.POST_ID to postId,
                     Keys.COMMENT_ID to parentCommentId,
@@ -303,7 +329,7 @@ object LMFeedAnalytics {
         commentId: String,
     ) {
         track(
-            Events.REPLY_POSTED,
+            LMFeedEvents.REPLY_POSTED,
             mapOf(
                 Keys.UUID to parentCommentCreatorUUID,
                 Keys.POST_ID to postId,
@@ -318,7 +344,7 @@ object LMFeedAnalytics {
      **/
     fun sendCommentPostedEvent(postId: String, commentId: String) {
         track(
-            Events.COMMENT_POSTED,
+            LMFeedEvents.COMMENT_POSTED,
             mapOf(
                 Keys.POST_ID to postId,
                 Keys.COMMENT_ID to commentId
@@ -336,9 +362,9 @@ object LMFeedAnalytics {
         loggedInUUID: String,
     ) {
         val event = if (commentLiked) {
-            Events.COMMENT_LIKED
+            LMFeedEvents.COMMENT_LIKED
         } else {
-            Events.COMMENT_UNLIKED
+            LMFeedEvents.COMMENT_UNLIKED
         }
 
         track(
@@ -356,7 +382,7 @@ object LMFeedAnalytics {
      **/
     fun sendCommentEditedEvent(comment: LMFeedCommentViewData) {
         track(
-            Events.COMMENT_EDITED,
+            LMFeedEvents.COMMENT_EDITED,
             mapOf(
                 "created_by_uuid" to comment.user.sdkClientInfoViewData.uuid,
                 Keys.COMMENT_ID to comment.id,
@@ -375,7 +401,7 @@ object LMFeedAnalytics {
         reason: String
     ) {
         track(
-            Events.POST_REPORTED,
+            LMFeedEvents.POST_REPORTED,
             mapOf(
                 "created_by_uuid" to uuid,
                 Keys.POST_ID to postId,
@@ -395,7 +421,7 @@ object LMFeedAnalytics {
         reason: String
     ) {
         track(
-            Events.COMMENT_REPORTED,
+            LMFeedEvents.COMMENT_REPORTED,
             mapOf(
                 Keys.POST_ID to postId,
                 Keys.UUID to uuid,
@@ -417,7 +443,7 @@ object LMFeedAnalytics {
     ) {
         val updatedParentId = parentCommentId ?: ""
         track(
-            Events.REPLY_REPORTED,
+            LMFeedEvents.REPLY_REPORTED,
             mapOf(
                 Keys.POST_ID to postId,
                 Keys.COMMENT_ID to updatedParentId,
@@ -441,7 +467,7 @@ object LMFeedAnalytics {
             map[Keys.COMMENT_ID] = commentId
         }
         track(
-            Events.LIKE_LIST_OPEN,
+            LMFeedEvents.LIKE_LIST_OPEN,
             map
         )
     }
@@ -450,20 +476,22 @@ object LMFeedAnalytics {
      * Triggers when the user taps on the bell icon and lands on the notification page
      **/
     fun sendNotificationPageOpenedEvent() {
-        track(Events.NOTIFICATION_PAGE_OPENED)
+        track(LMFeedEvents.NOTIFICATION_PAGE_OPENED)
     }
 
     /**
      * Triggers event when the user tags someone
      * @param uuid user-unique-id
      * @param userCount count of tagged users
+     * @param screenName screen name
      */
-    fun sendUserTagEvent(uuid: String, userCount: Int) {
+    fun sendUserTagEvent(uuid: String, userCount: Int, screenName: String) {
         track(
-            Events.USER_TAGGED_IN_POST,
+            LMFeedEvents.USER_TAGGED_IN_POST,
             mapOf(
                 "tagged_user_uuid" to uuid,
-                "tagged_user_count" to userCount.toString()
+                "tagged_user_count" to userCount.toString(),
+                "screen_name" to screenName
             )
         )
     }

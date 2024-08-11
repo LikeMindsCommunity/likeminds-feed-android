@@ -638,7 +638,7 @@ class LMFeedSocialFeedViewModel : ViewModel() {
             map[it.first] = it.second
         }
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.POST_CREATION_COMPLETED,
+            LMFeedAnalytics.LMFeedEvents.POST_CREATION_COMPLETED,
             map
         )
     }

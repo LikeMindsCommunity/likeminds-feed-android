@@ -14,6 +14,7 @@ import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.feed.android.core.utils.membertagging.MemberTaggingUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
@@ -437,7 +438,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
         map["document_attached"] = "no"
 
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.POST_CREATION_COMPLETED,
+            LMFeedAnalytics.LMFeedEvents.POST_CREATION_COMPLETED,
             map
         )
     }
@@ -448,9 +449,23 @@ class LMFeedCreatePostViewModel : ViewModel() {
      */
     fun sendClickedOnAttachmentEvent(type: String) {
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.CLICKED_ON_ATTACHMENT,
+            LMFeedAnalytics.LMFeedEvents.CLICKED_ON_ATTACHMENT,
             mapOf(
-                "type" to type
+                "type" to type,
+                "screen_name" to LMFeedScreenNames.CREATE_POST
+            )
+        )
+    }
+    /**
+     * Triggers event when the user clicks on add more attachment
+     * @param type - type of attachment
+     */
+    fun sendAddMoreAttachmentClicked(type: String) {
+        LMFeedAnalytics.track(
+            LMFeedAnalytics.LMFeedEvents.ADD_MORE_ATTACHMENT,
+            mapOf(
+                "type" to type,
+                "screen_name" to LMFeedScreenNames.CREATE_POST
             )
         )
     }
@@ -493,9 +508,10 @@ class LMFeedCreatePostViewModel : ViewModel() {
      **/
     private fun sendImageAttachedEvent(imageCount: Int) {
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.IMAGE_ATTACHED_TO_POST,
+            LMFeedAnalytics.LMFeedEvents.IMAGE_ATTACHED_TO_POST,
             mapOf(
-                "image_count" to imageCount.toString()
+                "image_count" to imageCount.toString(),
+                "screen_name" to LMFeedScreenNames.CREATE_POST
             )
         )
     }
@@ -506,9 +522,10 @@ class LMFeedCreatePostViewModel : ViewModel() {
      **/
     private fun sendVideoAttachedEvent(videoCount: Int) {
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.VIDEO_ATTACHED_TO_POST,
+            LMFeedAnalytics.LMFeedEvents.VIDEO_ATTACHED_TO_POST,
             mapOf(
-                "video_count" to videoCount.toString()
+                "video_count" to videoCount.toString(),
+                "screen_name" to LMFeedScreenNames.CREATE_POST
             )
         )
     }
@@ -519,22 +536,10 @@ class LMFeedCreatePostViewModel : ViewModel() {
      **/
     private fun sendDocumentAttachedEvent(documentCount: Int) {
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.DOCUMENT_ATTACHED_TO_POST,
+            LMFeedAnalytics.LMFeedEvents.DOCUMENT_ATTACHED_TO_POST,
             mapOf(
-                "document_count" to documentCount.toString()
-            )
-        )
-    }
-
-    /**
-     * Triggers when the user attaches link
-     * @param link - url of the link
-     **/
-    fun sendLinkAttachedEvent(link: String) {
-        LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.LINK_ATTACHED_IN_POST,
-            mapOf(
-                "link" to link
+                "document_count" to documentCount.toString(),
+                "screen_name" to LMFeedScreenNames.CREATE_POST
             )
         )
     }

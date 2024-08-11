@@ -31,6 +31,10 @@ import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity.Com
 import com.likeminds.feed.android.core.post.edit.viewmodel.LMFeedEditPostViewModel
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils.customizePostTopicsGroup
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionResultExtras
@@ -44,16 +48,13 @@ import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderVi
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedMediaViewData
-import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
-import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils.customizePostTopicsGroup
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getUrlIfExist
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.base.model.*
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
@@ -282,7 +283,8 @@ open class LMFeedEditPostFragment :
                 super.onUserTagged(user)
                 LMFeedAnalytics.sendUserTagEvent(
                     user.uuid,
-                    memberTagging.getTaggedMemberCount()
+                    memberTagging.getTaggedMemberCount(),
+                    LMFeedScreenNames.EDIT_POST
                 )
             }
         }
@@ -889,7 +891,7 @@ open class LMFeedEditPostFragment :
         val link = data.url ?: ""
 
         // sends link attached event with the link
-        LMFeedAnalytics.sendLinkAttachedEvent(link)
+        LMFeedAnalytics.sendLinkAttachedEvent(link, LMFeedScreenNames.EDIT_POST)
 
         binding.linkPreview.root.show()
 

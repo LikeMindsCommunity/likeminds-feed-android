@@ -64,6 +64,7 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapital
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWorker
@@ -1382,7 +1383,7 @@ open class LMFeedSocialFeedFragment :
                     )
                 } else {
                     // sends post creation started event
-                    LMFeedAnalytics.sendPostCreationStartedEvent()
+                    LMFeedAnalytics.sendPostCreationStartedEvent(LMFeedScreenNames.UNIVERSAL_FEED)
 
                     val createPostExtras = LMFeedCreatePostExtras.Builder()
                         .source(LMFeedAnalytics.Source.SOCIAL_FEED)
