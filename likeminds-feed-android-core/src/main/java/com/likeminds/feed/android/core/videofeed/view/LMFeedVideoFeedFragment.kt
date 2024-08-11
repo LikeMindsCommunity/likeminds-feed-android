@@ -303,29 +303,33 @@ open class LMFeedVideoFeedFragment :
     //precache the videos from specified position till [PRECACHE_VIDEO_COUNT]
     private fun preCache(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            for (i in position..position + PRECACHE_VIDEO_COUNT) {
-                if (videoFeedAdapter.itemCount <= i) {
-                    return@launch
+            try {
+                for (i in position..position + PRECACHE_VIDEO_COUNT) {
+                    if (videoFeedAdapter.itemCount <= i) {
+                        return@launch
+                    }
+
+                    val data = (videoFeedAdapter.items()[i])
+                    if (data !is LMFeedPostViewData) {
+                        return@launch
+                    }
+
+                    val url =
+                        data.mediaViewData.attachments.first().attachmentMeta.url
+
+                    CacheWriter(
+                        LMFeedVideoCache.getCacheDataSourceFactory(requireContext().applicationContext)
+                            .createDataSource(),
+                        DataSpec(
+                            Uri.parse(url),
+                            0,
+                            CACHE_SIZE_EACH_VIDEO
+                        ),
+                        null
+                    ) { _, _, _ -> }.cache()
                 }
-
-                val data = (videoFeedAdapter.items()[i])
-                if (data !is LMFeedPostViewData) {
-                    return@launch
-                }
-
-                val url =
-                    data.mediaViewData.attachments.first().attachmentMeta.url
-
-                CacheWriter(
-                    LMFeedVideoCache.getCacheDataSourceFactory(requireContext().applicationContext)
-                        .createDataSource(),
-                    DataSpec(
-                        Uri.parse(url),
-                        0,
-                        CACHE_SIZE_EACH_VIDEO
-                    ),
-                    null
-                ) { _, _, _ -> }.cache()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

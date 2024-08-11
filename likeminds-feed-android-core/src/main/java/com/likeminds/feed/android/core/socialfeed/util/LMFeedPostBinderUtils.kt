@@ -234,12 +234,9 @@ object LMFeedPostBinderUtils {
 
                     val seeMoreClickableSpan = object : ClickableSpan() {
                         override fun onClick(view: View) {
-                            Log.d("PUI", "onClick: ")
                             setOnClickListener {
-                                Log.d("PUI", "setOnClickListener: ")
                                 return@setOnClickListener
                             }
-                            Log.d("PUI", "setOnClickListener: ")
                             alreadySeenFullContent = true
                             val updatedPost = updatePostForSeeFullContent(postViewData)
                             postAdapterListener.onPostContentSeeMoreClicked(position, updatedPost)

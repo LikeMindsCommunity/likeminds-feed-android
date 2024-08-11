@@ -69,8 +69,6 @@ class LMFeedPostVideoPreviewAutoPlayHelper {
         }
 
         if (lastPlayerView == null || lastPlayerView != videoPost.videoView) {
-            Log.d("PUI", "videoPost: ")
-
             videoPost.playVideo(
                 Uri.parse(url),
                 false,

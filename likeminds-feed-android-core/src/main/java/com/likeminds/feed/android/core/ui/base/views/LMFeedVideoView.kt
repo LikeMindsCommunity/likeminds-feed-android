@@ -115,10 +115,7 @@ class LMFeedVideoView @JvmOverloads constructor(
 
         setThumbnail(thumbnailView, thumbnailSrc)
 
-        Log.d("PUI", "startPlayingRemoteUri: ")
         val mediaSource = createCachedMediaSource(context.applicationContext, videoUri)
-//            ProgressiveMediaSource.Factory(LMFeedVideoCache.getInstance(context.applicationContext))
-//                .createMediaSource(MediaItem.fromUri(videoUri))
         exoPlayer.setMediaSource(mediaSource)
         exoPlayer.seekTo(lastPos)
         exoPlayer.playWhenReady = true
@@ -127,7 +124,6 @@ class LMFeedVideoView @JvmOverloads constructor(
 
     private fun createCachedMediaSource(context: Context, uri: Uri): MediaSource {
         val type = inferContentType(uri)
-        Log.d("PUI", "createCachedMediaSource: $type")
         return when (type) {
             C.CONTENT_TYPE_DASH ->
                 DashMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
@@ -150,7 +146,6 @@ class LMFeedVideoView @JvmOverloads constructor(
 
     private fun inferContentType(uri: Uri): Int {
         val fileName: String = (uri.toString())
-        Log.d("PUI", "inferContentType: $fileName")
         if (fileName.endsWith(".m3u8")) {
             return C.CONTENT_TYPE_HLS
         }

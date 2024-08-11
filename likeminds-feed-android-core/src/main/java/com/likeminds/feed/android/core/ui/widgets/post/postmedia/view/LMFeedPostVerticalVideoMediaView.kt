@@ -194,8 +194,6 @@ class LMFeedPostVerticalVideoMediaView : ConstraintLayout {
     ) {
         binding.apply {
             if (isVideoLocal) {
-                Log.d("PUI", "startPlayingLocalUri: ")
-
                 videoView.startPlayingLocalUri(
                     uri,
                     pbVideoLoader,
@@ -203,8 +201,6 @@ class LMFeedPostVerticalVideoMediaView : ConstraintLayout {
                     thumbnailSrc
                 )
             } else {
-                Log.d("PUI", "startRemote: ")
-
                 videoView.startPlayingRemoteUri(
                     uri,
                     pbVideoLoader,
