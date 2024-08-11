@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.utils.user
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.Keep
 import com.google.firebase.messaging.FirebaseMessaging
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
@@ -11,6 +12,7 @@ import com.likeminds.likemindsfeed.configuration.model.ConfigurationType
 import com.likeminds.likemindsfeed.helper.model.RegisterDeviceRequest
 import kotlinx.coroutines.*
 
+@Keep
 class LMFeedUserMetaData {
     var domain: String? = null
     var enablePushNotifications: Boolean = false
