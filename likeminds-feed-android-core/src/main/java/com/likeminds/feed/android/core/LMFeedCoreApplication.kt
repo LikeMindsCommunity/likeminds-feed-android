@@ -97,6 +97,7 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
         enablePushNotifications: Boolean = false,
         deviceId: String? = null
     ) {
+        //instantiates the cache data source factory for caching videos
         LMFeedVideoCache.getCacheDataSourceFactory(application.applicationContext)
 
         mClient = LMFeedClient.Builder(application)

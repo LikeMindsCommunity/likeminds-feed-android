@@ -2,9 +2,7 @@ package com.likeminds.feed.android.core.videofeed.view
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
@@ -23,9 +21,7 @@ import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetLi
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
-import com.likeminds.feed.android.core.utils.LMFeedRoute
-import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
-import com.likeminds.feed.android.core.utils.LMFeedViewUtils
+import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
@@ -34,10 +30,8 @@ import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
 import com.likeminds.feed.android.core.videofeed.model.LMFeedCaughtUpViewData
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 open class LMFeedVideoFeedFragment :
     Fragment(),
@@ -88,6 +82,7 @@ open class LMFeedVideoFeedFragment :
         return binding.root
     }
 
+    //sets view style to vertical video post
     private fun setVerticalVideoPostViewStyle() {
         val postViewStyle = LMFeedStyleTransformer.postViewStyle
         val postHeaderViewStyle = postViewStyle.postHeaderViewStyle

@@ -4,11 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -138,7 +134,11 @@ class LMFeedVideoView @JvmOverloads constructor(
                     .createMediaSource(MediaItem.fromUri(uri))
 
             else -> {
-                return ProgressiveMediaSource.Factory(LMFeedVideoCache.getCacheDataSourceFactory(context))
+                return ProgressiveMediaSource.Factory(
+                    LMFeedVideoCache.getCacheDataSourceFactory(
+                        context
+                    )
+                )
                     .createMediaSource(MediaItem.fromUri(uri))
             }
         }

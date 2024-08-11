@@ -10,7 +10,7 @@ import com.likeminds.feed.android.core.databinding.LmFeedSocialTopicSelectorBarB
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.style.LMFeedSocialTopicSelectorBarViewStyle
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
@@ -124,7 +124,7 @@ class LMFeedSocialTopicSelectorBarView : ConstraintLayout {
      */
 
     //exposed function to set the adapter with the provided [listener] to the selected topic recycler view
-    fun setSelectedTopicAdapter(listener: LMFeedSocialSelectedTopicAdapterListener) {
+    fun setSelectedTopicAdapter(listener: LMFeedSelectedTopicAdapterListener) {
         binding.rvSelectedTopics.setAdapter(listener)
     }
 

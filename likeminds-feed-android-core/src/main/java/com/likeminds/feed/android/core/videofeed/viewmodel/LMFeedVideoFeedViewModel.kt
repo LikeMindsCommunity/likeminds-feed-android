@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 class LMFeedVideoFeedViewModel : ViewModel() {
 
     companion object {
-        const val PAGE_SIZE = 10
+        const val PAGE_SIZE = 20
     }
 
     private val lmFeedClient: LMFeedClient by lazy {
@@ -46,6 +46,7 @@ class LMFeedVideoFeedViewModel : ViewModel() {
         data class LikePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
     }
 
+    //gets video feed
     fun getFeed(page: Int, topicsIds: List<String>? = null) {
         viewModelScope.launchIO {
             val request = GetFeedRequest.Builder()

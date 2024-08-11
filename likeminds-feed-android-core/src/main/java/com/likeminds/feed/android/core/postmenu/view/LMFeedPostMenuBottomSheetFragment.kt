@@ -1,9 +1,7 @@
 package com.likeminds.feed.android.core.postmenu.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.likeminds.feed.android.core.databinding.LmFeedPostMenuBottomSheetFragmentBinding

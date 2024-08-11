@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,21 +20,11 @@ import com.likeminds.feed.android.core.activityfeed.view.LMFeedActivityFeedActiv
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentSocialFeedBinding
 import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
-import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogListener
-import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogListener
+import com.likeminds.feed.android.core.delete.view.*
 import com.likeminds.feed.android.core.likes.model.LMFeedLikesScreenExtras
 import com.likeminds.feed.android.core.likes.model.POST
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity
-import com.likeminds.feed.android.core.postmenu.model.DELETE_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.postmenu.model.EDIT_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.postmenu.model.PIN_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.postmenu.model.REPORT_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.postmenu.model.UNPIN_POST_MENU_ITEM_ID
-import com.likeminds.feed.android.core.poll.result.model.LMFeedPollOptionViewData
-import com.likeminds.feed.android.core.poll.result.model.LMFeedPollResultsExtras
-import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
+import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsActivity
 import com.likeminds.feed.android.core.post.create.model.LMFeedCreatePostExtras
 import com.likeminds.feed.android.core.post.create.view.LMFeedCreatePostActivity
@@ -47,13 +35,14 @@ import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
+import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
 import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialSelectedTopicAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
@@ -69,19 +58,9 @@ import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderVi
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
-import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetFragment
-import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetListener
-import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAnonymousPollDialogFragment
-import com.likeminds.feed.android.core.utils.LMFeedAndroidUtils
-import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
-import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
-import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
-import com.likeminds.feed.android.core.utils.LMFeedProgressBarHelper
-import com.likeminds.feed.android.core.utils.LMFeedRoute
-import com.likeminds.feed.android.core.utils.LMFeedShareUtils
-import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.ui.widgets.poll.view.*
+import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
-import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
@@ -89,9 +68,7 @@ import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWorker
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
-import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
-import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
-import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
+import com.likeminds.feed.android.core.utils.user.*
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -101,7 +78,7 @@ open class LMFeedSocialFeedFragment :
     LMFeedPostAdapterListener,
     LMFeedAdminDeleteDialogListener,
     LMFeedSelfDeleteDialogListener,
-    LMFeedSocialSelectedTopicAdapterListener,
+    LMFeedSelectedTopicAdapterListener,
     LMFeedAddPollOptionBottomSheetListener,
     LMFeedPostObserver {
 
