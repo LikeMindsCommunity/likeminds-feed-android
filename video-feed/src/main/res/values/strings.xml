@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">LikeMinds Video Feed Android</string>
+    <string name="start">Start</string>
+    <string name="api_key">Api Key</string>
+    <string name="enter_api_key">Enter API Key</string>
+    <string name="user_name">User Name</string>
+    <string name="user_id">User Id</string>
+    <string name="login">Login</string>
+    <string name="enter_user_name">Enter user name</string>
+    <string name="enter_user_id">Enter user id</string>
+</resources>

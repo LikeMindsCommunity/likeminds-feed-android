@@ -1,8 +1,6 @@
 package com.likeminds.feed.android.core.poll.util
 
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
-import com.likeminds.feed.android.core.post.detail.viewmodel.LMFeedPostDetailViewModel
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
 
 object LMFeedPollUtil {
 

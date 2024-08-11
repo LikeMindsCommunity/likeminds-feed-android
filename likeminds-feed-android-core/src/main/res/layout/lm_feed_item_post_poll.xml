@@ -11,7 +11,7 @@
 
         <variable
             name="postViewData"
-            type="com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData" />
+            type="com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,8 +64,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_post_content" />
 
-        <com.likeminds.feed.android.core.ui.widgets.post.postfooterview.view.LMFeedPostFooterView
-            android:id="@+id/post_footer"
+        <com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
+            android:id="@+id/post_action"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/lm_feed_large_margin"

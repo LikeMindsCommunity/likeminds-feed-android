@@ -18,5 +18,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "likeminds-feed-android"
-include ':example'
+include ':social-feed'
 include ':likeminds-feed-android-core'
+include ':video-feed'

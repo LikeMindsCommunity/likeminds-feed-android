@@ -95,8 +95,8 @@
 
             <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
                 android:id="@+id/iv_header_search"
-                android:layout_width="@dimen/lm_feed_universal_feed_header_icon_size"
-                android:layout_height="@dimen/lm_feed_universal_feed_header_icon_size"
+                android:layout_width="@dimen/lm_feed_social_feed_header_icon_size"
+                android:layout_height="@dimen/lm_feed_social_feed_header_icon_size"
                 android:layout_marginVertical="@dimen/lm_feed_large_margin"
                 android:layout_marginEnd="@dimen/lm_feed_medium_margin"
                 android:background="?selectableItemBackgroundBorderless"
@@ -110,8 +110,8 @@
 
             <com.likeminds.feed.android.core.ui.base.views.LMFeedImageView
                 android:id="@+id/iv_user_profile"
-                android:layout_width="@dimen/lm_feed_universal_feed_header_icon_size"
-                android:layout_height="@dimen/lm_feed_universal_feed_header_icon_size"
+                android:layout_width="@dimen/lm_feed_social_feed_header_icon_size"
+                android:layout_height="@dimen/lm_feed_social_feed_header_icon_size"
                 android:layout_marginVertical="@dimen/lm_feed_regular_margin"
                 android:layout_marginEnd="@dimen/lm_feed_medium_margin"
                 android:visibility="gone"

@@ -4,7 +4,7 @@ import android.util.Log
 import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
-import com.likeminds.feed.android.core.universalfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 
 object LMFeedAnalytics {
@@ -72,7 +72,7 @@ object LMFeedAnalytics {
     object Source {
         const val DEEP_LINK = "deep_link"
         const val NOTIFICATION = "notification"
-        const val UNIVERSAL_FEED = "universal_feed"
+        const val SOCIAL_FEED = "social_feed"
         const val POST_DETAIL = "post_detail"
     }
 
@@ -104,7 +104,7 @@ object LMFeedAnalytics {
         track(
             Events.FEED_OPENED,
             mapOf(
-                "feed_type" to "universal_feed"
+                "feed_type" to "social_feed"
             )
         )
     }

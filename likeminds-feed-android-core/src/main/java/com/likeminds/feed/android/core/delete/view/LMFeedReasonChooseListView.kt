@@ -32,7 +32,7 @@ class LMFeedReasonChooseListView @JvmOverloads constructor(
         adapter = reasonChooseAdapter
     }
 
-    //replaces the reasons in the universal feed adapter with the provided [reasons]
+    //replaces the reasons in the social feed adapter with the provided [reasons]
     fun replaceReasons(reasons: List<LMFeedReasonChooseViewData>) {
         reasonChooseAdapter.replace(reasons)
     }

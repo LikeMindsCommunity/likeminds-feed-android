@@ -16,7 +16,7 @@ class LMFeedReasonChooseBottomSheetFragment : BottomSheetDialogFragment(),
     LMFeedReasonChooseAdapterListener {
 
     companion object {
-        private const val TAG = "LMFeedReasonChooseDialog"
+        private const val TAG = "LMFeedReasonChooseBottomSheetFragment"
 
         @JvmStatic
         fun newInstance(fragmentManager: FragmentManager) =

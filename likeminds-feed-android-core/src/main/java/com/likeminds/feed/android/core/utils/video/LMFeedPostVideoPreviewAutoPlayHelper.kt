@@ -1,7 +1,9 @@
 package com.likeminds.feed.android.core.utils.video
 
 import android.net.Uri
+import android.util.Log
 import com.likeminds.feed.android.core.ui.base.views.LMFeedVideoView
+import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVideoMediaView
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 
@@ -48,6 +50,31 @@ class LMFeedPostVideoPreviewAutoPlayHelper {
                     LMFeedViewUtils.getShimmer()
                 )
             }
+            // stop last player
+            removePlayer()
+        }
+        lastPlayerView = videoPost.videoView
+    }
+
+    /**
+     * @param [videoPost] - Player view in which the provided video is played
+     * @param [url] - If the video is remote, then provided [url] is used to play locally
+     */
+    fun playVideoInView(
+        videoPost: LMFeedPostVerticalVideoMediaView,
+        url: String? = null
+    ) {
+        if (url == null) {
+            return
+        }
+
+        if (lastPlayerView == null || lastPlayerView != videoPost.videoView) {
+            videoPost.playVideo(
+                Uri.parse(url),
+                false,
+                LMFeedViewUtils.getShimmer()
+            )
+
             // stop last player
             removePlayer()
         }

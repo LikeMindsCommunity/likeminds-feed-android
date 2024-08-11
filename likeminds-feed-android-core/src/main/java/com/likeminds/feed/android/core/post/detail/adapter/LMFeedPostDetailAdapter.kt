@@ -5,15 +5,15 @@ import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedIte
 import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedItemCommentsCountViewDataBinder
 import com.likeminds.feed.android.core.post.detail.adapter.databinders.LMFeedItemNoCommentsFoundViewDataBinder
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
-import com.likeminds.feed.android.core.universalfeed.adapter.LMFeedUniversalFeedAdapterListener
-import com.likeminds.feed.android.core.universalfeed.adapter.databinders.*
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
+import com.likeminds.feed.android.core.socialfeed.adapter.databinders.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getItemInList
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseRecyclerAdapter
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 
 class LMFeedPostDetailAdapter(
-    private val universalFeedAdapterListener: LMFeedUniversalFeedAdapterListener,
+    private val postAdapterListener: LMFeedPostAdapterListener,
     private val postDetailAdapterListener: LMFeedPostDetailAdapterListener,
     private val replyAdapterListener: LMFeedReplyAdapterListener
 ) : LMFeedBaseRecyclerAdapter<LMFeedBaseViewType>() {
@@ -33,31 +33,31 @@ class LMFeedPostDetailAdapter(
         viewDataBinders.add(itemCommentViewDataBinder)
 
         val itemPostTextOnlyBinder =
-            LMFeedItemPostTextOnlyViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostTextOnlyViewDataBinder(postAdapterListener)
         viewDataBinders.add(itemPostTextOnlyBinder)
 
         val itemPostSingleImageViewDataBinder =
-            LMFeedItemPostSingleImageViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostSingleImageViewDataBinder(postAdapterListener)
         viewDataBinders.add(itemPostSingleImageViewDataBinder)
 
         val itemPostSingleVideoViewDataBinder =
-            LMFeedItemPostSingleVideoViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostSingleVideoViewDataBinder(postAdapterListener)
         viewDataBinders.add(itemPostSingleVideoViewDataBinder)
 
         val itemPostLinkViewDataBinder =
-            LMFeedItemPostLinkViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostLinkViewDataBinder(postAdapterListener)
         viewDataBinders.add(itemPostLinkViewDataBinder)
 
         val lmFeedItemPostDocumentsViewDataBinder =
-            LMFeedItemPostDocumentsViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostDocumentsViewDataBinder(postAdapterListener)
         viewDataBinders.add(lmFeedItemPostDocumentsViewDataBinder)
 
         val itemPostMultipleMediaViewDataBinder =
-            LMFeedItemPostMultipleMediaViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostMultipleMediaViewDataBinder(postAdapterListener)
         viewDataBinders.add(itemPostMultipleMediaViewDataBinder)
 
         val itemPostPollViewDataBinder =
-            LMFeedItemPostPollViewDataBinder(universalFeedAdapterListener)
+            LMFeedItemPostPollViewDataBinder(postAdapterListener)
         viewDataBinders.add(itemPostPollViewDataBinder)
 
         val itemNoCommentsFoundBinder = LMFeedItemNoCommentsFoundViewDataBinder()

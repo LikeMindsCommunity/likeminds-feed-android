@@ -11,6 +11,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.likeminds.feed.android.core.utils.mediauploader.utils.LMFeedAWSKeys
 import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
+import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.LMFeedSDKCallback
 import com.likeminds.likemindsfeed.user.model.InitiateUserRequest
@@ -96,6 +97,9 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
         enablePushNotifications: Boolean = false,
         deviceId: String? = null
     ) {
+        //instantiates the cache data source factory for caching videos
+        LMFeedVideoCache.getCacheDataSourceFactory(application.applicationContext)
+
         mClient = LMFeedClient.Builder(application)
             .lmCallback(this)
             .build()

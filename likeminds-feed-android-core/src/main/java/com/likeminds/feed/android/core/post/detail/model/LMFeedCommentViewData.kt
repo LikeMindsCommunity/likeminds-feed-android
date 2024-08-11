@@ -1,6 +1,6 @@
 package com.likeminds.feed.android.core.post.detail.model
 
-import com.likeminds.feed.android.core.overflowmenu.model.LMFeedOverflowMenuItemViewData
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.base.model.ITEM_COMMENT
 import com.likeminds.feed.android.core.utils.base.model.ITEM_REPLY
@@ -19,7 +19,7 @@ class LMFeedCommentViewData private constructor(
     val user: LMFeedUserViewData,
     val createdAt: Long,
     val updatedAt: Long,
-    val menuItems: List<LMFeedOverflowMenuItemViewData>,
+    val menuItems: List<LMFeedPostMenuItemViewData>,
     val replies: MutableList<LMFeedCommentViewData>,
     val parentId: String?,
     val parentComment: LMFeedCommentViewData?,
@@ -49,7 +49,7 @@ class LMFeedCommentViewData private constructor(
         private var user: LMFeedUserViewData = LMFeedUserViewData.Builder().build()
         private var createdAt: Long = 0
         private var updatedAt: Long = 0
-        private var menuItems: List<LMFeedOverflowMenuItemViewData> = listOf()
+        private var menuItems: List<LMFeedPostMenuItemViewData> = listOf()
         private var replies: MutableList<LMFeedCommentViewData> = mutableListOf()
         private var parentId: String? = null
         private var parentComment: LMFeedCommentViewData? = null
@@ -71,7 +71,7 @@ class LMFeedCommentViewData private constructor(
         fun user(user: LMFeedUserViewData) = apply { this.user = user }
         fun createdAt(createdAt: Long) = apply { this.createdAt = createdAt }
         fun updatedAt(updatedAt: Long) = apply { this.updatedAt = updatedAt }
-        fun menuItems(menuItems: List<LMFeedOverflowMenuItemViewData>) =
+        fun menuItems(menuItems: List<LMFeedPostMenuItemViewData>) =
             apply { this.menuItems = menuItems }
 
         fun parentId(parentId: String?) = apply { this.parentId = parentId }

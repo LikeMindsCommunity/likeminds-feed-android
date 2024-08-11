@@ -56,7 +56,9 @@ class LMFeedTextStyle private constructor(
     @DrawableRes val drawableTopSrc: Int?,
     @DrawableRes val drawableRightSrc: Int?,
     @DrawableRes val drawableBottomSrc: Int?,
-    @DimenRes val drawablePadding: Int?
+    @DimenRes val drawablePadding: Int?,
+    val expandableCTAText: String?,
+    @ColorRes val expandableCTAColor: Int?
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -104,6 +106,11 @@ class LMFeedTextStyle private constructor(
 
         @DimenRes
         private var drawablePadding: Int? = null
+
+        private var expandableCTAText: String? = null
+
+        @ColorRes
+        private var expandableCTAColor: Int? = null
 
         fun textColor(@ColorRes textColor: Int) = apply {
             this.textColor = textColor
@@ -181,6 +188,14 @@ class LMFeedTextStyle private constructor(
             this.drawablePadding = drawablePadding
         }
 
+        fun expandableCTAText(expandableCTAText: String?) = apply {
+            this.expandableCTAText = expandableCTAText
+        }
+
+        fun expandableCTAColor(@ColorRes expandableCTAColor: Int?) = apply {
+            this.expandableCTAColor = expandableCTAColor
+        }
+
         fun build() = LMFeedTextStyle(
             textColor,
             textSize,
@@ -200,7 +215,9 @@ class LMFeedTextStyle private constructor(
             drawableTopSrc,
             drawableRightSrc,
             drawableBottomSrc,
-            drawablePadding
+            drawablePadding,
+            expandableCTAText,
+            expandableCTAColor
         )
     }
 
@@ -224,6 +241,8 @@ class LMFeedTextStyle private constructor(
             .drawableRightSrc(drawableRightSrc)
             .drawableBottomSrc(drawableRightSrc)
             .drawablePadding(drawablePadding)
+            .expandableCTAText(expandableCTAText)
+            .expandableCTAColor(expandableCTAColor)
     }
 
     // applies the [LMFeedTextStyle] to [LMFeedTextView]
@@ -246,7 +265,7 @@ class LMFeedTextStyle private constructor(
         applyImpl(lmFeedFAB)
     }
 
-    fun apply(lmFeedSwitch: LMFeedSwitch){
+    fun apply(lmFeedSwitch: LMFeedSwitch) {
         applyImpl(lmFeedSwitch)
     }
 

@@ -3,7 +3,7 @@
 -keep class com.likeminds.feed.android.core.activityfeed.model.** { *; }
 -keep class com.likeminds.feed.android.core.delete.model.** { *; }
 -keep class com.likeminds.feed.android.core.likes.model.** { *; }
--keep class com.likeminds.feed.android.core.overflowmenu.model.** { *; }
+-keep class com.likeminds.feed.android.core.postmenu.model.** { *; }
 -keep class com.likeminds.feed.android.core.poll.create.model.** { *; }
 -keep class com.likeminds.feed.android.core.poll.result.model.** { *; }
 -keep class com.likeminds.feed.android.core.post.model.** { *; }
@@ -16,7 +16,7 @@
 -keep class com.likeminds.feed.android.core.topicselection.model.** { *; }
 -keep class com.likeminds.feed.android.core.ui.theme.model.** { *; }
 -keep class com.likeminds.feed.android.core.ui.widgets.poll.model.** { *; }
--keep class com.likeminds.feed.android.core.universalfeed.model.** { *; }
+-keep class com.likeminds.feed.android.core.socialfeed.model.** { *; }
 -keep class com.likeminds.feed.android.core.utils.base.model.** { *; }
 -keep class com.likeminds.feed.android.core.utils.pluralize.model.** { *; }
 
