@@ -34,7 +34,7 @@ class LMFeedVideoView @JvmOverloads constructor(
     private var progressBar: LMFeedProgressBar? = null
     private var thumbnailView: LMFeedImageView? = null
 
-    private var lastPos: Long = 0
+//    private var lastPos: Long = 0
 
     init {
         descendantFocusability = FOCUS_AFTER_DESCENDANTS
@@ -113,7 +113,7 @@ class LMFeedVideoView @JvmOverloads constructor(
 
         val mediaSource = createCachedMediaSource(context.applicationContext, videoUri)
         exoPlayer.setMediaSource(mediaSource)
-        exoPlayer.seekTo(lastPos)
+//        exoPlayer.seekTo(lastPos)
         exoPlayer.playWhenReady = true
         exoPlayer.prepare()
     }
@@ -170,7 +170,7 @@ class LMFeedVideoView @JvmOverloads constructor(
 
         val mediaSource = MediaItem.fromUri(videoUri)
         exoPlayer.setMediaItem(mediaSource)
-        exoPlayer.seekTo(lastPos)
+//        exoPlayer.seekTo(lastPos)
         exoPlayer.playWhenReady = true
         exoPlayer.prepare()
     }
@@ -186,7 +186,7 @@ class LMFeedVideoView @JvmOverloads constructor(
      */
     fun removePlayer() {
         exoPlayer.playWhenReady = false
-        lastPos = exoPlayer.currentPosition
+//        lastPos = exoPlayer.currentPosition
         exoPlayer.stop()
     }
 
