@@ -68,12 +68,15 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
                 }, executeBinder = {}
             )
 
+            //get custom widget attachment
             val customWidgetData = data.mediaViewData.attachments.find {
                 it.attachmentType == CUSTOM_WIDGET
             }
             if (customWidgetData != null) {
+                //get widget metadata
                 val widgetData = customWidgetData.attachmentMeta.widgetViewData
                 if (widgetData != null) {
+                    //convert metadata to string
                     val metadata = widgetData.metadata.toString()
                     binding.tvPostCw.show()
                     binding.tvPostCw.text = metadata

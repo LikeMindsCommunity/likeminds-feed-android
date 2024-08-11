@@ -4,11 +4,4 @@ import com.likeminds.feed.android.core.universalfeed.view.LMFeedUniversalFeedFra
 import com.likeminds.feed.android.core.universalfeed.view.LMFeedUniversalFeedListView
 
 class CustomLMUniversalFeedAdminFragment : LMFeedUniversalFeedFragment() {
-    override fun customizeUniversalFeedListView(rvUniversal: LMFeedUniversalFeedListView) {
-//        val abcCustomViewDataBinder = ABCCustomViewDataBinder()
-//        rvUniversal.universalFeedAdapter.replaceViewDataBinder(
-//            ITEM_POST_CUSTOM_WIDGET,
-//            abcCustomViewDataBinder
-//        )
-    }
 }
