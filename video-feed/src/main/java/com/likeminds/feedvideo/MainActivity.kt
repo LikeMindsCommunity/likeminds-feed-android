@@ -4,12 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.LMFeedCore
-import com.likeminds.feed.android.core.videofeed.view.LMFeedVideoFeedFragment
 import com.likeminds.feedvideo.LMVideoFeed.Companion.LM_VIDEO_FEED_TAG
 import com.likeminds.feedvideo.auth.util.LMVideoFeedAuthPreferences
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var lmVideoFeedAuthPreferences: LMVideoFeedAuthPreferences
@@ -38,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun replaceFragment() {
         val containerViewId = R.id.frame_layout
-        val fragment = LMFeedVideoFeedFragment()
+        val fragment = CustomVideoFeedFragment()
 
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(containerViewId, fragment, containerViewId.toString())

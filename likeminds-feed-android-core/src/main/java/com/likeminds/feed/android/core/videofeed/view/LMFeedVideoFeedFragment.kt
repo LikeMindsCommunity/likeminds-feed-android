@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.cache.CacheWriter
@@ -40,7 +41,7 @@ open class LMFeedVideoFeedFragment :
 
     private lateinit var binding: LmFeedFragmentVideoFeedBinding
 
-    private lateinit var videoFeedAdapter: LMFeedVideoFeedAdapter
+    lateinit var videoFeedAdapter: LMFeedVideoFeedAdapter
 
     private val videoFeedViewModel: LMFeedVideoFeedViewModel by viewModels()
 
@@ -65,6 +66,15 @@ open class LMFeedVideoFeedFragment :
     ): View {
         binding = LmFeedFragmentVideoFeedBinding.inflate(layoutInflater)
 
+        setupVideoFeed()
+        binding.apply {
+            customizeVideoFeedListView(binding.vp2VideoFeed, videoFeedAdapter)
+        }
+
+        return binding.root
+    }
+
+    private fun setupVideoFeed() {
         binding.vp2VideoFeed.apply {
             for (i in 0 until childCount) {
                 if (getChildAt(i) is RecyclerView) {
@@ -76,10 +86,8 @@ open class LMFeedVideoFeedFragment :
                 }
             }
         }
-
+        videoFeedAdapter = LMFeedVideoFeedAdapter(this)
         setVerticalVideoPostViewStyle()
-
-        return binding.root
     }
 
     //sets view style to vertical video post
@@ -143,6 +151,13 @@ open class LMFeedVideoFeedFragment :
             .build()
     }
 
+    protected open fun customizeVideoFeedListView(
+        vp2VideoFeed: ViewPager2,
+        videoFeedAdapter: LMFeedVideoFeedAdapter
+    ) {
+        //customize video feed view here
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -159,8 +174,6 @@ open class LMFeedVideoFeedFragment :
 
     //initializes the view pager
     private fun initViewPager() {
-        videoFeedAdapter = LMFeedVideoFeedAdapter(this)
-
         binding.vp2VideoFeed.apply {
             registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
