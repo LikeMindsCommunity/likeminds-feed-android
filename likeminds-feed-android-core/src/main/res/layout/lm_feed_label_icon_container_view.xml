@@ -15,7 +15,7 @@
             android:layout_marginTop="@dimen/lm_feed_label_icon_container_top_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/lm_feed_ic_delete" />
+            tools:srcCompat="@drawable/lm_feed_ic_delete" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_container_label"
