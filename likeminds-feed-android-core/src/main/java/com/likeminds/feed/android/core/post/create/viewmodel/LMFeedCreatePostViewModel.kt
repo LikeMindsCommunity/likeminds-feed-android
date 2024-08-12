@@ -14,6 +14,7 @@ import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedKeys
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.feed.android.core.utils.membertagging.MemberTaggingUtil
@@ -267,7 +268,15 @@ class LMFeedCreatePostViewModel : ViewModel() {
                     )
                     _postAdded.postValue(true)
                 } else {
-                    errorEventChannel.send(ErrorMessageEvent.AddPost(response.errorMessage))
+                    val errorMessage = response.errorMessage
+
+                    sendPostCreationFailedEvent(
+                        updatedText,
+                        ogTags,
+                        selectedTopics,
+                        errorMessage
+                    )
+                    errorEventChannel.send(ErrorMessageEvent.AddPost(errorMessage))
                 }
             }
         }
@@ -428,7 +437,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
         if (!topics.isNullOrEmpty()) {
             val topicsNameString = topics.joinToString(", ") { it.name }
             map["topics_added"] = "yes"
-            map["topics"] = topicsNameString
+            map[LMFeedKeys.POST_TOPICS] = topicsNameString
         } else {
             map["topics_added"] = "no"
         }
@@ -437,8 +446,62 @@ class LMFeedCreatePostViewModel : ViewModel() {
         map["video_attached"] = "no"
         map["document_attached"] = "no"
 
+        map[LMFeedKeys.SCREEN_NAME] = LMFeedScreenNames.CREATE_POST
+
         LMFeedAnalytics.track(
             LMFeedAnalytics.LMFeedEvents.POST_CREATION_COMPLETED,
+            map
+        )
+    }
+
+    /**
+     * Triggers when the user opens post is not created successfully
+     **/
+    private fun sendPostCreationFailedEvent(
+        postText: String?,
+        ogTags: LMFeedLinkOGTagsViewData?,
+        topics: List<LMFeedTopicViewData>?,
+        errorMessage: String?
+    ) {
+        val map = hashMapOf<String, String>()
+        val taggedUsers = UserTaggingDecoder.decodeAndReturnAllTaggedMembers(postText)
+
+        if (taggedUsers.isNotEmpty()) {
+            map["user_tagged"] = "yes"
+            map["tagged_users_count"] = taggedUsers.size.toString()
+            val taggedUserIds =
+                taggedUsers.joinToString {
+                    it.first
+                }
+            map["tagged_users_uuid"] = taggedUserIds
+        } else {
+            map["user_tagged"] = "no"
+        }
+
+        if (ogTags != null) {
+            map["link_attached"] = "yes"
+            map["link"] = ogTags.url ?: ""
+        } else {
+            map["link_attached"] = "no"
+        }
+
+        if (!topics.isNullOrEmpty()) {
+            val topicsNameString = topics.joinToString(", ") { it.name }
+            map["topics_added"] = "yes"
+            map[LMFeedKeys.POST_TOPICS] = topicsNameString
+        } else {
+            map["topics_added"] = "no"
+        }
+
+        map["image_attached"] = "no"
+        map["video_attached"] = "no"
+        map["document_attached"] = "no"
+        map["error_message"] = errorMessage ?: "Something went wrong!"
+
+        map[LMFeedKeys.SCREEN_NAME] = LMFeedScreenNames.CREATE_POST
+
+        LMFeedAnalytics.track(
+            LMFeedAnalytics.LMFeedEvents.POST_CREATION_ERROR,
             map
         )
     }
@@ -452,10 +515,11 @@ class LMFeedCreatePostViewModel : ViewModel() {
             LMFeedAnalytics.LMFeedEvents.CLICKED_ON_ATTACHMENT,
             mapOf(
                 "type" to type,
-                "screen_name" to LMFeedScreenNames.CREATE_POST
+                LMFeedKeys.SCREEN_NAME to LMFeedScreenNames.CREATE_POST
             )
         )
     }
+
     /**
      * Triggers event when the user clicks on add more attachment
      * @param type - type of attachment
@@ -465,7 +529,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
             LMFeedAnalytics.LMFeedEvents.ADD_MORE_ATTACHMENT,
             mapOf(
                 "type" to type,
-                "screen_name" to LMFeedScreenNames.CREATE_POST
+                LMFeedKeys.SCREEN_NAME to LMFeedScreenNames.CREATE_POST
             )
         )
     }
@@ -511,7 +575,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
             LMFeedAnalytics.LMFeedEvents.IMAGE_ATTACHED_TO_POST,
             mapOf(
                 "image_count" to imageCount.toString(),
-                "screen_name" to LMFeedScreenNames.CREATE_POST
+                LMFeedKeys.SCREEN_NAME to LMFeedScreenNames.CREATE_POST
             )
         )
     }
@@ -525,7 +589,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
             LMFeedAnalytics.LMFeedEvents.VIDEO_ATTACHED_TO_POST,
             mapOf(
                 "video_count" to videoCount.toString(),
-                "screen_name" to LMFeedScreenNames.CREATE_POST
+                LMFeedKeys.SCREEN_NAME to LMFeedScreenNames.CREATE_POST
             )
         )
     }
@@ -539,7 +603,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
             LMFeedAnalytics.LMFeedEvents.DOCUMENT_ATTACHED_TO_POST,
             mapOf(
                 "document_count" to documentCount.toString(),
-                "screen_name" to LMFeedScreenNames.CREATE_POST
+                LMFeedKeys.SCREEN_NAME to LMFeedScreenNames.CREATE_POST
             )
         )
     }

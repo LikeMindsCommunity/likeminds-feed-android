@@ -4,8 +4,12 @@ import android.util.Log
 import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
+import com.likeminds.feed.android.core.post.model.IMAGE
+import com.likeminds.feed.android.core.post.model.VIDEO
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
+import com.likeminds.feed.android.core.utils.base.model.*
+import com.likeminds.usertagging.util.UserTaggingDecoder
 
 object LMFeedAnalytics {
 
@@ -22,6 +26,7 @@ object LMFeedAnalytics {
         const val VIDEO_ATTACHED_TO_POST = "video_attached_to_post"
         const val DOCUMENT_ATTACHED_TO_POST = "document_attached_in_post"
         const val POST_CREATION_COMPLETED = "post_creation_completed"
+        const val POST_CREATION_ERROR = "post_creation_error"
         const val POST_PINNED = "post_pinned"
         const val POST_UNPINNED = "post_unpinned"
         const val POST_REPORTED = "post_reported"
@@ -54,7 +59,7 @@ object LMFeedAnalytics {
     /*
     * Event keys variables
     * */
-    object Keys {
+    object LMFeedKeys {
         const val POST_ID = "post_id"
         const val UUID = "uuid"
         const val COMMENT_ID = "comment_id"
@@ -65,12 +70,15 @@ object LMFeedAnalytics {
         const val POST_TYPE_IMAGE_VIDEO = "image,video"
         const val POST_TYPE_DOCUMENT = "document"
         const val POST_TYPE_LINK = "link"
+        const val SCREEN_NAME = "screen_name"
+        const val POST_CREATED_BY_UUID = "post_created_by_uuid"
+        const val POST_TOPICS = "post_topics"
     }
 
     /**
      * Source keys variables
      **/
-    object Source {
+    object LMFeedSource {
         const val DEEP_LINK = "deep_link"
         const val NOTIFICATION = "notification"
         const val SOCIAL_FEED = "social_feed"
@@ -136,7 +144,7 @@ object LMFeedAnalytics {
     fun sendPostCreationStartedEvent(screenName: String) {
         track(
             LMFeedEvents.POST_CREATION_STARTED, mapOf(
-                "screen_name" to screenName
+                LMFeedKeys.SCREEN_NAME to screenName
             )
         )
     }
@@ -158,8 +166,8 @@ object LMFeedAnalytics {
         track(
             event,
             mapOf(
-                Keys.UUID to uuid,
-                Keys.POST_ID to postId
+                LMFeedKeys.UUID to uuid,
+                LMFeedKeys.POST_ID to postId
             )
         )
     }
@@ -181,8 +189,8 @@ object LMFeedAnalytics {
         track(
             event,
             mapOf(
-                Keys.UUID to uuid,
-                Keys.POST_ID to postId
+                LMFeedKeys.UUID to uuid,
+                LMFeedKeys.POST_ID to postId
             )
         )
     }
@@ -190,7 +198,7 @@ object LMFeedAnalytics {
     /**
      * Triggers when the current user pins/unpins a post
      */
-    fun sendPostPinnedEvent(post: LMFeedPostViewData) {
+    fun sendPostPinnedEvent(post: LMFeedPostViewData, screenName: String) {
         val headerViewData = post.headerViewData
         val event = if (headerViewData.isPinned) {
             LMFeedEvents.POST_PINNED
@@ -198,12 +206,16 @@ object LMFeedAnalytics {
             LMFeedEvents.POST_UNPINNED
         }
 
+        val topicNames = post.topicsViewData.joinToString(",")
+
         track(
             event,
             mapOf(
-                Keys.UUID to headerViewData.user.sdkClientInfoViewData.uuid,
-                Keys.POST_ID to post.id,
+                LMFeedKeys.POST_CREATED_BY_UUID to headerViewData.user.sdkClientInfoViewData.uuid,
+                LMFeedKeys.POST_ID to post.id,
                 "post_type" to LMFeedViewUtils.getPostTypeFromViewType(post.viewType),
+                LMFeedKeys.POST_TOPICS to topicNames,
+                LMFeedKeys.SCREEN_NAME to screenName
             )
         )
     }
@@ -226,7 +238,7 @@ object LMFeedAnalytics {
             LMFeedEvents.POST_SHARED,
             mapOf(
                 "created_by_uuid" to postCreatorUUID,
-                Keys.POST_ID to post.id,
+                LMFeedKeys.POST_ID to post.id,
                 "post_type" to postType,
             )
         )
@@ -236,15 +248,12 @@ object LMFeedAnalytics {
      * Triggers when the user edits a post
      **/
     fun sendPostEditedEvent(post: LMFeedPostViewData) {
-        val postType = LMFeedViewUtils.getPostTypeFromViewType(post.viewType)
-        val postCreatorUUID = post.headerViewData.user.sdkClientInfoViewData.uuid
+        val map = getPostMetaAnalytics(post)
+        map["created_by_uuid"] = post.headerViewData.user.sdkClientInfoViewData.uuid
+
         track(
             LMFeedEvents.POST_EDITED,
-            mapOf(
-                "created_by_uuid" to postCreatorUUID,
-                Keys.POST_ID to post.id,
-                "post_type" to postType,
-            )
+            map
         )
     }
 
@@ -257,7 +266,7 @@ object LMFeedAnalytics {
             LMFeedEvents.LINK_ATTACHED_IN_POST,
             mapOf(
                 "link" to link,
-                "screen_name" to screenName
+                LMFeedKeys.SCREEN_NAME to screenName
             )
         )
     }
@@ -279,8 +288,8 @@ object LMFeedAnalytics {
         val postCreatorUUID = post.headerViewData.user.sdkClientInfoViewData.uuid
         val map = mapOf(
             "user_state" to userStateString,
-            Keys.UUID to postCreatorUUID,
-            Keys.POST_ID to post.id,
+            LMFeedKeys.UUID to postCreatorUUID,
+            LMFeedKeys.POST_ID to post.id,
             "post_type" to LMFeedViewUtils.getPostTypeFromViewType(post.viewType),
         )
         track(
@@ -302,8 +311,8 @@ object LMFeedAnalytics {
             track(
                 LMFeedEvents.COMMENT_DELETED,
                 mapOf(
-                    Keys.POST_ID to postId,
-                    Keys.COMMENT_ID to commentId
+                    LMFeedKeys.POST_ID to postId,
+                    LMFeedKeys.COMMENT_ID to commentId
                 )
             )
         } else {
@@ -311,9 +320,9 @@ object LMFeedAnalytics {
             track(
                 LMFeedEvents.REPLY_DELETED,
                 mapOf(
-                    Keys.POST_ID to postId,
-                    Keys.COMMENT_ID to parentCommentId,
-                    Keys.COMMENT_REPLY_ID to commentId,
+                    LMFeedKeys.POST_ID to postId,
+                    LMFeedKeys.COMMENT_ID to parentCommentId,
+                    LMFeedKeys.COMMENT_REPLY_ID to commentId,
                 )
             )
         }
@@ -331,10 +340,10 @@ object LMFeedAnalytics {
         track(
             LMFeedEvents.REPLY_POSTED,
             mapOf(
-                Keys.UUID to parentCommentCreatorUUID,
-                Keys.POST_ID to postId,
-                Keys.COMMENT_ID to parentCommentId,
-                Keys.COMMENT_REPLY_ID to commentId
+                LMFeedKeys.UUID to parentCommentCreatorUUID,
+                LMFeedKeys.POST_ID to postId,
+                LMFeedKeys.COMMENT_ID to parentCommentId,
+                LMFeedKeys.COMMENT_REPLY_ID to commentId
             )
         )
     }
@@ -346,8 +355,8 @@ object LMFeedAnalytics {
         track(
             LMFeedEvents.COMMENT_POSTED,
             mapOf(
-                Keys.POST_ID to postId,
-                Keys.COMMENT_ID to commentId
+                LMFeedKeys.POST_ID to postId,
+                LMFeedKeys.COMMENT_ID to commentId
             )
         )
     }
@@ -370,9 +379,9 @@ object LMFeedAnalytics {
         track(
             event,
             mapOf(
-                Keys.UUID to loggedInUUID,
-                Keys.POST_ID to postId,
-                Keys.COMMENT_ID to commentId,
+                LMFeedKeys.UUID to loggedInUUID,
+                LMFeedKeys.POST_ID to postId,
+                LMFeedKeys.COMMENT_ID to commentId,
             )
         )
     }
@@ -385,7 +394,7 @@ object LMFeedAnalytics {
             LMFeedEvents.COMMENT_EDITED,
             mapOf(
                 "created_by_uuid" to comment.user.sdkClientInfoViewData.uuid,
-                Keys.COMMENT_ID to comment.id,
+                LMFeedKeys.COMMENT_ID to comment.id,
                 "level" to comment.level.toString()
             )
         )
@@ -404,7 +413,7 @@ object LMFeedAnalytics {
             LMFeedEvents.POST_REPORTED,
             mapOf(
                 "created_by_uuid" to uuid,
-                Keys.POST_ID to postId,
+                LMFeedKeys.POST_ID to postId,
                 "report_reason" to reason,
                 "post_type" to postType,
             )
@@ -423,9 +432,9 @@ object LMFeedAnalytics {
         track(
             LMFeedEvents.COMMENT_REPORTED,
             mapOf(
-                Keys.POST_ID to postId,
-                Keys.UUID to uuid,
-                Keys.COMMENT_ID to commentId,
+                LMFeedKeys.POST_ID to postId,
+                LMFeedKeys.UUID to uuid,
+                LMFeedKeys.COMMENT_ID to commentId,
                 "reason" to reason,
             )
         )
@@ -445,10 +454,10 @@ object LMFeedAnalytics {
         track(
             LMFeedEvents.REPLY_REPORTED,
             mapOf(
-                Keys.POST_ID to postId,
-                Keys.COMMENT_ID to updatedParentId,
-                Keys.COMMENT_REPLY_ID to replyId,
-                Keys.UUID to uuid,
+                LMFeedKeys.POST_ID to postId,
+                LMFeedKeys.COMMENT_ID to updatedParentId,
+                LMFeedKeys.COMMENT_REPLY_ID to replyId,
+                LMFeedKeys.UUID to uuid,
                 "reason" to reason,
             )
         )
@@ -462,9 +471,9 @@ object LMFeedAnalytics {
         commentId: String?
     ) {
         val map = hashMapOf<String, String>()
-        map[Keys.POST_ID] = postId
+        map[LMFeedKeys.POST_ID] = postId
         if (commentId != null) {
-            map[Keys.COMMENT_ID] = commentId
+            map[LMFeedKeys.COMMENT_ID] = commentId
         }
         track(
             LMFeedEvents.LIKE_LIST_OPEN,
@@ -491,9 +500,123 @@ object LMFeedAnalytics {
             mapOf(
                 "tagged_user_uuid" to uuid,
                 "tagged_user_count" to userCount.toString(),
-                "screen_name" to screenName
+                LMFeedKeys.SCREEN_NAME to screenName
             )
         )
+    }
+
+    /**
+     * Get meta analytics for post
+     * @param post - view data of post
+     * @return - a map of event key and value
+     */
+    fun getPostMetaAnalytics(post: LMFeedPostViewData): HashMap<String, String> {
+        val map = hashMapOf<String, String>()
+        // fetches list of tagged users
+        val taggedUsers =
+            UserTaggingDecoder.decodeAndReturnAllTaggedMembers(post.contentViewData.text)
+        val topics = post.topicsViewData
+
+        // adds tagged user count and their ids in the map
+        if (taggedUsers.isNotEmpty()) {
+            map["user_tagged"] = "yes"
+            map["tagged_users_count"] = taggedUsers.size.toString()
+            val taggedUserIds =
+                taggedUsers.joinToString {
+                    it.first
+                }
+            map["tagged_users_id"] = taggedUserIds
+        } else {
+            map["user_tagged"] = "no"
+        }
+
+        if (topics.isNotEmpty()) {
+            val topicsNameString = topics.joinToString(", ") { it.name }
+            map["topics_added"] = "yes"
+            map["post_topics"] = topicsNameString
+        } else {
+            map["topics_added"] = "no"
+        }
+
+        // gets event property key and corresponding value for post attachments
+        val attachmentInfo = getEventAttachmentInfo(post)
+        attachmentInfo.forEach {
+            map[it.first] = it.second
+        }
+
+        return map
+    }
+
+    /**
+     * @param post - view data of post
+     * @return - a list of pair of event key and value
+     * */
+    private fun getEventAttachmentInfo(post: LMFeedPostViewData): List<Pair<String, String>> {
+        val attachments = post.mediaViewData.attachments
+
+        return when (post.viewType) {
+            ITEM_POST_SINGLE_IMAGE -> {
+                listOf(
+                    Pair("image_attached", "1"),
+                    Pair("video_attached", "no"),
+                    Pair("document_attached", "no"),
+                    Pair("link_attached", "no")
+                )
+            }
+
+            ITEM_POST_SINGLE_VIDEO -> {
+                listOf(
+                    Pair("video_attached", "1"),
+                    Pair("image_attached", "no"),
+                    Pair("document_attached", "no"),
+                    Pair("link_attached", "no")
+                )
+            }
+
+            ITEM_POST_DOCUMENTS -> {
+                listOf(
+                    Pair("video_attached", "no"),
+                    Pair("image_attached", "no"),
+                    Pair("document_attached", attachments.size.toString()),
+                    Pair("link_attached", "no")
+                )
+            }
+
+            ITEM_POST_MULTIPLE_MEDIA -> {
+                val imageCount = attachments.count {
+                    it.attachmentType == IMAGE
+                }
+                val imageCountString = if (imageCount == 0) {
+                    "no"
+                } else {
+                    imageCount.toString()
+                }
+                val videoCount = attachments.count {
+                    it.attachmentType == VIDEO
+                }
+                val videoCountString = if (videoCount == 0) {
+                    "no"
+                } else {
+                    videoCount.toString()
+                }
+                listOf(
+                    Pair(
+                        "image_attached",
+                        imageCountString
+                    ),
+                    Pair(
+                        "video_attached",
+                        videoCountString
+                    ),
+                    Pair("document_attached", "no"),
+                    Pair("link_attached", "no")
+                )
+            }
+
+            else -> {
+                return emptyList()
+            }
+        }
     }
 
 }

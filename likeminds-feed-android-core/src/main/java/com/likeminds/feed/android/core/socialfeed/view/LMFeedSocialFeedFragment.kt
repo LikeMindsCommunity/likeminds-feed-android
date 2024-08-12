@@ -1386,7 +1386,7 @@ open class LMFeedSocialFeedFragment :
                     LMFeedAnalytics.sendPostCreationStartedEvent(LMFeedScreenNames.UNIVERSAL_FEED)
 
                     val createPostExtras = LMFeedCreatePostExtras.Builder()
-                        .source(LMFeedAnalytics.Source.SOCIAL_FEED)
+                        .source(LMFeedAnalytics.LMFeedSource.SOCIAL_FEED)
                         .build()
 
                     val intent = LMFeedCreatePostActivity.getIntent(

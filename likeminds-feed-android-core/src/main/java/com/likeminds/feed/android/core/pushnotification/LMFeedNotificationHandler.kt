@@ -170,7 +170,7 @@ class LMFeedNotificationHandler {
             context,
             route,
             0,
-            LMFeedAnalytics.Source.NOTIFICATION
+            LMFeedAnalytics.LMFeedSource.NOTIFICATION
         )
 
         if (intent?.getBundleExtra("lm_feed_bundle") != null) {

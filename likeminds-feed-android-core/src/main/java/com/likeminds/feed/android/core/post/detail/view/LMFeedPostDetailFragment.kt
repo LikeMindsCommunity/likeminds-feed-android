@@ -258,8 +258,8 @@ open class LMFeedPostDetailFragment :
         }
 
         //if source is notification/deep link, then call initiate first and then other apis
-        if (postDetailExtras.source == LMFeedAnalytics.Source.NOTIFICATION ||
-            postDetailExtras.source == LMFeedAnalytics.Source.DEEP_LINK
+        if (postDetailExtras.source == LMFeedAnalytics.LMFeedSource.NOTIFICATION ||
+            postDetailExtras.source == LMFeedAnalytics.LMFeedSource.DEEP_LINK
         ) {
             LMFeedCore.showFeed(
                 context = requireContext(),
@@ -965,8 +965,8 @@ open class LMFeedPostDetailFragment :
     private fun observeCommentsRightData() {
         postDetailViewModel.hasCommentRights.observe(viewLifecycleOwner) {
             //if source is notification/deep link, don't update comments right from here
-            if (postDetailExtras.source != LMFeedAnalytics.Source.NOTIFICATION &&
-                postDetailExtras.source != LMFeedAnalytics.Source.DEEP_LINK
+            if (postDetailExtras.source != LMFeedAnalytics.LMFeedSource.NOTIFICATION &&
+                postDetailExtras.source != LMFeedAnalytics.LMFeedSource.DEEP_LINK
             ) {
                 binding.commentComposer.setCommentRights(it)
             }
