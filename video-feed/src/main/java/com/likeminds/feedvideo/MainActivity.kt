@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun replaceFragment() {
         val containerViewId = R.id.frame_layout
-        val fragment = LMFeedVideoFeedFragment()
+        val fragment = CustomVideoFeedFragment()
 
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(containerViewId, fragment, containerViewId.toString())

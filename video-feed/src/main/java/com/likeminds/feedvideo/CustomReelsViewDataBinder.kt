@@ -16,8 +16,8 @@ import com.likeminds.feedvideo.databinding.ItemCustomReelsViewDataBinderBinding
 class CustomReelsViewDataBinder(
     private val postAdapterListener: LMFeedPostAdapterListener,
     private val investClickListener: InvestClickListener
-) :
-    PostItemViewDataBinder<ItemCustomReelsViewDataBinderBinding>() {
+) : PostItemViewDataBinder<ItemCustomReelsViewDataBinderBinding>() {
+
     override val viewType: Int
         get() = ITEM_POST_VIDEO_FEED
 
