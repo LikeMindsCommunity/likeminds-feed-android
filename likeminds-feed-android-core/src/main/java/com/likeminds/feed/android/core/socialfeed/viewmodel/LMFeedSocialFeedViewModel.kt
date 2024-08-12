@@ -10,8 +10,8 @@ import com.likeminds.feed.android.core.poll.util.LMFeedPollUtil
 import com.likeminds.feed.android.core.post.create.util.LMFeedPostAttachmentUploadWorker
 import com.likeminds.feed.android.core.post.model.IMAGE
 import com.likeminds.feed.android.core.post.model.VIDEO
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
@@ -20,11 +20,11 @@ import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.feed.model.GetFeedRequest
 import com.likeminds.likemindsfeed.poll.model.AddPollOptionRequest
 import com.likeminds.likemindsfeed.poll.model.SubmitVoteRequest
 import com.likeminds.likemindsfeed.post.model.*
 import com.likeminds.likemindsfeed.topic.model.GetTopicRequest
-import com.likeminds.likemindsfeed.universalfeed.model.GetFeedRequest
 import com.likeminds.usertagging.util.UserTaggingDecoder
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
