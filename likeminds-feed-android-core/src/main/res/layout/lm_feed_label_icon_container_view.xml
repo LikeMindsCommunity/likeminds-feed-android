@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
+            android:id="@+id/iv_container_icon"
+            android:layout_width="@dimen/lm_feed_standard_icon_size"
+            android:layout_height="@dimen/lm_feed_standard_icon_size"
+            android:layout_marginStart="@dimen/lm_feed_extra_large_margin"
+            android:layout_marginTop="@dimen/lm_feed_label_icon_container_top_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/lm_feed_ic_delete" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+            android:id="@+id/tv_container_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/lm_feed_container_label_margin_start"
+            app:layout_constraintBottom_toBottomOf="@id/iv_container_icon"
+            app:layout_constraintStart_toEndOf="@id/iv_container_icon"
+            app:layout_constraintTop_toTopOf="@id/iv_container_icon"
+            tools:text="Edit Post" />
+
+        <View
+            android:id="@+id/view_separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/lm_feed_small_separator_size"
+            android:layout_marginTop="@dimen/lm_feed_label_icon_container_top_margin"
+            android:background="@color/lm_feed_blue_separator"
+            app:layout_constraintTop_toBottomOf="@id/tv_container_label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
