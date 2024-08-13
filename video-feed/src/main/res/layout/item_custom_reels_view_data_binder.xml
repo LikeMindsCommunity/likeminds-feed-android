@@ -195,14 +195,13 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/lm_feed_small_padding"
                 android:scaleType="fitCenter"
-                android:tint="@color/lm_feed_white"
+                app:tint="@color/lm_feed_white"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="ContentDescription,UnusedAttribute"
-                tools:src="@drawable/lm_feed_ic_overflow_menu"
-                tools:visibility="visible" />
+                tools:src="@drawable/lm_feed_ic_overflow_menu" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
