@@ -100,7 +100,7 @@ class LMFeedNotificationHandler {
         }
 
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.NOTIFICATION_RECEIVED, hashMapOf(
+            LMFeedAnalytics.LMFeedEvents.NOTIFICATION_RECEIVED, hashMapOf(
                 Pair("payload", payloadJson.toString()),
                 Pair(LM_FEED_NOTIFICATION_CATEGORY, category),
                 Pair(LM_FEED_NOTIFICATION_SUBCATEGORY, subcategory)
@@ -170,7 +170,7 @@ class LMFeedNotificationHandler {
             context,
             route,
             0,
-            LMFeedAnalytics.Source.NOTIFICATION
+            LMFeedAnalytics.LMFeedSource.NOTIFICATION
         )
 
         if (intent?.getBundleExtra("lm_feed_bundle") != null) {

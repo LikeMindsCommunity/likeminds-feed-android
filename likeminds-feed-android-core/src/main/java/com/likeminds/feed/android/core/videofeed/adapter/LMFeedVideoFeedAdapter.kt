@@ -28,4 +28,9 @@ class LMFeedVideoFeedAdapter(
 
         return viewDataBinders
     }
+
+    //replace any view data binder provide by the customer
+    fun replaceViewDataBinder(viewType: Int, viewDataBinder: LMFeedViewDataBinder<*, *>) {
+        supportedViewBinderResolverMap.put(viewType, viewDataBinder)
+    }
 }

@@ -8,6 +8,7 @@ import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.feed.android.core.utils.membertagging.MemberTaggingUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
@@ -567,7 +568,7 @@ class LMFeedPostDetailViewModel : ViewModel() {
 
             if (response.success) {
                 //sends event for post pinned/unpinned
-                LMFeedAnalytics.sendPostPinnedEvent(postViewData)
+                LMFeedAnalytics.sendPostPinnedEvent(postViewData, LMFeedScreenNames.POST_DETAIL)
 
                 _postPinnedResponse.postValue(postViewData)
             } else {

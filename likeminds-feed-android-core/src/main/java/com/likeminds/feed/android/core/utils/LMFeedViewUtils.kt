@@ -109,31 +109,31 @@ object LMFeedViewUtils {
     fun getPostTypeFromViewType(postViewType: Int?): String {
         return when (postViewType) {
             ITEM_POST_TEXT_ONLY -> {
-                LMFeedAnalytics.Keys.POST_TYPE_TEXT
+                LMFeedAnalytics.LMFeedKeys.POST_TYPE_TEXT
             }
 
             ITEM_POST_SINGLE_IMAGE -> {
-                LMFeedAnalytics.Keys.POST_TYPE_IMAGE
+                LMFeedAnalytics.LMFeedKeys.POST_TYPE_IMAGE
             }
 
             ITEM_POST_SINGLE_VIDEO -> {
-                LMFeedAnalytics.Keys.POST_TYPE_VIDEO
+                LMFeedAnalytics.LMFeedKeys.POST_TYPE_VIDEO
             }
 
             ITEM_POST_DOCUMENTS -> {
-                LMFeedAnalytics.Keys.POST_TYPE_DOCUMENT
+                LMFeedAnalytics.LMFeedKeys.POST_TYPE_DOCUMENT
             }
 
             ITEM_POST_MULTIPLE_MEDIA -> {
-                LMFeedAnalytics.Keys.POST_TYPE_IMAGE_VIDEO
+                LMFeedAnalytics.LMFeedKeys.POST_TYPE_IMAGE_VIDEO
             }
 
             ITEM_POST_LINK -> {
-                LMFeedAnalytics.Keys.POST_TYPE_LINK
+                LMFeedAnalytics.LMFeedKeys.POST_TYPE_LINK
             }
 
             else -> {
-                LMFeedAnalytics.Keys.POST_TYPE_TEXT
+                LMFeedAnalytics.LMFeedKeys.POST_TYPE_TEXT
             }
         }
     }

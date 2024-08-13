@@ -5,5 +5,5 @@
     <stroke
         android:width="@dimen/lm_feed_poll_option_input_stroke_width"
         android:color="@color/lm_feed_cloudy_blue" />
-    <corners android:radius="@dimen/lm_feed_corner_radius_medium" />
+    <corners android:radius="8dp" />
 </shape>

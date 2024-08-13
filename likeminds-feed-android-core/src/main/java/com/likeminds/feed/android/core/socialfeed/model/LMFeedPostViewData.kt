@@ -57,7 +57,7 @@ class LMFeedPostViewData private constructor(
                 ITEM_POST_POLL
             }
 
-            (mediaViewData.attachments.size == 1 && mediaViewData.attachments.first().attachmentType == REEL) -> {
+            (mediaAttachments.size == 1 && mediaAttachments.first().attachmentType == REEL) -> {
                 ITEM_POST_VIDEO_FEED
             }
 

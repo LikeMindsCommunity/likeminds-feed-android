@@ -56,6 +56,7 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapital
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.membertagging.MemberTaggingUtil
@@ -327,7 +328,8 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                 super.onUserTagged(user)
                 LMFeedAnalytics.sendUserTagEvent(
                     user.uuid,
-                    memberTagging.getTaggedMemberCount()
+                    memberTagging.getTaggedMemberCount(),
+                    LMFeedScreenNames.CREATE_POST
                 )
             }
         }
@@ -640,7 +642,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private fun initLinkView(data: LMFeedLinkOGTagsViewData) {
         val link = data.url ?: ""
         // sends link attached event with the link
-        createPostViewModel.sendLinkAttachedEvent(link)
+        LMFeedAnalytics.sendLinkAttachedEvent(link,LMFeedScreenNames.CREATE_POST)
         binding.postLinkView.apply {
             show()
             setLinkImage(data.image)
@@ -716,7 +718,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
             multipleMediaView.hide()
             btnAddMoreMedia.setOnClickListener {
                 // sends clicked on attachment event for image and video
-                createPostViewModel.sendClickedOnAttachmentEvent(TYPE_OF_ATTACHMENT_CLICKED)
+                createPostViewModel.sendAddMoreAttachmentClicked(TYPE_OF_ATTACHMENT_CLICKED)
 
                 startCustomGallery(galleryLauncher, listOf(IMAGE, VIDEO))
             }
@@ -787,7 +789,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
 
             btnAddMoreMedia.setOnClickListener {
                 // sends clicked on attachment event for image and video
-                createPostViewModel.sendClickedOnAttachmentEvent(TYPE_OF_ATTACHMENT_CLICKED)
+                createPostViewModel.sendAddMoreAttachmentClicked(TYPE_OF_ATTACHMENT_CLICKED)
 
                 startCustomGallery(galleryLauncher, listOf(IMAGE, VIDEO))
             }
@@ -1048,7 +1050,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
 
             btnAddMoreMedia.setOnClickListener {
                 // sends clicked on attachment event for file
-                createPostViewModel.sendClickedOnAttachmentEvent("file")
+                createPostViewModel.sendAddMoreAttachmentClicked("file")
 
                 startCustomGallery(documentLauncher, listOf(PDF))
             }

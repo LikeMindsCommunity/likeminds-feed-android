@@ -8,24 +8,22 @@ import androidx.work.WorkManager
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.poll.util.LMFeedPollUtil
 import com.likeminds.feed.android.core.post.create.util.LMFeedPostAttachmentUploadWorker
-import com.likeminds.feed.android.core.post.model.IMAGE
-import com.likeminds.feed.android.core.post.model.VIDEO
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedKeys
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
-import com.likeminds.feed.android.core.utils.base.model.*
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.feed.model.GetFeedRequest
 import com.likeminds.likemindsfeed.poll.model.AddPollOptionRequest
 import com.likeminds.likemindsfeed.poll.model.SubmitVoteRequest
 import com.likeminds.likemindsfeed.post.model.*
 import com.likeminds.likemindsfeed.topic.model.GetTopicRequest
-import com.likeminds.likemindsfeed.universalfeed.model.GetFeedRequest
-import com.likeminds.usertagging.util.UserTaggingDecoder
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
@@ -219,7 +217,12 @@ class LMFeedSocialFeedViewModel : ViewModel() {
 
                 postDataEventChannel.send(PostDataEvent.PostResponseData(postViewData))
             } else {
-                errorMessageChannel.send(ErrorMessageEvent.AddPost(response.errorMessage))
+                val errorMessage = response.errorMessage
+
+                // sends post creation failed event
+                sendPostCreationFailedEvent(postingData, errorMessage)
+
+                errorMessageChannel.send(ErrorMessageEvent.AddPost(errorMessage))
             }
         }
     }
@@ -336,7 +339,7 @@ class LMFeedSocialFeedViewModel : ViewModel() {
 
             if (response.success) {
                 //sends event for pin/unpin post
-                LMFeedAnalytics.sendPostPinnedEvent(postViewData)
+                LMFeedAnalytics.sendPostPinnedEvent(postViewData, LMFeedScreenNames.UNIVERSAL_FEED)
 
                 _postPinnedResponse.postValue(postViewData)
             } else {
@@ -605,113 +608,27 @@ class LMFeedSocialFeedViewModel : ViewModel() {
     private fun sendPostCreationCompletedEvent(
         post: LMFeedPostViewData
     ) {
-        val map = hashMapOf<String, String>()
-        // fetches list of tagged users
-        val taggedUsers =
-            UserTaggingDecoder.decodeAndReturnAllTaggedMembers(post.contentViewData.text)
-        val topics = post.topicsViewData
-
-        // adds tagged user count and their ids in the map
-        if (taggedUsers.isNotEmpty()) {
-            map["user_tagged"] = "yes"
-            map["tagged_users_count"] = taggedUsers.size.toString()
-            val taggedUserIds =
-                taggedUsers.joinToString {
-                    it.first
-                }
-            map["tagged_users_id"] = taggedUserIds
-        } else {
-            map["user_tagged"] = "no"
-        }
-
-        if (topics.isNotEmpty()) {
-            val topicsNameString = topics.joinToString(", ") { it.name }
-            map["topics_added"] = "yes"
-            map["topics"] = topicsNameString
-        } else {
-            map["topics_added"] = "no"
-        }
-
-        // gets event property key and corresponding value for post attachments
-        val attachmentInfo = getEventAttachmentInfo(post)
-        attachmentInfo.forEach {
-            map[it.first] = it.second
-        }
         LMFeedAnalytics.track(
-            LMFeedAnalytics.Events.POST_CREATION_COMPLETED,
-            map
+            LMFeedAnalytics.LMFeedEvents.POST_CREATION_COMPLETED,
+            LMFeedAnalytics.getPostMetaAnalytics(post)
         )
     }
 
     /**
-     * @param post - view data of post
-     * @return - a list of pair of event key and value
-     * */
-    private fun getEventAttachmentInfo(post: LMFeedPostViewData): List<Pair<String, String>> {
-        val attachments = post.mediaViewData.attachments
+     * Triggers when the user opens post is created successfully
+     **/
+    private fun sendPostCreationFailedEvent(
+        post: LMFeedPostViewData,
+        errorMessage: String?
+    ) {
+        val map = LMFeedAnalytics.getPostMetaAnalytics(post)
 
-        return when (post.viewType) {
-            ITEM_POST_SINGLE_IMAGE -> {
-                listOf(
-                    Pair("image_attached", "1"),
-                    Pair("video_attached", "no"),
-                    Pair("document_attached", "no"),
-                    Pair("link_attached", "no")
-                )
-            }
+        map["error_message"] = errorMessage ?: "Something went wrong"
+        map[LMFeedKeys.SCREEN_NAME] = LMFeedScreenNames.UNIVERSAL_FEED
 
-            ITEM_POST_SINGLE_VIDEO -> {
-                listOf(
-                    Pair("video_attached", "1"),
-                    Pair("image_attached", "no"),
-                    Pair("document_attached", "no"),
-                    Pair("link_attached", "no")
-                )
-            }
-
-            ITEM_POST_DOCUMENTS -> {
-                listOf(
-                    Pair("video_attached", "no"),
-                    Pair("image_attached", "no"),
-                    Pair("document_attached", attachments.size.toString()),
-                    Pair("link_attached", "no")
-                )
-            }
-
-            ITEM_POST_MULTIPLE_MEDIA -> {
-                val imageCount = attachments.count {
-                    it.attachmentType == IMAGE
-                }
-                val imageCountString = if (imageCount == 0) {
-                    "no"
-                } else {
-                    imageCount.toString()
-                }
-                val videoCount = attachments.count {
-                    it.attachmentType == VIDEO
-                }
-                val videoCountString = if (videoCount == 0) {
-                    "no"
-                } else {
-                    videoCount.toString()
-                }
-                listOf(
-                    Pair(
-                        "image_attached",
-                        imageCountString
-                    ),
-                    Pair(
-                        "video_attached",
-                        videoCountString
-                    ),
-                    Pair("document_attached", "no"),
-                    Pair("link_attached", "no")
-                )
-            }
-
-            else -> {
-                return emptyList()
-            }
-        }
+        LMFeedAnalytics.track(
+            LMFeedAnalytics.LMFeedEvents.POST_CREATION_ERROR,
+            map
+        )
     }
 }

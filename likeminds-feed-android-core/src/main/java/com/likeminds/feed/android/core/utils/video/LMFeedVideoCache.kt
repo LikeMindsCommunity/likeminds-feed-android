@@ -20,7 +20,7 @@ class LMFeedVideoCache {
                 return sDownloadCache!!
             }
 
-            val exoPlayerCacheSize = 500 * 1024 * 1024.toLong()// Set the size of cache for video
+            val exoPlayerCacheSize = 750 * 1024 * 1024.toLong()// Set the size of cache for video
             val leastRecentlyUsedCacheEvictor =
                 LeastRecentlyUsedCacheEvictor(exoPlayerCacheSize)
             val exoDatabaseProvider = StandaloneDatabaseProvider(context)

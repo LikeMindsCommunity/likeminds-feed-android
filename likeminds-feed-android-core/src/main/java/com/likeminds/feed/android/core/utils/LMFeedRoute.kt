@@ -102,7 +102,7 @@ object LMFeedRoute {
             context,
             firstPath,
             0,
-            source = LMFeedAnalytics.Source.DEEP_LINK
+            source = LMFeedAnalytics.LMFeedSource.DEEP_LINK
         )
     }
 
