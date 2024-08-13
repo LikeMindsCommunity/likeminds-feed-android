@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.core.app.ActivityCompat
+import androidx.core.util.containsKey
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -216,10 +217,15 @@ open class LMFeedVideoFeedFragment :
             val page = response.first
             val posts = response.second
 
+            //add only those posts which are supported by the adapter
+            val finalPosts = posts.filter {
+                (videoFeedAdapter.supportedViewBinderResolverMap.containsKey(it.viewType))
+            }
+
             if (page == 1) {
-                checkPostsAndReplace(posts)
+                checkPostsAndReplace(finalPosts)
             } else {
-                videoFeedAdapter.addAll(posts)
+                videoFeedAdapter.addAll(finalPosts)
             }
         }
 
