@@ -437,8 +437,6 @@ open class LMFeedVideoFeedFragment :
             .menuItems(postViewData.headerViewData.menuItems)
             .build()
 
-        Log.d("PUI", "onPostActionMenuClicked: ${postMenuExtras.menuItems.size}")
-
         LMFeedPostMenuBottomSheetFragment.newInstance(childFragmentManager, postMenuExtras)
     }
 

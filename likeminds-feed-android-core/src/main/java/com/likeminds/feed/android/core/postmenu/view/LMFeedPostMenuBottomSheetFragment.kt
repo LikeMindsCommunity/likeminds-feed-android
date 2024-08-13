@@ -2,7 +2,6 @@ package com.likeminds.feed.android.core.postmenu.view
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -86,7 +85,6 @@ open class LMFeedPostMenuBottomSheetFragment :
     //initializes the menu list
     private fun initMenuList() {
         binding.rvMenu.apply {
-            Log.d("PUI", "initMenuList: ${postMenuExtras.menuItems.size}")
             setAdapter(this@LMFeedPostMenuBottomSheetFragment)
             replaceMenuItems(postMenuExtras.menuItems)
         }
