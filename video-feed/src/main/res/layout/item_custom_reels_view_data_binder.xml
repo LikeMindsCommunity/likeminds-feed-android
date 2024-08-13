@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-<!--    Rest of the layout-->
+    <!--    Rest of the layout-->
 
     <data>
 
@@ -109,6 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/lm_feed_medium_margin"
                 android:foreground="?selectableItemBackground"
+                android:textColor="@color/lm_feed_white"
                 android:textStyle="normal"
                 android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/iv_comment"
@@ -117,7 +118,6 @@
                 tools:fontFamily="@font/lm_feed_roboto"
                 tools:ignore="UnusedAttribute"
                 tools:text="31k"
-                tools:textColor="@color/lm_feed_grey"
                 tools:textSize="@dimen/lm_feed_text_medium" />
 
             <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
@@ -195,7 +195,8 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/lm_feed_small_padding"
                 android:scaleType="fitCenter"
-                android:visibility="gone"
+                android:tint="@color/lm_feed_white"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

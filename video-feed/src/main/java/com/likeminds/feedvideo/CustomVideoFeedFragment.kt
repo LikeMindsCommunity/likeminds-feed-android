@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.likeminds.feed.android.core.post.model.CUSTOM_WIDGET
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
@@ -23,11 +24,10 @@ class CustomVideoFeedFragment : LMFeedVideoFeedFragment(), InvestClickListener {
     }
 
     override fun onInvestIconClick(postViewData: LMFeedPostViewData) {
-        Log.d(
-            "PUI", """
-            postViewData: ${postViewData.id}
-        """.trimIndent()
-        )
+        val widgetViewData = postViewData.mediaViewData.attachments.firstOrNull {
+            it.attachmentType == CUSTOM_WIDGET
+        }?.attachmentMeta?.widgetViewData
+        Log.d("PUI", "widgetViewData ${widgetViewData?.metadata}")
     }
 
     override fun replaceVideoView(position: Int): LMFeedPostVerticalVideoMediaView? {
