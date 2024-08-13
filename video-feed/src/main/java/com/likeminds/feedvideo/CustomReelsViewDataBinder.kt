@@ -16,7 +16,7 @@ import com.likeminds.feedvideo.databinding.ItemCustomReelsViewDataBinderBinding
 class CustomReelsViewDataBinder(
     private val postAdapterListener: LMFeedPostAdapterListener,
     private val investClickListener: InvestClickListener
-) : PostItemViewDataBinder<ItemCustomReelsViewDataBinderBinding>() {
+) : PostItemViewDataBinder<ItemCustomReelsViewDataBinderBinding>(postAdapterListener) {
 
     override val viewType: Int
         get() = ITEM_POST_VIDEO_FEED
@@ -40,10 +40,37 @@ class CustomReelsViewDataBinder(
 
             postVideoView.setStyle(postVerticalVideoMediaStyle)
 
-            setClickListeners(this)
+            setListener(this)
         }
 
         return binding
+    }
+
+    fun setListener(
+        binding: ItemCustomReelsViewDataBinderBinding,
+    ) {
+        binding.apply {
+            postHeader.setAuthorFrameClickListener {
+                val post = this.postViewData ?: return@setAuthorFrameClickListener
+                postAdapterListener.onPostAuthorHeaderClicked(position, post)
+            }
+
+            ivLike.setOnClickListener {
+                val post = this.postViewData ?: return@setOnClickListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
+                postAdapterListener.onPostLikeClicked(position, updatedPost)
+            }
+
+            ivPostMenu.setOnClickListener {
+                val post = this.postViewData ?: return@setOnClickListener
+                postAdapterListener.onPostActionMenuClicked(position, post)
+            }
+
+            ivInvest.setOnClickListener {
+                val post = this.postViewData ?: return@setOnClickListener
+                investClickListener.onInvestIconClick(post)
+            }
+        }
     }
 
     override fun bindData(
@@ -94,31 +121,6 @@ class CustomReelsViewDataBinder(
                     return@setPostBindData
                 }, executeBinder = {}
             )
-        }
-    }
-
-    private fun setClickListeners(binding: ItemCustomReelsViewDataBinderBinding) {
-        binding.apply {
-            postHeader.setAuthorFrameClickListener {
-                val post = this.postViewData ?: return@setAuthorFrameClickListener
-                postAdapterListener.onPostAuthorHeaderClicked(position, post)
-            }
-
-            ivLike.setOnClickListener {
-                val post = this.postViewData ?: return@setOnClickListener
-                val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
-                postAdapterListener.onPostLikeClicked(position, updatedPost)
-            }
-
-            ivPostMenu.setOnClickListener {
-                val post = this.postViewData ?: return@setOnClickListener
-                postAdapterListener.onPostActionMenuClicked(position, post)
-            }
-
-            ivInvest.setOnClickListener {
-                val post = this.postViewData ?: return@setOnClickListener
-                investClickListener.onInvestIconClick(post)
-            }
         }
     }
 }

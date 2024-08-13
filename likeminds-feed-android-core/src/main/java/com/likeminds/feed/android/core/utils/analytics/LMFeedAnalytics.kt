@@ -73,6 +73,7 @@ object LMFeedAnalytics {
         const val SCREEN_NAME = "screen_name"
         const val POST_CREATED_BY_UUID = "post_created_by_uuid"
         const val POST_TOPICS = "post_topics"
+        const val POST_TYPE = "post_type"
     }
 
     /**
@@ -213,7 +214,7 @@ object LMFeedAnalytics {
             mapOf(
                 LMFeedKeys.POST_CREATED_BY_UUID to headerViewData.user.sdkClientInfoViewData.uuid,
                 LMFeedKeys.POST_ID to post.id,
-                "post_type" to LMFeedViewUtils.getPostTypeFromViewType(post.viewType),
+                LMFeedKeys.POST_TYPE to LMFeedViewUtils.getPostTypeFromViewType(post.viewType),
                 LMFeedKeys.POST_TOPICS to topicNames,
                 LMFeedKeys.SCREEN_NAME to screenName
             )
@@ -239,7 +240,7 @@ object LMFeedAnalytics {
             mapOf(
                 "created_by_uuid" to postCreatorUUID,
                 LMFeedKeys.POST_ID to post.id,
-                "post_type" to postType,
+                LMFeedKeys.POST_TYPE to postType,
             )
         )
     }
@@ -290,7 +291,7 @@ object LMFeedAnalytics {
             "user_state" to userStateString,
             LMFeedKeys.UUID to postCreatorUUID,
             LMFeedKeys.POST_ID to post.id,
-            "post_type" to LMFeedViewUtils.getPostTypeFromViewType(post.viewType),
+            LMFeedKeys.POST_TYPE to LMFeedViewUtils.getPostTypeFromViewType(post.viewType),
         )
         track(
             LMFeedEvents.POST_DELETED,
@@ -412,10 +413,10 @@ object LMFeedAnalytics {
         track(
             LMFeedEvents.POST_REPORTED,
             mapOf(
-                "created_by_uuid" to uuid,
+                LMFeedKeys.POST_CREATED_BY_UUID to uuid,
                 LMFeedKeys.POST_ID to postId,
                 "report_reason" to reason,
-                "post_type" to postType,
+                LMFeedKeys.POST_TYPE to postType,
             )
         )
     }

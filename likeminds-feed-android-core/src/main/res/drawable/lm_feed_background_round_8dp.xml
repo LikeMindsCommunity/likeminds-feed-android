@@ -3,11 +3,11 @@
     android:shape="rectangle">
 
     <stroke
-        android:width="@dimen/lm_feed_small_separator_size"
+        android:width="1dp"
         android:color="@color/lm_feed_majorelle_blue" />
 
     <solid android:color="@android:color/transparent" />
 
-    <corners android:radius="@dimen/lm_feed_corner_radius_regular" />
+    <corners android:radius="8dp" />
 
 </shape>

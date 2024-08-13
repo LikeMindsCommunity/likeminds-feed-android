@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.LMFeedCore
-import com.likeminds.feed.android.core.videofeed.view.LMFeedVideoFeedFragment
 import com.likeminds.feedvideo.LMVideoFeed.Companion.LM_VIDEO_FEED_TAG
 import com.likeminds.feedvideo.auth.util.LMVideoFeedAuthPreferences
 import kotlinx.coroutines.*
@@ -18,20 +17,20 @@ class MainActivity : AppCompatActivity() {
 
         lmVideoFeedAuthPreferences = LMVideoFeedAuthPreferences(this)
 
-        //with API Key Security
-        callInitiateUser { accessToken, refreshToken ->
-            LMFeedCore.showFeed(
-                this,
-                accessToken,
-                refreshToken,
-                success = {
-                    replaceFragment()
-                },
-                error = {
-                    Log.e(LM_VIDEO_FEED_TAG, "$it")
-                }
-            )
-        }
+
+        //without API Key Security
+        LMFeedCore.showFeed(
+            this,
+            apiKey = lmVideoFeedAuthPreferences.getApiKey(),
+            uuid = lmVideoFeedAuthPreferences.getUserId(),
+            userName = lmVideoFeedAuthPreferences.getUserName(),
+            success = {
+                replaceFragment()
+            },
+            error = {
+                Log.e("Example", "$it")
+            }
+        )
     }
 
     private fun replaceFragment() {

@@ -66,14 +66,14 @@ object LMFeedCore {
                 val response = lmFeedClient.initiateUser(initiateUserRequest)
                 if (response.success) {
                     success?.let {success ->
-                        //perform post session actions
-                        userMeta.onPostSessionInit(context, userName, uuid)
-
                         //return user response
                         response.data?.let {data->
                             val userResponse = UserResponseConvertor.getUserResponse(data)
                             success(userResponse)
                         }
+
+                        //perform post session actions
+                        userMeta.onPostSessionInit(context, userName, uuid)
                     }
                 } else {
                     error?.let { it(response.errorMessage) }
@@ -111,17 +111,17 @@ object LMFeedCore {
             val response = lmFeedClient.validateUser(validateUserRequest)
             if (response.success) {
                 success?.let {success ->
-                    //perform post session actions
-                    val user = response.data?.user
-                    val userName = user?.name
-                    val uuid = user?.sdkClientInfo?.uuid
-                    userMeta.onPostSessionInit(context, userName, uuid)
-
                     //return user response
                     response.data?.let { data ->
                         val userResponse = UserResponseConvertor.getUserResponse(data)
                         success(userResponse)
                     }
+
+                    //perform post session actions
+                    val user = response.data?.user
+                    val userName = user?.name
+                    val uuid = user?.sdkClientInfo?.uuid
+                    userMeta.onPostSessionInit(context, userName, uuid)
                 }
             } else {
                 error?.let { it(response.errorMessage) }

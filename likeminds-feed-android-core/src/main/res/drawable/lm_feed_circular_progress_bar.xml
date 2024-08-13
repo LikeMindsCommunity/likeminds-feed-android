@@ -7,7 +7,7 @@
     <shape
         android:innerRadiusRatio="3"
         android:shape="ring"
-        android:thickness="@dimen/lm_feed_progress_bar_thickness"
+        android:thickness="3dp"
         android:useLevel="true">
         <solid android:color="@color/lm_feed_majorelle_blue" />
     </shape>

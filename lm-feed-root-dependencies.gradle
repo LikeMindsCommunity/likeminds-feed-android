@@ -1,7 +1,7 @@
 ext.feed_versions = [:]
 def feed_versions = [:]
 feed_versions.compile_sdk = 34
-feed_versions.min_sdk = 24
+feed_versions.min_sdk = 21
 feed_versions.target_sdk = 34
 feed_versions.sdk_version_major = '1'
 feed_versions.sdk_version_minor = '3'

@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape>
-            <corners android:radius="@dimen/lm_feed_corner_radius_medium" />
+            <corners android:radius="8dp" />
             <solid android:color="@color/lm_feed_white" />
         </shape>
     </item>
@@ -10,7 +10,7 @@
     <item android:id="@+id/lm_feed_poll_progress_clip">
         <clip>
             <shape>
-                <corners android:radius="@dimen/lm_feed_corner_radius_medium" />
+                <corners android:radius="8dp" />
                 <solid android:color="@color/lm_feed_majorelle_blue_20" />
             </shape>
         </clip>

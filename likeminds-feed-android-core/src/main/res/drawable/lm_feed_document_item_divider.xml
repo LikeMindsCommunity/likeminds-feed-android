@@ -1,5 +1,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/lm_feed_white" />
-    <size android:height="@dimen/lm_feed_document_divider_height" />
+    <size android:height="8dp" />
 </shape>
