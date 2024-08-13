@@ -170,4 +170,8 @@
     <!--    Video feed caught up -->
     <dimen name="lm_feed_video_feed_caught_up_title_top_margin">28dp</dimen>
     <dimen name="lm_feed_video_feed_caught_up_title_size">20sp</dimen>
+
+    <!-- Label Icon Container  -->
+    <dimen name="lm_feed_container_label_margin_start">18dp</dimen>
+    <dimen name="lm_feed_label_icon_container_top_margin">26dp</dimen>
 </resources>

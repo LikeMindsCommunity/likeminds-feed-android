@@ -1,8 +1,11 @@
 package com.likeminds.feed.android.core.videofeed.view
 
+import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.util.containsKey
 import androidx.core.view.get
@@ -18,15 +21,30 @@ import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentVideoFeedBinding
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBinding
-import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
+import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
+import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
+import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
+import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
+import com.likeminds.feed.android.core.postmenu.model.*
+import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
+import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
+import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
+import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
+import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
+import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
@@ -434,7 +452,12 @@ open class LMFeedVideoFeedFragment :
     override fun onPostActionMenuClicked(position: Int, postViewData: LMFeedPostViewData) {
         super.onPostActionMenuClicked(position, postViewData)
 
-        //todo:
+        val postMenuExtras = LMFeedPostMenuExtras.Builder()
+            .postId(postViewData.id)
+            .menuItems(postViewData.headerViewData.menuItems)
+            .build()
+
+        LMFeedPostMenuBottomSheetFragment.newInstance(childFragmentManager, postMenuExtras)
     }
 
     //callback when the user clicks on the post author header
@@ -455,7 +478,140 @@ open class LMFeedVideoFeedFragment :
 
     //callback when the user clicks on post menu item in the menu bottom sheet
     override fun onPostMenuItemClicked(postId: String, menuItem: LMFeedPostMenuItemViewData) {
+        val postWithIndex = getIndexAndPostFromAdapter(postId) ?: return
+        val position = postWithIndex.first
+        val postViewData = postWithIndex.second
 
+        when (val menuId = menuItem.id) {
+            EDIT_POST_MENU_ITEM_ID -> {
+                onEditPostMenuClicked(
+                    position,
+                    menuId,
+                    postViewData
+                )
+            }
+
+            DELETE_POST_MENU_ITEM_ID -> {
+                onDeletePostMenuClicked(
+                    position,
+                    menuId,
+                    postViewData
+                )
+            }
+
+            REPORT_POST_MENU_ITEM_ID -> {
+                onReportPostMenuClicked(
+                    position,
+                    menuId,
+                    postViewData
+                )
+            }
+
+            PIN_POST_MENU_ITEM_ID -> {
+                val updatedPostViewData =
+                    LMFeedPostBinderUtils.updatePostForPin(requireContext(), postViewData)
+
+                updatedPostViewData?.let {
+//                    onPinPostMenuClicked(
+//                        position,
+//                        menuId,
+//                        it
+//                    )
+                }
+            }
+
+            UNPIN_POST_MENU_ITEM_ID -> {
+                val updatedPost =
+                    LMFeedPostBinderUtils.updatePostForUnpin(requireContext(), postViewData)
+
+                updatedPost?.let {
+//                    onUnpinPostMenuClicked(
+//                        position,
+//                        menuId,
+//                        it
+//                    )
+                }
+            }
+        }
+    }
+
+    //processes the edit post menu click
+    protected open fun onEditPostMenuClicked(
+        position: Int,
+        menuId: Int,
+        post: LMFeedPostViewData
+    ) {
+        //to be implemented
+    }
+
+    //processes the delete post menu click
+    protected open fun onDeletePostMenuClicked(
+        position: Int,
+        menuId: Int,
+        post: LMFeedPostViewData
+    ) {
+        val deleteExtras = LMFeedDeleteExtras.Builder()
+            .postId(post.id)
+            .entityType(DELETE_TYPE_POST)
+            .build()
+
+        val postCreatorUUID = post.headerViewData.user.sdkClientInfoViewData.uuid
+
+        val userPreferences = LMFeedUserPreferences(requireContext())
+        val loggedInUUID = userPreferences.getUUID()
+
+        if (postCreatorUUID == loggedInUUID) {
+            // if the post was created by current user
+            LMFeedSelfDeleteDialogFragment.showDialog(
+                childFragmentManager,
+                deleteExtras
+            )
+        } else {
+            // if the post was not created by current user and they are admin
+            LMFeedAdminDeleteDialogFragment.showDialog(
+                childFragmentManager,
+                deleteExtras
+            )
+        }
+    }
+
+    // launcher to start [ReportActivity] and show success dialog for result
+    private val reportPostLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data?.getStringExtra(LM_FEED_REPORT_RESULT)
+                val entityType = if (data == "Post") {
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    data
+                }
+                LMFeedReportSuccessDialogFragment(entityType ?: "").show(
+                    childFragmentManager,
+                    LMFeedReportSuccessDialogFragment.TAG
+                )
+            }
+        }
+
+    //processes the report post menu click
+    protected open fun onReportPostMenuClicked(
+        position: Int,
+        menuId: Int,
+        post: LMFeedPostViewData
+    ) {
+        //create extras for [ReportActivity]
+        val reportExtras = LMFeedReportExtras.Builder()
+            .entityId(post.id)
+            .uuid(post.headerViewData.user.sdkClientInfoViewData.uuid)
+            .entityType(REPORT_TYPE_POST)
+            .postViewType(post.viewType)
+            .build()
+
+        //get Intent for [ReportActivity]
+        val intent = LMFeedReportActivity.getIntent(requireContext(), reportExtras)
+
+        //start [ReportActivity] and check for result
+        reportPostLauncher.launch(intent)
     }
 
     /**
