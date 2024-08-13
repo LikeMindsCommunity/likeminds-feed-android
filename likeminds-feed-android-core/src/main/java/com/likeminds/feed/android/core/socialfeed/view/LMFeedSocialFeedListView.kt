@@ -25,7 +25,7 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
     val linearLayoutManager: LinearLayoutManager
     private val dividerDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
 
-    lateinit var socialFeedAdapter: LMFeedSocialFeedAdapter
+    private lateinit var socialFeedAdapter: LMFeedSocialFeedAdapter
     private var postVideoAutoPlayHelper: LMFeedPostVideoAutoPlayHelper? = null
     private lateinit var paginationScrollListener: LMFeedEndlessRecyclerViewScrollListener
 

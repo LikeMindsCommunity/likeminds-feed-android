@@ -2,7 +2,6 @@ package com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
