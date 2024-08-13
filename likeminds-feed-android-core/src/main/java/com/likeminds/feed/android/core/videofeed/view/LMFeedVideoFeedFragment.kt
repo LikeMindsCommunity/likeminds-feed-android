@@ -57,7 +57,7 @@ open class LMFeedVideoFeedFragment :
 
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
-        private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 10 MB
+        private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
         private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
     }
 
@@ -76,6 +76,7 @@ open class LMFeedVideoFeedFragment :
         return binding.root
     }
 
+    //sets up the video feed
     private fun setupVideoFeed() {
         binding.vp2VideoFeed.apply {
             for (i in 0 until childCount) {
@@ -294,7 +295,7 @@ open class LMFeedVideoFeedFragment :
         return videoFeedBinding.postVideoView
     }
 
-    //player the video at specified position if present in view pager
+    //plays the video at specified position if present in view pager
     fun playVideoInViewPager(position: Int) {
         val videoView = replaceVideoView(position) ?: return
         if (position >= 0 && videoFeedAdapter.items()[position] != null) {
