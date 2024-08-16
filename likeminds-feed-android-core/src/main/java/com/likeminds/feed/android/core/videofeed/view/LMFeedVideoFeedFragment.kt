@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.videofeed.view
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -76,8 +77,8 @@ open class LMFeedVideoFeedFragment :
 
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
-        private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
-        private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
+        private const val CACHE_SIZE_EACH_VIDEO = 25 * 1024 * 1024L // 25 MB
+        private const val PRECACHE_VIDEO_COUNT = 5 //we will precache 5 videos from current position
     }
 
     override fun onCreateView(
@@ -362,7 +363,9 @@ open class LMFeedVideoFeedFragment :
             postVideoPreviewAutoPlayHelper.playVideoInView(videoView, url)
 
             //cache videos from next position till [PRECACHE_VIDEO_COUNT]
-            preCache(position + 1)
+            for (i in position..position + PRECACHE_VIDEO_COUNT) {
+                preCache(i)
+            }
         } else {
             postVideoPreviewAutoPlayHelper.removePlayer()
         }
@@ -372,30 +375,35 @@ open class LMFeedVideoFeedFragment :
     private fun preCache(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                for (i in position..position + PRECACHE_VIDEO_COUNT) {
-                    if (videoFeedAdapter.itemCount <= i) {
-                        return@launch
-                    }
-
-                    val data = (videoFeedAdapter.items()[i])
-                    if (data !is LMFeedPostViewData) {
-                        return@launch
-                    }
-
-                    val url =
-                        data.mediaViewData.attachments.first().attachmentMeta.url
-
-                    CacheWriter(
-                        LMFeedVideoCache.getCacheDataSourceFactory(requireContext().applicationContext)
-                            .createDataSource(),
-                        DataSpec(
-                            Uri.parse(url),
-                            0,
-                            CACHE_SIZE_EACH_VIDEO
-                        ),
-                        null
-                    ) { _, _, _ -> }.cache()
+                if (videoFeedAdapter.itemCount <= position) {
+                    return@launch
                 }
+
+                val data = (videoFeedAdapter.items()[position])
+                if (data !is LMFeedPostViewData) {
+                    return@launch
+                }
+
+                val url =
+                    data.mediaViewData.attachments.first().attachmentMeta.url ?: ""
+
+                CacheWriter(
+                    LMFeedVideoCache.getCacheDataSourceFactory(
+                        requireContext().applicationContext,
+                        url
+                    ).createDataSource(),
+                    DataSpec(
+                        Uri.parse(url),
+                        0,
+                        CACHE_SIZE_EACH_VIDEO
+                    ),
+                    null
+                ) { requestLength, bytesCached, newBytesCached ->
+                    Log.d(
+                        "PUI",
+                        "caching: requestLength: ${requestLength / (1024 * 1024)} bytesCached: ${bytesCached / (1024 * 1024)} position::::: $position:::::${Thread.currentThread().name}"
+                    )
+                }.cache()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

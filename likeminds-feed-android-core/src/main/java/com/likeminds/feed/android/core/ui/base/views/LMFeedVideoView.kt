@@ -10,6 +10,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultAllocator
 import com.google.android.exoplayer2.util.Util
@@ -46,21 +47,24 @@ class LMFeedVideoView @JvmOverloads constructor(
         // used to configure ms of media to buffer before starting playback
         val defaultLoadControl = DefaultLoadControl.Builder()
             .setBufferDurationsMs(
+                1000,
                 DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
-                DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+                1000,
+                1000
             )
-            .setAllocator(DefaultAllocator(true, 16))
+//            .setAllocator(DefaultAllocator(true, 16))
             .setPrioritizeTimeOverSizeThresholds(true)
             .build()
 
         exoPlayer = ExoPlayer.Builder(context)
             .setLoadControl(defaultLoadControl)
+            .setRenderersFactory(DefaultRenderersFactory(context))
+            .setTrackSelector(DefaultTrackSelector(context))
             .build()
 
         exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
         exoPlayer.playWhenReady = false
+
         player = exoPlayer
 
         exoPlayer.addListener(object : Player.Listener {
@@ -113,9 +117,9 @@ class LMFeedVideoView @JvmOverloads constructor(
 
         val mediaSource = createCachedMediaSource(context.applicationContext, videoUri)
         exoPlayer.setMediaSource(mediaSource)
-        exoPlayer.seekTo(lastPos)
-        exoPlayer.playWhenReady = true
+//        exoPlayer.seekTo(lastPos)
         exoPlayer.prepare()
+        exoPlayer.playWhenReady = true
     }
 
     private fun createCachedMediaSource(context: Context, uri: Uri): MediaSource {
@@ -135,9 +139,7 @@ class LMFeedVideoView @JvmOverloads constructor(
 
             else -> {
                 return ProgressiveMediaSource.Factory(
-                    LMFeedVideoCache.getCacheDataSourceFactory(
-                        context
-                    )
+                    LMFeedVideoCache.getCacheDataSourceFactory(context)
                 )
                     .createMediaSource(MediaItem.fromUri(uri))
             }
