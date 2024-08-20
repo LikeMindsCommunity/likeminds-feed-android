@@ -14,7 +14,7 @@ class LMFeedVideoFeedAdapter(
     }
 
     override fun getSupportedViewDataBinder(): MutableList<LMFeedViewDataBinder<*, *>> {
-        val viewDataBinders = ArrayList<LMFeedViewDataBinder<*, *>>(1)
+        val viewDataBinders = ArrayList<LMFeedViewDataBinder<*, *>>(2)
 
         val itemPostVideoFeedViewDataBinder =
             LMFeedItemPostVideoFeedViewDataBinder(postAdapterListener)

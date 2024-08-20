@@ -7,12 +7,14 @@ import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.util.containsKey
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.exoplayer2.upstream.DataSpec
@@ -39,6 +41,7 @@ import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListe
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
+import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
@@ -60,6 +63,7 @@ open class LMFeedVideoFeedFragment :
     LMFeedPostMenuBottomSheetListener {
 
     lateinit var binding: LmFeedFragmentVideoFeedBinding
+    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
 
     lateinit var videoFeedAdapter: LMFeedVideoFeedAdapter
 
@@ -75,7 +79,7 @@ open class LMFeedVideoFeedFragment :
 
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
-        private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 10 MB
+        private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
         private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
     }
 
@@ -94,6 +98,7 @@ open class LMFeedVideoFeedFragment :
         return binding.root
     }
 
+    //sets up the video feed
     private fun setupVideoFeed() {
         binding.vp2VideoFeed.apply {
             for (i in 0 until childCount) {
@@ -183,6 +188,7 @@ open class LMFeedVideoFeedFragment :
 
         fetchData()
         initViewPager()
+        initSwipeRefreshLayout()
         observeResponses()
     }
 
@@ -229,6 +235,31 @@ open class LMFeedVideoFeedFragment :
         }
     }
 
+    //initializes the refresh layout
+    private fun initSwipeRefreshLayout() {
+        mSwipeRefreshLayout = binding.swipeRefreshLayout
+        mSwipeRefreshLayout.apply {
+            setColorSchemeColors(
+                ContextCompat.getColor(
+                    requireContext(),
+                    LMFeedTheme.getButtonColor()
+                )
+            )
+
+            setOnRefreshListener {
+                onFeedRefreshed()
+            }
+        }
+    }
+
+    //processes the feed refreshed event
+    protected open fun onFeedRefreshed() {
+        binding.apply {
+            mSwipeRefreshLayout.isRefreshing = true
+            videoFeedViewModel.getFeed(1)
+        }
+    }
+
     //observes live data responses
     private fun observeResponses() {
         videoFeedViewModel.videoFeedResponse.observe(viewLifecycleOwner) { response ->
@@ -238,6 +269,12 @@ open class LMFeedVideoFeedFragment :
             //add only those posts which are supported by the adapter
             val finalPosts = posts.filter {
                 (videoFeedAdapter.supportedViewBinderResolverMap.containsKey(it.viewType))
+            }
+
+            if (mSwipeRefreshLayout.isRefreshing) {
+                checkPostsAndReplace(finalPosts)
+                mSwipeRefreshLayout.isRefreshing = false
+                return@observe
             }
 
             if (page == 1) {
@@ -285,6 +322,7 @@ open class LMFeedVideoFeedFragment :
 
                 is LMFeedVideoFeedViewModel.ErrorMessageEvent.VideoFeed -> {
                     val errorMessage = response.errorMessage
+                    mSwipeRefreshLayout.isRefreshing = false
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
             }
@@ -312,7 +350,7 @@ open class LMFeedVideoFeedFragment :
         return videoFeedBinding.postVideoView
     }
 
-    //player the video at specified position if present in view pager
+    //plays the video at specified position if present in view pager
     fun playVideoInViewPager(position: Int) {
         val videoView = replaceVideoView(position) ?: return
         if (position >= 0 && videoFeedAdapter.items()[position] != null) {
@@ -321,6 +359,7 @@ open class LMFeedVideoFeedFragment :
                 postVideoPreviewAutoPlayHelper.removePlayer()
                 return
             }
+            val videoView = replaceVideoView(position) ?: return
             val url = data.mediaViewData.attachments.firstOrNull()?.attachmentMeta?.url ?: ""
 
             //plays the video in the [postVideoView]
@@ -445,7 +484,9 @@ open class LMFeedVideoFeedFragment :
     override fun onPostVideoFeedCaughtUpClicked() {
         super.onPostVideoFeedCaughtUpClicked()
 
-        binding.vp2VideoFeed.setCurrentItem(0, true)
+        binding.vp2VideoFeed.apply {
+            onFeedRefreshed()
+        }
     }
 
     //callback when the user clicks on the post menu icon in the post action view
