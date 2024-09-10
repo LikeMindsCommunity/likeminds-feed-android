@@ -20,33 +20,33 @@ class MainActivity : AppCompatActivity() {
         lmSocialFeedAuthPreferences = LMSocialFeedAuthPreferences(this)
 
         //without API Key Security
-//        LMFeedCore.showFeed(
-//            this,
-//            apiKey = authPreferences.getApiKey(),
-//            uuid = authPreferences.getUserId(),
-//            userName = authPreferences.getUserName(),
-//            success = {
-//                replaceFragment()
-//            },
-//            error = {
-//                Log.e("Example", "$it")
-//            }
-//        )
+        LMFeedCore.showFeed(
+            this,
+            apiKey = lmSocialFeedAuthPreferences.getApiKey(),
+            uuid = lmSocialFeedAuthPreferences.getUserId(),
+            userName = lmSocialFeedAuthPreferences.getUserName(),
+            success = {
+                replaceFragment()
+            },
+            error = {
+                Log.e("Example", "$it")
+            }
+        )
 
         //with API Key Security
-        callInitiateUser { accessToken, refreshToken ->
-            LMFeedCore.showFeed(
-                this,
-                accessToken,
-                refreshToken,
-                success = {
-                    replaceFragment()
-                },
-                error = {
-                    Log.e(LM_SOCIAL_FEED_TAG, "$it")
-                }
-            )
-        }
+//        callInitiateUser { accessToken, refreshToken ->
+//            LMFeedCore.showFeed(
+//                this,
+//                accessToken,
+//                refreshToken,
+//                success = {
+//                    replaceFragment()
+//                },
+//                error = {
+//                    Log.e(LM_SOCIAL_FEED_TAG, "$it")
+//                }
+//            )
+//        }
     }
 
     private fun replaceFragment() {
