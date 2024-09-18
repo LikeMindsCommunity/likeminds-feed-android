@@ -265,6 +265,15 @@ class LMFeedHeaderView : ConstraintLayout {
     }
 
     /**
+     * Sets the visibility of the search icon in the header view
+     *
+     * @param isVisible: whether to show the search icon or not
+     */
+    fun setSearchIconVisibility(isVisible: Boolean) {
+        binding.ivHeaderSearch.isVisible = isVisible
+    }
+
+    /**
      * Sets user profile in image view.
      *
      * @param user: data of the user.

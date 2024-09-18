@@ -30,6 +30,12 @@
             android:theme="@style/LMFeedAppTheme.NoActionBar" />
 
         <activity
+            android:name="com.likeminds.feed.android.core.search.view.LMFeedSearchActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/LMFeedAppTheme.NoActionBar" />
+
+        <activity
             android:name=".likes.view.LMFeedLikesActivity"
             android:exported="false"
             android:screenOrientation="portrait"
