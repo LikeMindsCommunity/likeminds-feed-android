@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -41,6 +42,7 @@ import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
+import com.likeminds.feed.android.core.search.view.LMFeedSearchActivity
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
@@ -177,6 +179,10 @@ open class LMFeedSocialFeedFragment :
 
             headerViewSocial.setNotificationIconClickListener {
                 onNotificationIconClicked()
+            }
+
+            headerViewSocial.setSearchIconClickListener{
+                onSearchIconClicked()
             }
 
             layoutNoPost.setActionFABClickListener {
@@ -1431,6 +1437,11 @@ open class LMFeedSocialFeedFragment :
     protected open fun onNotificationIconClicked() {
         LMFeedAnalytics.sendNotificationPageOpenedEvent()
         LMFeedActivityFeedActivity.start(requireContext())
+    }
+
+    //processes the search icon clicked
+    protected open fun onSearchIconClicked() {
+        LMFeedSearchActivity.start(requireContext())
     }
 
     //customizes the no post layout

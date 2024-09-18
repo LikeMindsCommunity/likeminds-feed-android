@@ -585,11 +585,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                             fileUris = selectedMediaUris,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll,
-                            metadata = JSONObject().apply {
-                                put("member_tagging", true)
-                                put("is_poll", poll != null)
-                            }
+                            poll = poll
                         )
                     }
 
@@ -603,11 +599,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                             postTextContent = updatedText,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll,
-                            metadata = JSONObject().apply {
-                                put("member_tagging", true)
-                                put("is_poll", poll != null)
-                            }
+                            poll = poll
                         )
                     }
 
@@ -621,11 +613,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                             postTextContent = updatedText,
                             ogTags = ogTags,
                             selectedTopics = selectedTopic,
-                            poll = poll,
-                            metadata = JSONObject().apply {
-                                put("member_tagging", true)
-                                put("is_poll", poll != null)
-                            }
+                            poll = poll
                         )
                     }
                 }
