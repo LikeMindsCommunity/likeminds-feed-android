@@ -1,59 +1,64 @@
 package com.likeminds.feed.android.core.search.style
 
-import android.text.TextUtils
+import androidx.annotation.ColorRes
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedEditTextStyle
+import com.likeminds.feed.android.core.search.view.LMFeedSearchFragment
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedImageStyle
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
-import com.likeminds.feed.android.core.ui.widgets.noentitylayout.style.LMFeedNoEntityLayoutViewStyle
 import com.likeminds.feed.android.core.ui.widgets.searchbar.style.LMFeedSearchBarViewStyle
 import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 
+
+/**
+ * [LMFeedSearchFragmentViewStyle] helps you to customize the search feed fragment [LMFeedSearchFragment]
+ *
+ * @property feedSearchBarViewStyle : [LMFeedSearchBarViewStyle] this will help you to customize the search bar in the search feed fragment
+ * TODO("No entity - noPostLayout")
+ *
+ * */
 class LMFeedSearchFragmentViewStyle private constructor(
     // search bar
-    val searchBarViewStyle: LMFeedSearchBarViewStyle,
+    val feedSearchBarViewStyle: LMFeedSearchBarViewStyle,
+    //background color
+    @ColorRes val backgroundColor: Int?
 ){
     class Builder {
-        private var searchBarViewStyle: LMFeedSearchBarViewStyle = LMFeedSearchBarViewStyle.Builder()
-            .searchInputStyle( LMFeedEditTextStyle.Builder()
-                .hintTextColor(com.likeminds.customgallery.R.color.grey)
-                .inputTextStyle(
-                    LMFeedTextStyle.Builder()
-                        .textColor(R.color.lm_feed_black)
+
+        private var feedSearchBarViewStyle: LMFeedSearchBarViewStyle =
+            LMFeedSearchBarViewStyle.Builder()
+                .searchCloseIconStyle(
+                    LMFeedIconStyle.Builder()
+                        .inActiveSrc(R.drawable.lm_feed_ic_cross_black)
+                        .iconTint(R.color.lm_feed_black)
                         .build()
                 )
-                .build())
-//            .elevation()
-            .searchBackIconStyle(
-                LMFeedIconStyle.Builder()
-                    .activeSrc(R.drawable.lm_feed_ic_arrow_back_black_24dp)
-                    .iconTint(R.color.lm_feed_black)
-                    .iconPadding(
-                        LMFeedPadding(
-                            R.dimen.lm_feed_icon_padding,
-                            R.dimen.lm_feed_icon_padding,
-                            R.dimen.lm_feed_icon_padding,
-                            R.dimen.lm_feed_icon_padding
-                        )
-                    ).build()
-            )
-            .searchCloseIconStyle(
-                LMFeedIconStyle.Builder()
-                    .activeSrc(R.drawable.lm_feed_ic_cross_black)
-                    .iconTint(R.color.lm_feed_black)
-                    .iconPadding(
-                        LMFeedPadding(
-                            R.dimen.lm_feed_icon_padding,
-                            R.dimen.lm_feed_icon_padding,
-                            R.dimen.lm_feed_icon_padding,
-                            R.dimen.lm_feed_icon_padding
-                        )
-                    ).build()
-            )
-            .build()
+                .searchBackIconStyle(
+                    LMFeedIconStyle.Builder()
+                        .inActiveSrc(R.drawable.lm_feed_ic_arrow_back_black_24dp)
+                        .build()
+                )
+                .backgroundColor(R.color.lm_feed_white)
+                .elevation(R.dimen.lm_feed_elevation_small)
+                .build()
 
+        @ColorRes
+        private var backgroundColor: Int? = null
 
+        fun feedSearchBarViewStyle(feedSearchBarViewStyle: LMFeedSearchBarViewStyle) = apply {
+            this.feedSearchBarViewStyle = feedSearchBarViewStyle
+        }
 
+        fun backgroundColor(@ColorRes backgroundColor: Int?) = apply {
+            this.backgroundColor = backgroundColor
+        }
+
+        fun build() = LMFeedSearchFragmentViewStyle(
+            feedSearchBarViewStyle,
+            backgroundColor
+        )
+
+    }
+    fun toBuilder(): Builder {
+        return Builder().feedSearchBarViewStyle(feedSearchBarViewStyle)
+            .backgroundColor(backgroundColor)
     }
 }

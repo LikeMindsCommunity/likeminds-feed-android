@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.search.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -82,18 +83,18 @@ class LMFeedSearchListView @JvmOverloads constructor(
         }
     }
 
-    //create the adapter with the provided [listener] to the universal feed recycler view
+    //create the adapter with the provided [listener] to the search recycler view
     fun initAdapterAndSetListener(listener: LMFeedPostAdapterListener){
         socialFeedAdapter = LMFeedSocialFeedAdapter(listener)
     }
 
-    //sets the adapter with the provided [listener] to the universal feed recycler view
+    //sets the adapter with the provided [listener] to the search recycler view
     fun setAdapter() {
         //setting adapter
         adapter = socialFeedAdapter
     }
 
-    //sets the pagination scroll listener to the social feed recycler view
+    //sets the pagination scroll listener to the search feed recycler view
     fun setPaginationScrollListener(scrollListener: LMFeedEndlessRecyclerViewScrollListener) {
         paginationScrollListener = scrollListener
         addOnScrollListener(scrollListener)
