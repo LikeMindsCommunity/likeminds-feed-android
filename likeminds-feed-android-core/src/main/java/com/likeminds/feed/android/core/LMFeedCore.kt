@@ -97,10 +97,10 @@ object LMFeedCore {
 
             val lmFeedClient = LMFeedClient.getInstance()
             val tokens = if (accessToken.isNullOrEmpty() || refreshToken.isNullOrEmpty()) {
-                lmFeedClient.getTokens().data ?: Pair("", "")
+                lmFeedClient.getTokens().data
             } else {
                 Pair(accessToken, refreshToken)
-            }
+            } ?: Pair("", "")
 
             val validateUserRequest = ValidateUserRequest.Builder()
                 .accessToken(tokens.first)
