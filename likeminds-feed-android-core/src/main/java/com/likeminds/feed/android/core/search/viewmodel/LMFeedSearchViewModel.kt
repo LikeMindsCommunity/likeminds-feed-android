@@ -1,14 +1,21 @@
 package com.likeminds.feed.android.core.search.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
+import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.poll.model.SubmitVoteRequest
+import com.likeminds.likemindsfeed.post.model.*
 import com.likeminds.likemindsfeed.search.model.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -32,6 +39,39 @@ class LMFeedSearchViewModel : ViewModel() {
         _searchFeedResponse
     }
 
+    private val _postSavedResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
+
+    val postSavedResponse: LiveData<LMFeedPostViewData> by lazy {
+        _postSavedResponse
+    }
+
+    private val _postPinnedResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
+
+    val postPinnedResponse: LiveData<LMFeedPostViewData> by lazy {
+        _postPinnedResponse
+    }
+
+    private val _deletePostResponse by lazy {
+        MutableLiveData<String>()
+    }
+
+    val deletePostResponse: LiveData<String> by lazy {
+        _deletePostResponse
+    }
+
+    private val _postResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
+
+    val postResponse: LiveData<LMFeedPostViewData> by lazy {
+        _postResponse
+    }
+
+
     private val errorMessageChannel by lazy {
         Channel<ErrorMessageEvent>(Channel.BUFFERED)
     }
@@ -42,6 +82,12 @@ class LMFeedSearchViewModel : ViewModel() {
 
     sealed class ErrorMessageEvent {
         data class SearchPost(val errorMessage: String?) : ErrorMessageEvent()
+        data class SavePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
+        data class LikePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
+        data class PinPost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
+        data class DeletePost(val errorMessage: String?) : ErrorMessageEvent()
+        data class SubmitVote(val errorMessage: String?) : ErrorMessageEvent()
+        data class GetPost(val errorMessage: String?) : ErrorMessageEvent()
     }
 
     fun searchPosts(page: Int, searchString: String) {
@@ -67,7 +113,6 @@ class LMFeedSearchViewModel : ViewModel() {
                 val topicsMap = data.topics
                 val widgetsMap = data.widgets
 
-                Log.d("PUI", posts.toString())
                 //convert to view data
                 val listOfPostViewData =
                     LMFeedViewDataConvertor.convertGetFeedPosts(
@@ -81,6 +126,183 @@ class LMFeedSearchViewModel : ViewModel() {
                 _searchFeedResponse.postValue(Pair(page, listOfPostViewData))
             } else {
                 errorMessageChannel.send(ErrorMessageEvent.SearchPost(response.errorMessage))
+            }
+        }
+    }
+
+    fun savePost(postViewData: LMFeedPostViewData) {
+        viewModelScope.launchIO {
+            val request = SavePostRequest.Builder()
+                .postId(postViewData.id)
+                .build()
+
+            //call like post api
+            val response = lmFeedClient.savePost(request)
+
+            //check for error
+            if (response.success) {
+                //sends event for post saved/unsaved
+                LMFeedAnalytics.sendPostSavedEvent(
+                    uuid = postViewData.headerViewData.user.sdkClientInfoViewData.uuid,
+                    postId = postViewData.id,
+                    postSaved = postViewData.actionViewData.isSaved
+                )
+
+                _postSavedResponse.postValue(postViewData)
+            } else {
+                errorMessageChannel.send(
+                    ErrorMessageEvent.SavePost(
+                        postViewData.id,
+                        response.errorMessage
+                    )
+                )
+            }
+        }
+    }
+
+    fun pinPost(postViewData: LMFeedPostViewData) {
+        viewModelScope.launchIO {
+            val request = PinPostRequest.Builder()
+                .postId(postViewData.id)
+                .build()
+
+            //call pin api
+            val response = lmFeedClient.pinPost(request)
+
+            if (response.success) {
+                //sends event for pin/unpin post
+                LMFeedAnalytics.sendPostPinnedEvent(postViewData, LMFeedAnalytics.LMFeedScreenNames.SEARCH_SCREEN)
+
+                _postPinnedResponse.postValue(postViewData)
+            } else {
+                errorMessageChannel.send(
+                    ErrorMessageEvent.PinPost(
+                        postViewData.id,
+                        response.errorMessage
+                    )
+                )
+            }
+        }
+    }
+
+    //for like/unlike a post
+    fun likePost(
+        postId: String,
+        postLiked: Boolean,
+        loggedInUUID: String
+    ) {
+        viewModelScope.launchIO {
+            val request = LikePostRequest.Builder()
+                .postId(postId)
+                .build()
+
+            //call like post api
+            val response = lmFeedClient.likePost(request)
+
+            //check for error
+            if (response.success) {
+                //sends event for post liked
+                LMFeedAnalytics.sendPostLikedEvent(
+                    uuid = loggedInUUID,
+                    postId = postId,
+                    postLiked = postLiked
+                )
+            } else {
+                errorMessageChannel.send(
+                    ErrorMessageEvent.LikePost(
+                        postId,
+                        response.errorMessage
+                    )
+                )
+            }
+        }
+    }
+
+    //for delete post
+    fun deletePost(post: LMFeedPostViewData, reason: String? = null) {
+        viewModelScope.launchIO {
+            val request = DeletePostRequest.Builder()
+                .postId(post.id)
+                .deleteReason(reason)
+                .build()
+
+            //call delete post api
+            val response = lmFeedClient.deletePost(request)
+
+            if (response.success) {
+                // sends post deleted event
+                LMFeedAnalytics.sendPostDeletedEvent(post, reason)
+
+                _deletePostResponse.postValue(post.id)
+            } else {
+                errorMessageChannel.send(ErrorMessageEvent.DeletePost(response.errorMessage))
+            }
+        }
+    }
+
+    //calls api to submit vote on poll
+    fun submitPollVote(
+        context: Context,
+        postId: String,
+        pollId: String,
+        optionIds: List<String>
+    ) {
+        viewModelScope.launchIO {
+            if (optionIds.isEmpty()) {
+                errorMessageChannel.send(
+                    ErrorMessageEvent.SubmitVote(
+                        context.getString(
+                            R.string.lm_feed_please_select_options_before_submitting_vote
+                        )
+                    )
+                )
+            }
+
+            val request = SubmitVoteRequest.Builder()
+                .pollId(pollId)
+                .votes(optionIds)
+                .build()
+
+            val response = lmFeedClient.submitVote(request)
+
+            if (response.success) {
+                getPost(postId)
+            } else {
+                errorMessageChannel.send(ErrorMessageEvent.SubmitVote(response.errorMessage))
+            }
+        }
+    }
+
+    // to getPost
+    private fun getPost(postId: String) {
+        viewModelScope.launchIO {
+            // builds api request
+            val request = GetPostRequest.Builder()
+                .postId(postId)
+                .page(1)
+                .pageSize(LMFeedSocialFeedViewModel.GET_POST_PAGE_SIZE)
+                .build()
+
+            // calls api
+            val response = lmFeedClient.getPost(request)
+
+            if (response.success) {
+                val data = response.data ?: return@launchIO
+                val post = data.post
+                val users = data.users
+                val topics = data.topics
+                val widgets = data.widgets
+
+                _postResponse.postValue(
+                    LMFeedViewDataConvertor.convertPost(
+                        post,
+                        users,
+                        topics,
+                        widgets
+                    )
+                )
+            } else {
+                errorMessageChannel.send(ErrorMessageEvent.GetPost(response.errorMessage))
             }
         }
     }
