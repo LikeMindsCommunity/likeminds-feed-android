@@ -55,7 +55,7 @@ object LMFeedCore {
             val userMeta = LMFeedUserMetaData.getInstance()
             val deviceId = userMeta.deviceId
 
-            if (tokens?.first == null || tokens.second == null) {
+            if (tokens?.first.isNullOrEmpty() || tokens?.second.isNullOrEmpty()) {
                 val initiateUserRequest = InitiateUserRequest.Builder()
                     .apiKey(apiKey)
                     .userName(userName)
@@ -79,7 +79,7 @@ object LMFeedCore {
                     error?.let { it(response.errorMessage) }
                 }
             } else {
-                showFeed(context, tokens.first, tokens.second, success, error)
+                showFeed(context, tokens?.first, tokens?.second, success, error)
             }
         }
     }
@@ -96,11 +96,11 @@ object LMFeedCore {
             val deviceId = userMeta.deviceId
 
             val lmFeedClient = LMFeedClient.getInstance()
-            val tokens = if (accessToken == null || refreshToken == null) {
-                lmFeedClient.getTokens().data ?: Pair("", "")
+            val tokens = if (accessToken.isNullOrEmpty() || refreshToken.isNullOrEmpty()) {
+                lmFeedClient.getTokens().data
             } else {
                 Pair(accessToken, refreshToken)
-            }
+            } ?: Pair("", "")
 
             val validateUserRequest = ValidateUserRequest.Builder()
                 .accessToken(tokens.first)
