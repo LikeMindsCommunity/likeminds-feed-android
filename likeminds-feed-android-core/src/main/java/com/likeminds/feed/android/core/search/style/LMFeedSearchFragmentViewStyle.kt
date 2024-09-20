@@ -20,7 +20,7 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 class LMFeedSearchFragmentViewStyle private constructor(
     // search bar
     val feedSearchBarViewStyle: LMFeedSearchBarViewStyle,
-    //no post layout
+    //no search result layout
     val noSearchResultLayoutViewStyle: LMFeedNoEntityLayoutViewStyle,
     //background color
     @ColorRes val backgroundColor: Int?

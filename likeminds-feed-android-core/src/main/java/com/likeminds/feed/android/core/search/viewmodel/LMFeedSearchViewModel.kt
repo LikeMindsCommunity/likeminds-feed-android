@@ -90,9 +90,9 @@ class LMFeedSearchViewModel : ViewModel() {
         data class GetPost(val errorMessage: String?) : ErrorMessageEvent()
     }
 
+    // calls searchPosts API and posts the response in LiveData
     fun searchPosts(page: Int, searchString: String) {
         viewModelScope.launchIO {
-            Log.d("PUI", "searchString:$searchString")
             val requestBuilder = SearchPostsRequest.Builder()
                 .page(page)
                 .pageSize(PAGE_SIZE)
@@ -130,6 +130,7 @@ class LMFeedSearchViewModel : ViewModel() {
         }
     }
 
+    //for save/unsave a post
     fun savePost(postViewData: LMFeedPostViewData) {
         viewModelScope.launchIO {
             val request = SavePostRequest.Builder()
@@ -160,6 +161,7 @@ class LMFeedSearchViewModel : ViewModel() {
         }
     }
 
+    //for pin/unpin post
     fun pinPost(postViewData: LMFeedPostViewData) {
         viewModelScope.launchIO {
             val request = PinPostRequest.Builder()

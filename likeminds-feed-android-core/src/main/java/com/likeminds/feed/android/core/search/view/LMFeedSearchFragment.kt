@@ -129,8 +129,14 @@ open class LMFeedSearchFragment : Fragment(),
     }
 
 
+    // handles the back press of search bar for this fragment
     protected open fun onSearchViewClosed() {
         requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    // handles the cross press of search bar for this fragment
+    protected open fun onSearchCrossed() {
+        binding.layoutNoResultFound.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -209,7 +215,7 @@ open class LMFeedSearchFragment : Fragment(),
 
                 override fun onSearchCrossed() {
                     super.onSearchCrossed()
-                    binding.layoutNoResultFound.show()
+                    this@LMFeedSearchFragment.onSearchCrossed()
                 }
 
                 override fun onKeywordEntered(keyword: String) {
@@ -259,7 +265,7 @@ open class LMFeedSearchFragment : Fragment(),
             clearPostsAndNotify()
         }
         searchKeyword = keyword
-
+        //call apis
         keyword?.let {
             feedSearchViewModel.searchPosts(
                 1,
@@ -1053,6 +1059,7 @@ open class LMFeedSearchFragment : Fragment(),
         }
     }
 
+    //callback when the user clicks on the post menu icon
     protected open fun onPostMenuItemClicked(
         position: Int,
         menuId: Int,
