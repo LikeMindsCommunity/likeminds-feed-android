@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -113,7 +112,7 @@ open class LMFeedSocialFeedFragment :
             customizeNoPostLayout(layoutNoPost)
             customizePostingLayout(layoutPosting)
             customizeTopicSelectorBar(topicSelectorBar)
-            customizeUniversalFeedListView(rvSocial)
+            customizeSocialFeedListView(rvSocial)
         }
         return binding.root
     }
@@ -181,7 +180,7 @@ open class LMFeedSocialFeedFragment :
                 onNotificationIconClicked()
             }
 
-            headerViewSocial.setSearchIconClickListener{
+            headerViewSocial.setSearchIconClickListener {
                 onSearchIconClicked()
             }
 
@@ -611,6 +610,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    // initializes the recycler view of the social feed
     private fun initSocialFeedRecyclerView() {
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
         binding.rvSocial.apply {
@@ -631,6 +631,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    // initializes the swipe to refresh layout
     private fun initSwipeRefreshLayout() {
         mSwipeRefreshLayout = binding.swipeRefreshLayout
         mSwipeRefreshLayout.apply {
@@ -1424,7 +1425,7 @@ open class LMFeedSocialFeedFragment :
     }
 
     //customizes the universal feed list view
-    protected open fun customizeUniversalFeedListView(rvUniversal: LMFeedSocialFeedListView) {
+    protected open fun customizeSocialFeedListView(rvUniversal: LMFeedSocialFeedListView) {
     }
 
     //processes the user profile clicked
