@@ -35,6 +35,7 @@ import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
 import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
@@ -233,7 +234,7 @@ open class LMFeedSocialFeedFragment :
         }
 
         // observes deletePostResponse LiveData
-        socialFeedViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
+        socialFeedViewModel.helperViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
             binding.rvSocial.apply {
                 val indexToRemove = getIndexAndPostFromAdapter(postId)?.first ?: return@observe
                 removePostAtIndex(indexToRemove)
@@ -250,7 +251,7 @@ open class LMFeedSocialFeedFragment :
             }
         }
 
-        socialFeedViewModel.showTopicFilter.observe(viewLifecycleOwner) { showTopicFilter ->
+        socialFeedViewModel.helperViewModel.showTopicFilter.observe(viewLifecycleOwner) { showTopicFilter ->
             binding.topicSelectorBar.apply {
                 isVisible = showTopicFilter
                 setAllTopicsTextVisibility(showTopicFilter)
@@ -262,7 +263,7 @@ open class LMFeedSocialFeedFragment :
             binding.headerViewSocial.setNotificationCountText(unreadNotificationCount)
         }
 
-        socialFeedViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
+        socialFeedViewModel.helperViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
             //create toast message
             val toastMessage = if (postViewData.actionViewData.isSaved) {
                 getString(
@@ -280,7 +281,7 @@ open class LMFeedSocialFeedFragment :
             LMFeedViewUtils.showShortToast(requireContext(), toastMessage)
         }
 
-        socialFeedViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
+        socialFeedViewModel.helperViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
             //show toast message
             val toastMessage = if (postViewData.headerViewData.isPinned) {
                 getString(
@@ -320,12 +321,28 @@ open class LMFeedSocialFeedFragment :
                     removePostingView()
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.DeletePost -> {
-                    val errorMessage = response.errorMessage
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
+                    binding.headerViewSocial.setNotificationIconVisibility(false)
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.LikePost -> {
+                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SubmitVote -> {
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
+
+                is LMFeedSocialFeedViewModel.ErrorMessageEvent.AddPollOption -> {
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
+
+                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetPost -> {
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
+            }
+        }.observeInLifecycle(viewLifecycleOwner)
+
+        socialFeedViewModel.helperViewModel.errorMessageEventFlow.onEach { response ->
+            when (response) {
+                is LMFeedHelperViewModel.ErrorMessageEvent.LikePost -> {
                     val postId = response.postId
 
                     //get post and index
@@ -360,7 +377,12 @@ open class LMFeedSocialFeedFragment :
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.PinPost -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.DeletePost -> {
+                    val errorMessage = response.errorMessage
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+
+                is LMFeedHelperViewModel.ErrorMessageEvent.PinPost -> {
                     binding.rvSocial.apply {
                         val postId = response.postId
 
@@ -387,7 +409,7 @@ open class LMFeedSocialFeedFragment :
                     }
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SavePost -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.SavePost -> {
                     binding.rvSocial.apply {
                         val postId = response.postId
 
@@ -415,25 +437,8 @@ open class LMFeedSocialFeedFragment :
                     }
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetTopic -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.GetTopic -> {
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
-                    binding.headerViewSocial.setNotificationIconVisibility(false)
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SubmitVote -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.AddPollOption -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetPost -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
             }
         }.observeInLifecycle(viewLifecycleOwner)
@@ -651,7 +656,7 @@ open class LMFeedSocialFeedFragment :
     //init selected topic recycler view
     private fun initSelectedTopicRecyclerView() {
         binding.topicSelectorBar.apply {
-            socialFeedViewModel.getAllTopics(false)
+            socialFeedViewModel.helperViewModel.getAllTopics(false)
             setSelectedTopicAdapter(this@LMFeedSocialFeedFragment)
 
             setClearSelectedTopicsClickListener {
@@ -708,7 +713,7 @@ open class LMFeedSocialFeedFragment :
         val loggedInUUID = userPreferences.getUUID()
 
         //call api
-        socialFeedViewModel.likePost(
+        socialFeedViewModel.helperViewModel.likePost(
             postViewData.id,
             postViewData.actionViewData.isLiked,
             loggedInUUID
@@ -747,7 +752,7 @@ open class LMFeedSocialFeedFragment :
     //callback when the user clicks on the save post button
     override fun onPostSaveClicked(position: Int, postViewData: LMFeedPostViewData) {
         //call api
-        socialFeedViewModel.savePost(postViewData)
+        socialFeedViewModel.helperViewModel.savePost(postViewData)
 
         binding.rvSocial.apply {
             val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
@@ -952,13 +957,13 @@ open class LMFeedSocialFeedFragment :
     override fun onEntityDeletedByAdmin(deleteExtras: LMFeedDeleteExtras, reason: String) {
         val post =
             binding.rvSocial.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        socialFeedViewModel.deletePost(post, reason)
+        socialFeedViewModel.helperViewModel.deletePost(post, reason)
     }
 
     override fun onEntityDeletedByAuthor(deleteExtras: LMFeedDeleteExtras) {
         val post =
             binding.rvSocial.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        socialFeedViewModel.deletePost(post)
+        socialFeedViewModel.helperViewModel.deletePost(post)
     }
 
     override fun onTopicRemoved(position: Int, topicViewData: LMFeedTopicViewData) {
@@ -1730,7 +1735,7 @@ open class LMFeedSocialFeedFragment :
         post: LMFeedPostViewData
     ) {
         //call api
-        socialFeedViewModel.pinPost(post)
+        socialFeedViewModel.helperViewModel.pinPost(post)
 
         binding.rvSocial.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return
@@ -1747,7 +1752,7 @@ open class LMFeedSocialFeedFragment :
         post: LMFeedPostViewData
     ) {
         //call api
-        socialFeedViewModel.pinPost(post)
+        socialFeedViewModel.helperViewModel.pinPost(post)
 
         binding.rvSocial.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return
