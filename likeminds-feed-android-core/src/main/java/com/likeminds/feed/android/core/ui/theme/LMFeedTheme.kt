@@ -29,9 +29,6 @@ object LMFeedTheme {
     @DrawableRes
     private var notificationIcon: Int? = null
 
-    @ColorRes
-    private var notificationTextColor: Int? = null
-
     /**
      * @param lmFeedSetThemeRequest - Request to set base theme
      * sets fonts, used throughout the app as base theme
@@ -60,7 +57,6 @@ object LMFeedTheme {
         }
 
         notificationIcon = lmFeedSetThemeRequest.notificationIcon
-        notificationTextColor = lmFeedSetThemeRequest.notificationTextColor
     }
 
     //returns the pair of theme font resource and assets path
@@ -75,10 +71,6 @@ object LMFeedTheme {
 
     fun getNotificationIcon(): Int? {
         return notificationIcon
-    }
-
-    fun getNotificationTextColor(): Int? {
-        return notificationTextColor
     }
 
     fun getTextLinkColor(): Int {
