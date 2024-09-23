@@ -160,6 +160,7 @@ object LMFeedPostBinderUtils {
 
                 val tvPostText = SpannableStringBuilder()
 
+                // update the post's text
                 tvPostText.append(
                     LMFeedSearchUtil.getTrimmedText(
                         textWithTags,

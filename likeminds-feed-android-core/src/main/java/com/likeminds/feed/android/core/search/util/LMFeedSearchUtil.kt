@@ -7,13 +7,12 @@ import android.text.style.*
 import androidx.annotation.ColorInt
 
 object LMFeedSearchUtil {
-
+    // finds the keyword in the post's text and highlight it
     fun getTrimmedText(
         text: String,
         keywords: List<String>,
         @ColorInt color: Int,
         @ColorInt highlightColor: Int? = null,
-
     ): SpannableStringBuilder {
         val keyword = keywords[0]
         val trimmedText: String
@@ -46,19 +45,19 @@ object LMFeedSearchUtil {
                 "... " + text.substring(text.length - totalLen)
             }
         }
-        return getHighlightedText(trimmedText, keywords, color,highlightColor)
+        return getHighlightedText(trimmedText, keywords, color, highlightColor)
     }
 
     private fun getHighlightedText(
         stringToBeMatched: String,
         keywordsMatched: List<String>,
         color: Int,
-        highlightColor: Int ?= null
+        highlightColor: Int? = null
     ): SpannableStringBuilder {
         val str = SpannableStringBuilder(stringToBeMatched)
         keywordsMatched.forEach { keyword ->
             if (str.startsWith(keyword, ignoreCase = true)) {
-                highlightMatchedText(str, color,highlightColor,0, keyword.length)
+                highlightMatchedText(str, color, highlightColor, 0, keyword.length)
             }
             if (str.contains(" $keyword", ignoreCase = true)) {
                 var lastIndex = 0
@@ -80,6 +79,7 @@ object LMFeedSearchUtil {
         return str
     }
 
+    // gives keyword color and highlightColor to the post's text
     private fun highlightMatchedText(
         str: SpannableStringBuilder,
         @ColorInt color: Int,
@@ -113,6 +113,7 @@ object LMFeedSearchUtil {
         }
     }
 
+    // finds keywords searched in the post's text and add it in a list
     fun findMatchedKeyword(
         keywordSearched: String?,
         string: String?,

@@ -1,23 +1,19 @@
 package com.likeminds.feed.android.core.search.view
 
 import android.app.Activity
-import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.activityfeed.view.LMFeedActivityFeedFragment
 import com.likeminds.feed.android.core.databinding.LmFeedSearchFragmentBinding
 import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
@@ -43,10 +39,6 @@ import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListe
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
-import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedListView
-import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
-import com.likeminds.feed.android.core.topicselection.viewmodel.LMFeedTopicSelectionViewModel
-import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
@@ -216,6 +208,7 @@ open class LMFeedSearchFragment : Fragment(),
                         rvSearch.hide()
                     }
                 }
+
                 override fun onSearchViewClosed() {
                     super.onSearchViewClosed()
                     this@LMFeedSearchFragment.onSearchViewClosed()
@@ -232,15 +225,14 @@ open class LMFeedSearchFragment : Fragment(),
 
                 override fun onKeywordEntered(keyword: String) {
                     super.onKeywordEntered(keyword)
-                    if(keyword.isNotEmpty()){
+                    if (keyword.isNotEmpty()) {
                         updateSearchedPosts(keyword)
-                    }
-                    else{
-                        Log.d("Keytword","Entered in else of onKeywordEntered()")
+                    } else {
+                        Log.d("Keytword", "Entered in else of onKeywordEntered()")
                         binding.apply {
                             layoutNoResultFound.hide()
                             rvSearch.clearPostsAndNotify()
-                            Log.d("Keytword","Cleared rv ")
+                            Log.d("Keytword", "Cleared rv ")
                         }
                     }
                 }

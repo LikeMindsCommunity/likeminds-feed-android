@@ -181,7 +181,7 @@ open class LMFeedSocialFeedFragment :
                 onNotificationIconClicked()
             }
 
-            headerViewSocial.setSearchIconClickListener{
+            headerViewSocial.setSearchIconClickListener {
                 onSearchIconClicked()
             }
 
