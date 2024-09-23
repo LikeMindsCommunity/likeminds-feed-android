@@ -204,7 +204,8 @@ object LMFeedViewDataConvertor {
         post: Post,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
-        widgetsMap: Map<String, Widget>
+        widgetsMap: Map<String, Widget>,
+        searchString: String? = null
     ): LMFeedPostViewData {
         val postCreatorUUID = post.uuid
         val postCreator = usersMap[postCreatorUUID]
@@ -240,6 +241,7 @@ object LMFeedViewDataConvertor {
         //post content view data
         val postContentViewData = LMFeedPostContentViewData.Builder()
             .text(post.text)
+            .keywordMatchedInPostText()
             .build()
 
         //post media view data
@@ -877,6 +879,18 @@ object LMFeedViewDataConvertor {
             .parentEntityType(widget.parentEntityType)
             .updatedAt(widget.updatedAt)
             .build()
+    }
+
+    fun getSearchedPosts(
+        searchString: String,
+        posts: List<Post>,
+        usersMap: Map<String, User>,
+        topicsMap: Map<String, Topic>,
+        widgetsMap: Map<String, Widget>
+    ): List<LMFeedPostViewData> {
+        return posts.map { post ->
+            convertPost(post, usersMap, topicsMap, widgetsMap, searchString)
+        }
     }
 
     /**--------------------------------

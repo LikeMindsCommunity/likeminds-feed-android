@@ -115,7 +115,8 @@ class LMFeedSearchViewModel : ViewModel() {
 
                 //convert to view data
                 val listOfPostViewData =
-                    LMFeedViewDataConvertor.convertGetFeedPosts(
+                    LMFeedViewDataConvertor.getSearchedPosts(
+                        searchString,
                         posts,
                         usersMap,
                         topicsMap,
@@ -173,7 +174,10 @@ class LMFeedSearchViewModel : ViewModel() {
 
             if (response.success) {
                 //sends event for pin/unpin post
-                LMFeedAnalytics.sendPostPinnedEvent(postViewData, LMFeedAnalytics.LMFeedScreenNames.SEARCH_SCREEN)
+                LMFeedAnalytics.sendPostPinnedEvent(
+                    postViewData,
+                    LMFeedAnalytics.LMFeedScreenNames.SEARCH_SCREEN
+                )
 
                 _postPinnedResponse.postValue(postViewData)
             } else {
