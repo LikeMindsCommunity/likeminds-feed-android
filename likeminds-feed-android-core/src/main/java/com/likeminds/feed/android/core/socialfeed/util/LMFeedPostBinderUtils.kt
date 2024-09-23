@@ -164,7 +164,7 @@ object LMFeedPostBinderUtils {
                     LMFeedSearchUtil.getTrimmedText(
                         textWithTags,
                         matchedKeyword,
-                        ContextCompat.getColor(contentView.context, R.color.lm_feed_black)
+                        ContextCompat.getColor(contentView.context, R.color.lm_feed_black),
                     )
                 )
 

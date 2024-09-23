@@ -3,8 +3,7 @@ package com.likeminds.feed.android.core.search.util
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
+import android.text.style.*
 import androidx.annotation.ColorInt
 
 object LMFeedSearchUtil {
@@ -12,7 +11,9 @@ object LMFeedSearchUtil {
     fun getTrimmedText(
         text: String,
         keywords: List<String>,
-        @ColorInt color: Int
+        @ColorInt color: Int,
+        @ColorInt highlightColor: Int? = null,
+
     ): SpannableStringBuilder {
         val keyword = keywords[0]
         val trimmedText: String
@@ -45,31 +46,33 @@ object LMFeedSearchUtil {
                 "... " + text.substring(text.length - totalLen)
             }
         }
-        return getHighlightedText(trimmedText, keywords, color)
+        return getHighlightedText(trimmedText, keywords, color,highlightColor)
     }
 
-    fun getHighlightedText(
+    private fun getHighlightedText(
         stringToBeMatched: String,
         keywordsMatched: List<String>,
-        color: Int
+        color: Int,
+        highlightColor: Int ?= null
     ): SpannableStringBuilder {
         val str = SpannableStringBuilder(stringToBeMatched)
         keywordsMatched.forEach { keyword ->
             if (str.startsWith(keyword, ignoreCase = true)) {
-                highlightMatchedText(str, color, 0, keyword.length)
+                highlightMatchedText(str, color,highlightColor,0, keyword.length)
             }
             if (str.contains(" $keyword", ignoreCase = true)) {
                 var lastIndex = 0
                 while (lastIndex != -1) {
-                    lastIndex = str.indexOf(" $keyword", lastIndex, ignoreCase = true)
+                    lastIndex = str.indexOf(keyword, lastIndex, ignoreCase = true)
                     if (lastIndex != -1) {
                         highlightMatchedText(
                             str,
                             color,
+                            highlightColor,
                             lastIndex,
-                            lastIndex + keyword.length + 1
+                            lastIndex + keyword.length
                         )
-                        lastIndex += " $keyword".length
+                        lastIndex += keyword.length
                     }
                 }
             }
@@ -77,9 +80,10 @@ object LMFeedSearchUtil {
         return str
     }
 
-    fun highlightMatchedText(
+    private fun highlightMatchedText(
         str: SpannableStringBuilder,
         @ColorInt color: Int,
+        @ColorInt highlightColor: Int? = null,
         startIndex: Int,
         endIndex: Int,
         applyBoldSpan: Boolean = true
@@ -98,6 +102,15 @@ object LMFeedSearchUtil {
             endIndex,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+        // apply background highlight color if provided
+        highlightColor?.let {
+            str.setSpan(
+                BackgroundColorSpan(it),
+                startIndex,
+                endIndex,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
     }
 
     fun findMatchedKeyword(

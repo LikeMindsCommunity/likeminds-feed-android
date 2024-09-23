@@ -35,6 +35,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/feed_search_bar_view" />
 
+
+        <include
+            android:id="@+id/progress_bar"
+            layout="@layout/lm_feed_layout_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/lm_feed_zero_dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

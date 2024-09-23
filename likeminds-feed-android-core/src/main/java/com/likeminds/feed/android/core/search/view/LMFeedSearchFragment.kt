@@ -136,7 +136,7 @@ open class LMFeedSearchFragment : Fragment(),
 
     // handles the cross press of search bar for this fragment
     protected open fun onSearchCrossed() {
-        binding.layoutNoResultFound.show()
+        binding.rvSearch.hide()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -188,7 +188,7 @@ open class LMFeedSearchFragment : Fragment(),
             } else {
                 binding.apply {
                     layoutNoResultFound.show()
-                    rvSearch.hide()
+                    rvSearch.clearPostsAndNotify()
                 }
             }
         }
@@ -202,12 +202,20 @@ open class LMFeedSearchFragment : Fragment(),
     private fun initSearchView() {
         binding.feedSearchBarView.apply {
             initialize(lifecycleScope)
-
+            //open search bar with animation
             post {
                 openSearch()
             }
 
+            //set search listener
             val searchListener = object : LMFeedSearchBarListener {
+                override fun onSearchViewOpened() {
+                    super.onSearchViewOpened()
+                    binding.apply {
+                        layoutNoResultFound.hide()
+                        rvSearch.hide()
+                    }
+                }
                 override fun onSearchViewClosed() {
                     super.onSearchViewClosed()
                     this@LMFeedSearchFragment.onSearchViewClosed()
@@ -216,19 +224,33 @@ open class LMFeedSearchFragment : Fragment(),
                 override fun onSearchCrossed() {
                     super.onSearchCrossed()
                     this@LMFeedSearchFragment.onSearchCrossed()
+                    binding.apply {
+                        layoutNoResultFound.hide()
+                        rvSearch.clearPostsAndNotify()
+                    }
                 }
 
                 override fun onKeywordEntered(keyword: String) {
                     super.onKeywordEntered(keyword)
-                    updateSearchedPosts(keyword)
+                    if(keyword.isNotEmpty()){
+                        updateSearchedPosts(keyword)
+                    }
+                    else{
+                        Log.d("Keytword","Entered in else of onKeywordEntered()")
+                        binding.apply {
+                            layoutNoResultFound.hide()
+                            rvSearch.clearPostsAndNotify()
+                            Log.d("Keytword","Cleared rv ")
+                        }
+                    }
                 }
 
                 override fun onEmptyKeywordEntered() {
                     super.onEmptyKeywordEntered()
-                    if (!searchKeyword.isNullOrEmpty()) {
-                        updateSearchedPosts(null)
+                    binding.apply {
+                        layoutNoResultFound.hide()
+                        rvSearch.clearPostsAndNotify()
                     }
-                    binding.layoutNoResultFound.show()
                 }
             }
 
@@ -238,6 +260,7 @@ open class LMFeedSearchFragment : Fragment(),
     }
 
     private fun initRecyclerView() {
+        LMFeedProgressBarHelper.showProgress(binding.progressBar)
         binding.rvSearch.apply {
             setAdapter()
             //set scroll listener
@@ -275,6 +298,7 @@ open class LMFeedSearchFragment : Fragment(),
     }
 
     private fun observeResponses() {
+        LMFeedProgressBarHelper.showProgress(binding.progressBar)
         // observe search post response
         feedSearchViewModel.searchFeedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
@@ -287,6 +311,7 @@ open class LMFeedSearchFragment : Fragment(),
                     rvSearch.refreshVideoAutoPlayer()
                 }
             }
+            LMFeedProgressBarHelper.hideProgress(binding.progressBar)
         }
 
         // observes deletePostResponse LiveData
@@ -355,6 +380,7 @@ open class LMFeedSearchFragment : Fragment(),
             when (response) {
                 is LMFeedSearchViewModel.ErrorMessageEvent.SearchPost -> {
                     val errorMessage = response.errorMessage
+                    LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
 
