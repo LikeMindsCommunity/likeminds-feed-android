@@ -6,15 +6,16 @@ import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityEntityVi
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.delete.model.LMFeedReasonChooseViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
-import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.post.create.model.LMFeedFileUploadViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountViewData
 import com.likeminds.feed.android.core.post.model.*
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.report.model.LMFeedReportTagViewData
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
+import com.likeminds.feed.android.core.search.util.LMFeedSearchUtil
 import com.likeminds.feed.android.core.socialfeed.model.*
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
@@ -241,7 +242,7 @@ object LMFeedViewDataConvertor {
         //post content view data
         val postContentViewData = LMFeedPostContentViewData.Builder()
             .text(post.text)
-            .keywordMatchedInPostText()
+            .keywordMatchedInPostText(LMFeedSearchUtil.findMatchedKeyword(searchString, post.text))
             .build()
 
         //post media view data

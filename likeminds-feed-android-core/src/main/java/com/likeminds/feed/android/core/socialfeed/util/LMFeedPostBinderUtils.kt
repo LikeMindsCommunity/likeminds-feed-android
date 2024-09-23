@@ -6,12 +6,14 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
 import android.view.View
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.util.LinkifyCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.postmenu.model.PIN_POST_MENU_ITEM_ID
 import com.likeminds.feed.android.core.postmenu.model.UNPIN_POST_MENU_ITEM_ID
+import com.likeminds.feed.android.core.search.util.LMFeedSearchUtil
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.*
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
@@ -143,119 +145,144 @@ object LMFeedPostBinderUtils {
         contentView.apply {
             val contentViewData = postViewData.contentViewData
             val postContent = contentViewData.text ?: return
+            val matchedKeyword = contentViewData.keywordMatchedInPostText
 
             val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
             val maxLines = (postContentStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
 
-            /**
-             * Text is modified as Linkify doesn't accept texts with these specific unicode characters
-             * @see #Linkify.containsUnsupportedCharacters(String)
-             */
-            val textForLinkify = postContent.getValidTextForLinkify()
-
-            var alreadySeenFullContent = contentViewData.alreadySeenFullContent == true
-
-            if (textForLinkify.isEmpty()) {
-                hide()
-                return
-            } else {
-                show()
-            }
-
-            // post is used here to get lines count in the text view
-            post {
+            //if used while searching a post
+            if (!matchedKeyword.isNullOrEmpty()) {
                 setOnClickListener {
                     postAdapterListener.onPostContentClicked(position, postViewData)
                 }
 
-                UserTaggingDecoder.decodeRegexIntoSpannableText(
-                    this,
-                    textForLinkify.trim(),
-                    enableClick = true,
-                    highlightColor = ContextCompat.getColor(
-                        context,
-                        LMFeedTheme.getTextLinkColor()
-                    ),
-                    hasAtRateSymbol = true,
-                ) { route ->
-                    val uuid = route.getQueryParameter("member_id")
-                        ?: route.getQueryParameter("user_id")
-                        ?: route.getQueryParameter("uuid")
-                        ?: route.lastPathSegment
-                        ?: return@decodeRegexIntoSpannableText
+                val textWithTags = UserTaggingDecoder.decode(postContent)
 
-                    postAdapterListener.onPostTaggedMemberClicked(position, uuid)
-                }
+                val tvPostText = SpannableStringBuilder()
 
-                val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
-                    this,
-                    maxLines,
-                    LMFeedTheme.getPostCharacterLimit()
+                tvPostText.append(
+                    LMFeedSearchUtil.getTrimmedText(
+                        textWithTags,
+                        matchedKeyword,
+                        ContextCompat.getColor(contentView.context, R.color.lm_feed_black)
+                    )
                 )
 
-                val trimmedText =
-                    if (!alreadySeenFullContent && !shortText.isNullOrEmpty()) {
-                        editableText.subSequence(0, shortText.length)
-                    } else {
-                        editableText
-                    }
+                contentView.setText(tvPostText, TextView.BufferType.SPANNABLE)
+            } else { // in normal cases
+                var alreadySeenFullContent = contentViewData.alreadySeenFullContent == true
 
-                val seeMoreSpannableStringBuilder = SpannableStringBuilder()
-                val expandableText = postContentStyle.expandableCTAText
+                /**
+                 * Text is modified as Linkify doesn't accept texts with these specific unicode characters
+                 * @see #Linkify.containsUnsupportedCharacters(String)
+                 */
+                val textForLinkify = postContent.getValidTextForLinkify()
 
-                if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
-
-                    val expandableTextColor = ContextCompat.getColor(
-                        context,
-                        postContentStyle.expandableCTAColor ?: R.color.lm_feed_brown_grey
-                    )
-                    val expandSpannable = SpannableStringBuilder(expandableText)
-                    expandSpannable.setSpan(
-                        ForegroundColorSpan(expandableTextColor),
-                        0,
-                        expandSpannable.length,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-
-                    val seeMoreClickableSpan = object : ClickableSpan() {
-                        override fun onClick(view: View) {
-                            setOnClickListener {
-                                return@setOnClickListener
-                            }
-                            alreadySeenFullContent = true
-                            val updatedPost = updatePostForSeeFullContent(postViewData)
-                            postAdapterListener.onPostContentSeeMoreClicked(position, updatedPost)
-                        }
-
-                        override fun updateDrawState(textPaint: TextPaint) {
-                            textPaint.isUnderlineText = false
-                        }
-                    }
-
-                    seeMoreSpannableStringBuilder.append(expandSpannable)
-                    seeMoreSpannableStringBuilder.setSpan(
-                        seeMoreClickableSpan,
-                        0,
-                        expandSpannable.length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
+                if (textForLinkify.isEmpty()) {
+                    hide()
+                    return
+                } else {
+                    show()
                 }
 
-                text = TextUtils.concat(
-                    trimmedText,
-                    seeMoreSpannableStringBuilder
-                )
-
-                val linkifyLinks =
-                    (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
-                LinkifyCompat.addLinks(this, linkifyLinks)
-                movementMethod = LMFeedLinkMovementMethod { url ->
+                // post is used here to get lines count in the text view
+                post {
                     setOnClickListener {
-                        return@setOnClickListener
+                        postAdapterListener.onPostContentClicked(position, postViewData)
                     }
 
-                    postAdapterListener.onPostContentLinkClicked(url)
-                    true
+                    UserTaggingDecoder.decodeRegexIntoSpannableText(
+                        this,
+                        textForLinkify.trim(),
+                        enableClick = true,
+                        highlightColor = ContextCompat.getColor(
+                            context,
+                            LMFeedTheme.getTextLinkColor()
+                        ),
+                        hasAtRateSymbol = true,
+                    ) { route ->
+                        val uuid = route.getQueryParameter("member_id")
+                            ?: route.getQueryParameter("user_id")
+                            ?: route.getQueryParameter("uuid")
+                            ?: route.lastPathSegment
+                            ?: return@decodeRegexIntoSpannableText
+
+                        postAdapterListener.onPostTaggedMemberClicked(position, uuid)
+                    }
+
+                    val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
+                        this,
+                        maxLines,
+                        LMFeedTheme.getPostCharacterLimit()
+                    )
+
+                    val trimmedText =
+                        if (!alreadySeenFullContent && !shortText.isNullOrEmpty()) {
+                            editableText.subSequence(0, shortText.length)
+                        } else {
+                            editableText
+                        }
+
+                    val seeMoreSpannableStringBuilder = SpannableStringBuilder()
+                    val expandableText = postContentStyle.expandableCTAText
+
+                    if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
+
+                        val expandableTextColor = ContextCompat.getColor(
+                            context,
+                            postContentStyle.expandableCTAColor ?: R.color.lm_feed_brown_grey
+                        )
+                        val expandSpannable = SpannableStringBuilder(expandableText)
+                        expandSpannable.setSpan(
+                            ForegroundColorSpan(expandableTextColor),
+                            0,
+                            expandSpannable.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+
+                        val seeMoreClickableSpan = object : ClickableSpan() {
+                            override fun onClick(view: View) {
+                                setOnClickListener {
+                                    return@setOnClickListener
+                                }
+                                alreadySeenFullContent = true
+                                val updatedPost = updatePostForSeeFullContent(postViewData)
+                                postAdapterListener.onPostContentSeeMoreClicked(
+                                    position,
+                                    updatedPost
+                                )
+                            }
+
+                            override fun updateDrawState(textPaint: TextPaint) {
+                                textPaint.isUnderlineText = false
+                            }
+                        }
+
+                        seeMoreSpannableStringBuilder.append(expandSpannable)
+                        seeMoreSpannableStringBuilder.setSpan(
+                            seeMoreClickableSpan,
+                            0,
+                            expandSpannable.length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+
+                    text = TextUtils.concat(
+                        trimmedText,
+                        seeMoreSpannableStringBuilder
+                    )
+
+                    val linkifyLinks =
+                        (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
+                    LinkifyCompat.addLinks(this, linkifyLinks)
+                    movementMethod = LMFeedLinkMovementMethod { url ->
+                        setOnClickListener {
+                            return@setOnClickListener
+                        }
+
+                        postAdapterListener.onPostContentLinkClicked(url)
+                        true
+                    }
                 }
             }
         }

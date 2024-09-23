@@ -1,22 +1,18 @@
 package com.likeminds.feed.android.core.search.viewmodel
 
 import android.content.Context
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
-import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.poll.model.SubmitVoteRequest
 import com.likeminds.likemindsfeed.post.model.*
-import com.likeminds.likemindsfeed.search.model.*
+import com.likeminds.likemindsfeed.search.model.SearchPostsRequest
+import com.likeminds.likemindsfeed.search.model.SearchType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
