@@ -50,7 +50,7 @@ object LMFeedPostBinderUtils {
         postContent: LMFeedTextView,
     ) {
         val postContentTextStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-        postContent.setStyle(postContentTextStyle)
+        postContent.setStyle(postContentTextStyle.postTextViewStyle)
     }
 
     // customizes the horizontal post action view
@@ -148,7 +148,10 @@ object LMFeedPostBinderUtils {
             val matchedKeyword = contentViewData.keywordMatchedInPostText
 
             val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-            val maxLines = (postContentStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
+            val postTextStyle = postContentStyle.postTextViewStyle
+            val searchHighlightedStyle = postContentStyle.searchHighlightedViewStyle
+
+            val maxLines = (postTextStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
 
             //if used while searching a post
             if (!matchedKeyword.isNullOrEmpty()) {
@@ -160,12 +163,17 @@ object LMFeedPostBinderUtils {
 
                 val tvPostText = SpannableStringBuilder()
 
+                // get the color of text and background
+                val textColor = searchHighlightedStyle?.textColor ?: R.color.lm_feed_black
+                val backgroundColor = searchHighlightedStyle?.backgroundColor?: R.color.lm_feed_transparent
+
                 // update the post's text
                 tvPostText.append(
                     LMFeedSearchUtil.getTrimmedText(
                         textWithTags,
                         matchedKeyword,
-                        ContextCompat.getColor(contentView.context, R.color.lm_feed_black),
+                        ContextCompat.getColor(context, textColor),
+                        ContextCompat.getColor(context, backgroundColor)
                     )
                 )
 
@@ -225,13 +233,13 @@ object LMFeedPostBinderUtils {
                         }
 
                     val seeMoreSpannableStringBuilder = SpannableStringBuilder()
-                    val expandableText = postContentStyle.expandableCTAText
+                    val expandableText = postContentStyle.postTextViewStyle.expandableCTAText
 
                     if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
 
                         val expandableTextColor = ContextCompat.getColor(
                             context,
-                            postContentStyle.expandableCTAColor ?: R.color.lm_feed_brown_grey
+                            postTextStyle.expandableCTAColor ?: R.color.lm_feed_brown_grey
                         )
                         val expandSpannable = SpannableStringBuilder(expandableText)
                         expandSpannable.setSpan(
