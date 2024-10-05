@@ -1495,7 +1495,7 @@ open class LMFeedSocialFeedFragment :
     }
 
     //customizes the topic selector bar
-    protected open fun customizeTopicSelectorBar(topicSelectorBar: LMFeedSocialTopicSelectorBarView) {
+    protected open fun customizeTopicSelectorBar(topicSelectorBar: LMFeedTopicSelectorBarView) {
         topicSelectorBar.apply {
             setStyle(LMFeedStyleTransformer.socialFeedFragmentViewStyle.topicSelectorBarStyle)
 

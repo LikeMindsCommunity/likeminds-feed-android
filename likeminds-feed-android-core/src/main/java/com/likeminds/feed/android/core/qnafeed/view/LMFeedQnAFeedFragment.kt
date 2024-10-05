@@ -6,14 +6,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentQnaFeedBinding
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
 import com.likeminds.feed.android.core.qnafeed.viewmodel.LMFeedQnAFeedViewModel
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
+import com.likeminds.feed.android.core.ui.base.styles.setStyle
+import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
-import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
-import com.likeminds.feed.android.core.utils.LMFeedProgressBarHelper
+import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
+import com.likeminds.feed.android.core.utils.*
 
 open class LMFeedQnAFeedFragment :
     Fragment(),
@@ -35,6 +39,12 @@ open class LMFeedQnAFeedFragment :
     ): View {
         binding = LmFeedFragmentQnaFeedBinding.inflate(layoutInflater)
 
+        binding.apply {
+            customizeCreateNewPostButton(fabNewPost)
+            customizeQnAFeedHeaderView(headerViewQna)
+            customizePostHeadingView()
+            customizePostContentView()
+        }
         return binding.root
     }
 
@@ -47,6 +57,53 @@ open class LMFeedQnAFeedFragment :
     override fun onStart() {
         super.onStart()
         postPublisher.subscribe(this)
+    }
+
+    //customizes the create new post fab
+    protected open fun customizeCreateNewPostButton(fabNewPost: LMFeedFAB) {
+        fabNewPost.apply {
+            setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.createNewPostButtonViewStyle)
+
+            text = getString(R.string.lm_feed_ask_question)
+        }
+    }
+
+    //customizes the header view
+    protected open fun customizeQnAFeedHeaderView(headerViewQnA: LMFeedHeaderView) {
+        headerViewQnA.apply {
+            setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.headerViewStyle)
+
+            setTitleText(getString(R.string.lm_feed_feed))
+        }
+    }
+
+    // customizes the heading view in the post
+    protected open fun customizePostHeadingView() {
+        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
+            .postHeadingTextStyle(
+                //todo: see more?
+                LMFeedTextStyle.Builder()
+                    .textColor(R.color.lm_feed_dark_grey)
+                    .textSize(R.dimen.lm_feed_text_large)
+                    .maxLines(3)
+                    .fontResource(R.font.lm_feed_roboto_medium)
+                    .build()
+            )
+            .build()
+    }
+
+    // customizes the post content view in the post
+    protected open fun customizePostContentView() {
+        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
+            .postContentTextStyle(
+                LMFeedTextStyle.Builder()
+                    .textColor(R.color.lm_feed_dark_grey)
+                    .textSize(R.dimen.lm_feed_text_medium)
+                    .maxLines(3)
+                    .fontResource(R.font.lm_feed_roboto_medium)
+                    .build()
+            )
+            .build()
     }
 
     private fun initUI() {

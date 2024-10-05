@@ -1,7 +1,9 @@
-package com.likeminds.feed.android.core.socialfeed.style
+package com.likeminds.feed.android.core.qnafeed.style
 
 import android.text.TextUtils
 import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.socialfeed.style.LMFeedPostingViewStyle
+import com.likeminds.feed.android.core.socialfeed.style.LMFeedTopicSelectorBarViewStyle
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
@@ -10,15 +12,15 @@ import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 
 /**
- * [LMFeedSocialFeedFragmentViewStyle] helps you to customize the social feed fragment [LMFeedSocialFeedFragment]
+ * [LMFeedQnAFeedFragmentViewStyle] helps you to customize the qna feed fragment [LMFeedQnAFeedFragment]
  *
- * @property headerViewStyle : [LMFeedHeaderViewStyle] this will help you to customize the header view in the social feed fragment
- * @property createNewPostButtonViewStyle : [LMFeedFABStyle] this will help you to customize the create new post fab in the social feed fragment
- * @property noPostLayoutViewStyle: [LMFeedNoEntityLayoutViewStyle] this will help you to customize the no post layout in the social feed fragment
- * @property postingViewStyle: [LMFeedPostingViewStyle] this will help you to customize the posting progress view in the social feed fragment
- * @property topicSelectorBarStyle: [LMFeedTopicSelectorBarViewStyle] this will help you to customize the topic selector bar in the social feed fragment
+ * @property headerViewStyle : [LMFeedHeaderViewStyle] this will help you to customize the header view in the qna feed fragment
+ * @property createNewPostButtonViewStyle : [LMFeedFABStyle] this will help you to customize the create new post fab in the qna feed fragment
+ * @property noPostLayoutViewStyle: [LMFeedNoEntityLayoutViewStyle] this will help you to customize the no post layout in the qna feed fragment
+ * @property postingViewStyle: [LMFeedPostingViewStyle] this will help you to customize the posting progress view in the qna feed fragment
+ * @property topicSelectorBarStyle: [LMFeedTopicSelectorBarViewStyle] this will help you to customize the topic selector bar in the qna feed fragment
  * */
-class LMFeedSocialFeedFragmentViewStyle private constructor(
+class LMFeedQnAFeedFragmentViewStyle private constructor(
     //header
     val headerViewStyle: LMFeedHeaderViewStyle,
     //create post button
@@ -161,7 +163,7 @@ class LMFeedSocialFeedFragmentViewStyle private constructor(
             }
 
         fun build() =
-            LMFeedSocialFeedFragmentViewStyle(
+            LMFeedQnAFeedFragmentViewStyle(
                 headerViewStyle,
                 createNewPostButtonViewStyle,
                 noPostLayoutViewStyle,

@@ -15,9 +15,13 @@ class LMFeedPostContentViewData private constructor(
         private var text: String? = null
         private var alreadySeenFullContent: Boolean? = null
 
-        fun text(text: String?) = apply { this.text = text }
-        fun alreadySeenFullContent(alreadySeenFullContent: Boolean?) =
-            apply { this.alreadySeenFullContent = alreadySeenFullContent }
+        fun text(text: String?) = apply {
+            this.text = text
+        }
+
+        fun alreadySeenFullContent(alreadySeenFullContent: Boolean?) = apply {
+            this.alreadySeenFullContent = alreadySeenFullContent
+        }
 
         fun build() = LMFeedPostContentViewData(
             text,

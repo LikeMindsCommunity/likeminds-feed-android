@@ -150,4 +150,8 @@ interface LMFeedPostAdapterListener {
     fun onPostVideoFeedCaughtUpClicked() {
         //triggered when the user clicks on the cta on video feed caught up screen
     }
+
+    fun onPostHeadingClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the heading of the post
+    }
 }

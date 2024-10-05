@@ -9,6 +9,7 @@ class LMFeedPostViewData private constructor(
     val id: String,
     val headerViewData: LMFeedPostHeaderViewData,
     val contentViewData: LMFeedPostContentViewData,
+    val headingViewData: LMFeedPostHeadingViewData,
     val mediaViewData: LMFeedMediaViewData,
     val actionViewData: LMFeedPostActionViewData,
     val topicsViewData: List<LMFeedTopicViewData>,
@@ -72,6 +73,8 @@ class LMFeedPostViewData private constructor(
             LMFeedPostHeaderViewData.Builder().build()
         private var contentViewData: LMFeedPostContentViewData =
             LMFeedPostContentViewData.Builder().build()
+        private var headingViewData: LMFeedPostHeadingViewData =
+            LMFeedPostHeadingViewData.Builder().build()
         private var mediaViewData: LMFeedMediaViewData =
             LMFeedMediaViewData.Builder().build()
         private var actionViewData: LMFeedPostActionViewData =
@@ -82,33 +85,55 @@ class LMFeedPostViewData private constructor(
         private var fromVideoAction: Boolean = false
         private var isPosted: Boolean = true
 
-        fun id(id: String) = apply { this.id = id }
-        fun headerViewData(headerViewData: LMFeedPostHeaderViewData) =
-            apply { this.headerViewData = headerViewData }
+        fun id(id: String) = apply {
+            this.id = id
+        }
 
-        fun contentViewData(contentViewData: LMFeedPostContentViewData) =
-            apply { this.contentViewData = contentViewData }
+        fun headerViewData(headerViewData: LMFeedPostHeaderViewData) = apply {
+            this.headerViewData = headerViewData
+        }
 
-        fun mediaViewData(mediaViewData: LMFeedMediaViewData) =
-            apply { this.mediaViewData = mediaViewData }
+        fun contentViewData(contentViewData: LMFeedPostContentViewData) = apply {
+            this.contentViewData = contentViewData
+        }
 
-        fun actionViewData(actionViewData: LMFeedPostActionViewData) =
-            apply { this.actionViewData = actionViewData }
+        fun headingViewData(headingViewData: LMFeedPostHeadingViewData) = apply {
+            this.headingViewData = headingViewData
+        }
 
-        fun topicsViewData(topicsViewData: List<LMFeedTopicViewData>) =
-            apply { this.topicsViewData = topicsViewData }
+        fun mediaViewData(mediaViewData: LMFeedMediaViewData) = apply {
+            this.mediaViewData = mediaViewData
+        }
 
-        fun fromPostLiked(fromPostLiked: Boolean) = apply { this.fromPostLiked = fromPostLiked }
-        fun fromPostSaved(fromPostSaved: Boolean) = apply { this.fromPostSaved = fromPostSaved }
-        fun fromVideoAction(fromVideoAction: Boolean) =
-            apply { this.fromVideoAction = fromVideoAction }
+        fun actionViewData(actionViewData: LMFeedPostActionViewData) = apply {
+            this.actionViewData = actionViewData
+        }
 
-        fun isPosted(isPosted: Boolean) = apply { this.isPosted = isPosted }
+        fun topicsViewData(topicsViewData: List<LMFeedTopicViewData>) = apply {
+            this.topicsViewData = topicsViewData
+        }
+
+        fun fromPostLiked(fromPostLiked: Boolean) = apply {
+            this.fromPostLiked = fromPostLiked
+        }
+
+        fun fromPostSaved(fromPostSaved: Boolean) = apply {
+            this.fromPostSaved = fromPostSaved
+        }
+
+        fun fromVideoAction(fromVideoAction: Boolean) = apply {
+            this.fromVideoAction = fromVideoAction
+        }
+
+        fun isPosted(isPosted: Boolean) = apply {
+            this.isPosted = isPosted
+        }
 
         fun build() = LMFeedPostViewData(
             id,
             headerViewData,
             contentViewData,
+            headingViewData,
             mediaViewData,
             actionViewData,
             topicsViewData,
@@ -124,6 +149,7 @@ class LMFeedPostViewData private constructor(
             .id(id)
             .headerViewData(headerViewData)
             .contentViewData(contentViewData)
+            .headingViewData(headingViewData)
             .mediaViewData(mediaViewData)
             .actionViewData(actionViewData)
             .topicsViewData(topicsViewData)
@@ -141,6 +167,8 @@ class LMFeedPostViewData private constructor(
             append(headerViewData)
             append(", contentViewData=")
             append(contentViewData)
+            append(", headingViewData=")
+            append(headingViewData)
             append(", mediaViewData=")
             append(mediaViewData)
             append(", actionViewData=")

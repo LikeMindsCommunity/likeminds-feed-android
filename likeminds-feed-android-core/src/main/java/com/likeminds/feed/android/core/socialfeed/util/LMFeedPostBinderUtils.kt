@@ -76,6 +76,7 @@ object LMFeedPostBinderUtils {
     //bind post data to specific views
     fun setPostBindData(
         headerView: LMFeedPostHeaderView,
+        headingView: LMFeedTextView,
         contentView: LMFeedTextView,
         data: LMFeedPostViewData,
         position: Int,
@@ -97,6 +98,14 @@ object LMFeedPostBinderUtils {
                 data.headerViewData
             )
 
+            // sets data to the heading view
+            setPostHeadingViewData(
+                headingView,
+                data,
+                postAdapterListener,
+                position
+            )
+
             // sets the text content of the post
             setPostContentViewData(
                 contentView,
@@ -105,6 +114,7 @@ object LMFeedPostBinderUtils {
                 position
             )
 
+            // sets the topics view of the post
             setPostTopicsViewData(
                 topicsView,
                 data.topicsViewData
@@ -257,6 +267,27 @@ object LMFeedPostBinderUtils {
                     postAdapterListener.onPostContentLinkClicked(url)
                     true
                 }
+            }
+        }
+    }
+
+    // sets data in post heading view
+    private fun setPostHeadingViewData(
+        headingView: LMFeedTextView,
+        postViewData: LMFeedPostViewData,
+        postAdapterListener: LMFeedPostAdapterListener,
+        position: Int
+    ) {
+        headingView.apply {
+            val postHeadingTextStyle = LMFeedStyleTransformer.postViewStyle.postHeadingTextStyle
+
+            if (postHeadingTextStyle == null || postViewData.headingViewData.heading.isNullOrEmpty()) {
+                headingView.hide()
+            } else {
+                headingView.show()
+                headingView.text = postViewData.headingViewData.heading
+
+                postAdapterListener.onPostHeadingClicked(position, postViewData)
             }
         }
     }

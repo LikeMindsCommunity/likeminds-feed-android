@@ -38,14 +38,28 @@
             app:layout_constraintTop_toBottomOf="@id/post_header" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
-            android:id="@+id/tv_post_content"
+            android:id="@+id/tv_post_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/lm_feed_regular_margin"
+            android:layout_marginTop="@dimen/lm_feed_large_margin"
             android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_topics_group"
+            tools:fontFamily="@font/roboto_medium"
+            tools:textColor="@color/lm_feed_dark_grey"
+            tools:textSize="@dimen/lm_feed_text_large" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+            android:id="@+id/tv_post_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/lm_feed_large_margin"
+            android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_post_heading"
+            app:layout_goneMarginTop="@dimen/lm_feed_regular_margin"
             tools:fontFamily="@font/lm_feed_roboto"
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_large" />

@@ -112,6 +112,7 @@ class CustomReelsViewDataBinder(
             // checks whether to bind complete data or not and execute corresponding lambda function
             LMFeedPostBinderUtils.setPostBindData(
                 postHeader,
+                tvPostHeading,
                 tvPostContent,
                 data,
                 position,
