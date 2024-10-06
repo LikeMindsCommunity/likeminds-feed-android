@@ -36,7 +36,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:fontFamily="@font/lm_feed_roboto"
             tools:ignore="UnusedAttribute"
-            tools:text="@string/lm_feed_likes"
+            tools:text="@string/lm_feed_s_likes"
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_medium" />
 

@@ -10,10 +10,10 @@
     <string name="lm_feed_be_the_first_one_to_create_a_comment">Be the first one to create a comment</string>
     <string name="lm_feed_creating_s">Creating %s</string>
     <string name="lm_feed_retry">Retry</string>
-    <string name="lm_feed_like">Like</string>
-    <plurals name="lm_feed_likes">
-        <item quantity="one">1 Like</item>
-        <item quantity="other">%d Likes</item>
+    <string name="lm_feed_s_like">%s</string>
+    <plurals name="lm_feed_s_likes">
+        <item quantity="one">1 %s</item>
+        <item quantity="other">%d %s</item>
     </plurals>
     <string name="lm_feed_add_comment">Add Comment</string>
     <plurals name="lm_feed_comments">
@@ -58,10 +58,10 @@
     <string name="lm_feed_ellipsize">…</string>
     <string name="lm_feed_s_post">%s</string>
     <string name="lm_feed_notifications">Notifications</string>
-    <string name="lm_feed_likes">Likes</string>
-    <plurals name="lm_feed_likes_small">
-        <item quantity="one">1 like</item>
-        <item quantity="other">%d likes</item>
+    <string name="lm_feed_s_likes">%s</string>
+    <plurals name="lm_feed_s_likes_small">
+        <item quantity="one">1 %s</item>
+        <item quantity="other">%d %s</item>
     </plurals>
     <string name="lm_feed_report_sub_header">You would be able to report this %s after selecting a problem.</string>
     <string name="lm_feed_comment">Comment</string>

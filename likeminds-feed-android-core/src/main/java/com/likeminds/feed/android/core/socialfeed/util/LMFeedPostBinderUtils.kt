@@ -304,12 +304,23 @@ object LMFeedPostBinderUtils {
             val likesCount = postActionViewData.likesCount
 
             val likesCountText = if (likesCount == 0) {
-                context.getString(R.string.lm_feed_like)
+                context.getString(
+                    R.string.lm_feed_s_like,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
+                val likeString = if (likesCount == 1) {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
                 context.resources.getQuantityString(
-                    R.plurals.lm_feed_likes,
+                    R.plurals.lm_feed_s_likes,
                     likesCount,
-                    likesCount
+                    likeString
                 )
             }
             setLikesCount(likesCountText)
@@ -340,7 +351,11 @@ object LMFeedPostBinderUtils {
             val likesCount = postActionViewData.likesCount
 
             val likesCountText = if (likesCount == 0) {
-                context.getString(R.string.lm_feed_like)
+                context.getString(
+                    R.string.lm_feed_s_like,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
                 likesCount.toLong().getFormatedNumber()
             }
