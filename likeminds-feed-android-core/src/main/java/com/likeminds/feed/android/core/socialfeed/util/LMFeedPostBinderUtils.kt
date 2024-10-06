@@ -320,6 +320,7 @@ object LMFeedPostBinderUtils {
                 context.resources.getQuantityString(
                     R.plurals.lm_feed_s_likes,
                     likesCount,
+                    likesCount,
                     likeString
                 )
             }
@@ -328,12 +329,24 @@ object LMFeedPostBinderUtils {
             val commentsCount = postActionViewData.commentsCount
 
             val commentsCountText = if (commentsCount == 0) {
-                context.getString(R.string.lm_feed_add_comment)
+                context.getString(
+                    R.string.lm_feed_add_s_comment,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_PLURAL)
+                )
             } else {
+                val commentString = if (commentsCount == 1) {
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
                 context.resources.getQuantityString(
-                    R.plurals.lm_feed_comments,
+                    R.plurals.lm_feed_s_comments,
                     commentsCount,
-                    commentsCount
+                    commentsCount,
+                    commentString
                 )
             }
             setCommentsCount(commentsCountText)

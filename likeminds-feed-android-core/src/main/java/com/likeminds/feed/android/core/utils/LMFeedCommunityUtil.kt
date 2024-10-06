@@ -32,7 +32,7 @@ object LMFeedCommunityUtil {
     }
 
     fun getCommentVariable(): String {
-        return likeVariable
+        return commentVariable
     }
 
     fun setCommentVariable(commentVariable: String) {

@@ -111,8 +111,20 @@ open class LMFeedAdminDeleteDialogFragment
                     )
                 )
             } else {
-                setAlertTitle(getString(R.string.lm_feed_delete_comment_question))
-                setAlertSubtitle(getString(R.string.lm_feed_delete_comment_message))
+                setAlertTitle(
+                    getString(
+                        R.string.lm_feed_delete_s_comment_question,
+                        LMFeedCommunityUtil.getCommentVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                    )
+                )
+                setAlertSubtitle(
+                    getString(
+                        R.string.lm_feed_delete_s_comment_message,
+                        LMFeedCommunityUtil.getCommentVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                    )
+                )
             }
         }
     }

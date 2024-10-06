@@ -224,6 +224,7 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
             this.resources.getQuantityString(
                 R.plurals.lm_feed_s_likes_small,
                 totalLikes,
+                totalLikes,
                 likeString
             )
         )

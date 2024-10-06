@@ -107,6 +107,7 @@ class LMFeedItemCommentViewDataBinder(
                 context.resources.getQuantityString(
                     R.plurals.lm_feed_s_likes,
                     data.likesCount,
+                    data.likesCount,
                     likeString
                 )
             }

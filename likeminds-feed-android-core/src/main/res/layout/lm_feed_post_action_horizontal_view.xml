@@ -56,7 +56,7 @@
             tools:drawableStart="@drawable/lm_feed_ic_comment"
             tools:fontFamily="@font/lm_feed_roboto"
             tools:ignore="UnusedAttribute"
-            tools:text="@string/lm_feed_comment"
+            tools:text="@string/lm_feed_s_comment"
             tools:textAlignment="center"
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_medium" />

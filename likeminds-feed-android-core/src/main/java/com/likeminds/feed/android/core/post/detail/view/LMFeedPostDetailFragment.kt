@@ -160,7 +160,13 @@ open class LMFeedPostDetailFragment :
     //customize comment composer
     protected open fun customizeCommentComposer(commentComposer: LMFeedCommentComposerView) {
         commentComposer.apply {
-            setCommentInputBoxHint(getString(R.string.lm_feed_write_a_comment))
+            setCommentInputBoxHint(
+                getString(
+                    R.string.lm_feed_write_a_s_comment,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                )
+            )
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.commentComposerStyle)
         }
     }
@@ -557,11 +563,20 @@ open class LMFeedPostDetailFragment :
 
     // updates the comments count on toolbar
     private fun updateCommentsCount(commentsCount: Int) {
+        val commentString = if (commentsCount == 1) {
+            LMFeedCommunityUtil.getCommentVariable()
+                .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+        } else {
+            LMFeedCommunityUtil.getCommentVariable()
+                .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_PLURAL)
+        }
+
         binding.headerViewPostDetail.setSubTitleText(
             resources.getQuantityString(
-                R.plurals.lm_feed_comments_small,
+                R.plurals.lm_feed_s_comments_small,
                 commentsCount,
-                commentsCount
+                commentsCount,
+                commentString
             )
         )
     }
@@ -890,7 +905,11 @@ open class LMFeedPostDetailFragment :
             if (!isLocal) {
                 LMFeedViewUtils.showShortToast(
                     requireContext(),
-                    getString(R.string.lm_feed_comment_deleted)
+                    getString(
+                        R.string.lm_feed_s_comment_deleted,
+                        LMFeedCommunityUtil.getCommentVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                    )
                 )
             }
 
