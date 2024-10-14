@@ -62,7 +62,6 @@ open class LMFeedSearchFragment : Fragment(),
     LMFeedPostAdapterListener,
     LMFeedAdminDeleteDialogListener,
     LMFeedSelfDeleteDialogListener,
-    LMFeedSelectedTopicAdapterListener,
     LMFeedPostObserver {
 
     private lateinit var binding: LmFeedSearchFragmentBinding
@@ -203,10 +202,7 @@ open class LMFeedSearchFragment : Fragment(),
             val searchListener = object : LMFeedSearchBarListener {
                 override fun onSearchViewOpened() {
                     super.onSearchViewOpened()
-                    binding.apply {
-                        layoutNoResultFound.hide()
-                        rvSearch.hide()
-                    }
+                    binding.layoutNoResultFound.hide()
                 }
 
                 override fun onSearchViewClosed() {
@@ -559,6 +555,16 @@ open class LMFeedSearchFragment : Fragment(),
         )
 
         LMFeedAnalytics.sendPostShared(postViewData)
+    }
+
+    //updates the fromPostLiked/fromPostSaved variables and updates the rv list
+    override fun updateFromLikedSaved(position: Int, postViewData: LMFeedPostViewData) {
+        val updatedPostData = postViewData.toBuilder()
+            .fromPostLiked(false)
+            .fromPostSaved(false)
+            .build()
+
+        binding.rvSearch.updatePostWithoutNotifying(position, updatedPostData)
     }
 
     //callback when the user clicks on the link in the post content

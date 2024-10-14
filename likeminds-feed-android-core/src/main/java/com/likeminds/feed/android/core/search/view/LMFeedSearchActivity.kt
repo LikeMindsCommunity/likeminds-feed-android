@@ -32,11 +32,11 @@ class LMFeedSearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //inflates search feed fragment
-        inflatePostDetailFragment()
+        inflateSearchFeedFragment()
 
     }
 
-    private fun inflatePostDetailFragment() {
+    private fun inflateSearchFeedFragment() {
         //gets feed search fragment instance
         val feedSearchFragment =
             LMFeedSearchFragment.getInstance()

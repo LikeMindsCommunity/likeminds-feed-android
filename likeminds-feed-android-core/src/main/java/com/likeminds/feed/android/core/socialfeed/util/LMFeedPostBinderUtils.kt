@@ -5,6 +5,7 @@ import android.text.*
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -121,6 +122,7 @@ object LMFeedPostBinderUtils {
         headerView: LMFeedPostHeaderView,
         headerViewData: LMFeedPostHeaderViewData
     ) {
+        Log.d("Test123","setPostHeaderViewData called")
         headerView.apply {
             setPinIcon(headerViewData.isPinned)
             setPostEdited(headerViewData.isEdited)
@@ -142,6 +144,7 @@ object LMFeedPostBinderUtils {
         postAdapterListener: LMFeedPostAdapterListener,
         position: Int
     ) {
+        Log.d("Test123","setPostContentViewData called")
         contentView.apply {
             val contentViewData = postViewData.contentViewData
             val postContent = contentViewData.text ?: return
@@ -153,38 +156,70 @@ object LMFeedPostBinderUtils {
 
             val maxLines = (postTextStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
 
-            //if used while searching a post
+            Log.d("Test123","matchedKeyword:{$matchedKeyword}")
+            // if used while searching a post
             if (!matchedKeyword.isNullOrEmpty()) {
-                setOnClickListener {
-                    postAdapterListener.onPostContentClicked(position, postViewData)
+                val textForLinkify = postContent.getValidTextForLinkify()
+
+                if (textForLinkify.isEmpty()) {
+                    hide()
+                    return
+                } else {
+                    Log.d("Linkify", "Linkify used here")
+                    show()
                 }
 
-                val textWithTags = UserTaggingDecoder.decode(postContent)
+                post {
+                    setOnClickListener {
+                        postAdapterListener.onPostContentClicked(position, postViewData)
+                    }
+                    UserTaggingDecoder.decodeRegexIntoSpannableText(
+                        this,
+                        textForLinkify.trim(),
+                        enableClick = true,
+                        highlightColor = ContextCompat.getColor(
+                            context,
+                            LMFeedTheme.getTextLinkColor()
+                        ),
+                        hasAtRateSymbol = true,
+                    ) { route ->
+                        val uuid = route.getQueryParameter("member_id")
+                            ?: route.getQueryParameter("user_id")
+                            ?: route.getQueryParameter("uuid")
+                            ?: route.lastPathSegment
+                            ?: return@decodeRegexIntoSpannableText
 
-                val tvPostText = SpannableStringBuilder()
+                        postAdapterListener.onPostTaggedMemberClicked(position, uuid)
+                    }
 
-                // get the color of text and background
-                val textColor = searchHighlightedStyle?.textColor ?: R.color.lm_feed_black
-                val backgroundColor = searchHighlightedStyle?.backgroundColor?: R.color.lm_feed_transparent
+                    val textWithTags = UserTaggingDecoder.decode(postContent)
 
-                // update the post's text
-                tvPostText.append(
-                    LMFeedSearchUtil.getTrimmedText(
-                        textWithTags,
-                        matchedKeyword,
-                        ContextCompat.getColor(context, textColor),
-                        ContextCompat.getColor(context, backgroundColor)
+                    val tvPostText = SpannableStringBuilder()
+
+                    // get the color of text and background
+                    val textColor = searchHighlightedStyle?.textColor ?: R.color.lm_feed_black
+                    val backgroundColor = searchHighlightedStyle?.backgroundColor ?: R.color.lm_feed_transparent
+
+                    // update the post's text
+                    tvPostText.append(
+                        LMFeedSearchUtil.getTrimmedText(
+                            textWithTags,
+                            matchedKeyword,
+                            ContextCompat.getColor(context, textColor),
+                            ContextCompat.getColor(context, backgroundColor)
+                        )
                     )
-                )
 
-                contentView.setText(tvPostText, TextView.BufferType.SPANNABLE)
+                    Log.d("Test123","matchedKeyword:{$matchedKeyword}")
+                    Log.d("Test123","Post text:{$tvPostText}")
+//                    Log.d("Test123","postContent in Search:{$postContent}")
+
+                    contentView.setText(tvPostText, TextView.BufferType.SPANNABLE)
+//                    Log.d("tvPostText", "$tvPostText")
+                }
             } else { // in normal cases
                 var alreadySeenFullContent = contentViewData.alreadySeenFullContent == true
 
-                /**
-                 * Text is modified as Linkify doesn't accept texts with these specific unicode characters
-                 * @see #Linkify.containsUnsupportedCharacters(String)
-                 */
                 val textForLinkify = postContent.getValidTextForLinkify()
 
                 if (textForLinkify.isEmpty()) {
@@ -194,7 +229,6 @@ object LMFeedPostBinderUtils {
                     show()
                 }
 
-                // post is used here to get lines count in the text view
                 post {
                     setOnClickListener {
                         postAdapterListener.onPostContentClicked(position, postViewData)
@@ -280,6 +314,10 @@ object LMFeedPostBinderUtils {
                         trimmedText,
                         seeMoreSpannableStringBuilder
                     )
+
+                    Log.d("Test123","matchedKeyword in else ie null:{$matchedKeyword}")
+                    Log.d("Test123","Post text:{$text}")
+//                    Log.d("tvPostText", "$text")
 
                     val linkifyLinks =
                         (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
