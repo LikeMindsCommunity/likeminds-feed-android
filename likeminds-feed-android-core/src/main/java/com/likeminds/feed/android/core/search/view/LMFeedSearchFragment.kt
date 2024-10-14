@@ -36,7 +36,6 @@ import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.*
 import com.likeminds.feed.android.core.search.viewmodel.LMFeedSearchViewModel
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView

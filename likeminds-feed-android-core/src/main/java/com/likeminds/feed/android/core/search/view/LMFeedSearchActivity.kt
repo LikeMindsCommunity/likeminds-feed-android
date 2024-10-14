@@ -1,10 +1,9 @@
-package com.likeminds.feed.android.core.search.view;
+package com.likeminds.feed.android.core.search.view
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.likeminds.feed.android.core.activityfeed.view.LMFeedActivityFeedActivity
 import com.likeminds.feed.android.core.databinding.LmFeedSearchActivityBinding
 import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailActivity
 
