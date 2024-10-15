@@ -250,6 +250,7 @@ open class LMFeedSearchFragment : Fragment(),
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
         binding.rvSearch.apply {
             setAdapter()
+            Log.d("Adapter123", "Adapter set")
             //set scroll listener
             val paginationScrollListener =
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
