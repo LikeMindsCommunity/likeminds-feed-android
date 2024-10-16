@@ -35,6 +35,7 @@
     <dimen name="lm_feed_corner_radius_small">2dp</dimen>
     <dimen name="lm_feed_corner_radius_regular">4dp</dimen>
     <dimen name="lm_feed_corner_radius_medium">8dp</dimen>
+    <dimen name="lm_feed_corner_radius_large">16dp</dimen>
     <dimen name="lm_feed_corner_radius_bottom_sheet">10dp</dimen>
 
     <!--    Padding Size-->
@@ -174,4 +175,13 @@
     <!-- Label Icon Container  -->
     <dimen name="lm_feed_container_label_margin_start">18dp</dimen>
     <dimen name="lm_feed_label_icon_container_top_margin">26dp</dimen>
+
+    <!-- Post top response view  -->
+    <dimen name="lm_feed_top_response_author_image_size">40dp</dimen>
+
+    <!-- QnA Feed Action View  -->
+    <dimen name="lm_qna_upvote_action_view">1dp</dimen>
+    <dimen name="lm_qna_action_view_vertical_padding">6dp</dimen>
+    <dimen name="lm_qna_action_view_vertical_margin">1dp</dimen>
+
 </resources>

@@ -384,6 +384,6 @@ class LMFeedTextStyle private constructor(
 /**
  * Util function that helps to apply all the styling [LMFeedTextStyle] to [LMFeedTextView]
  **/
-fun LMFeedTextView.setStyle(viewStyle: LMFeedTextStyle, value: Int = 0) {
+fun LMFeedTextView.setStyle(viewStyle: LMFeedTextStyle) {
     viewStyle.apply(this)
 }

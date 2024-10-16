@@ -1,6 +1,7 @@
 package com.likeminds.feed.android.core.qnafeed.view
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -12,11 +13,11 @@ import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
 import com.likeminds.feed.android.core.qnafeed.viewmodel.LMFeedQnAFeedViewModel
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
-import com.likeminds.feed.android.core.ui.base.styles.setStyle
+import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
 import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
+import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
 import com.likeminds.feed.android.core.utils.*
 
 open class LMFeedQnAFeedFragment :
@@ -38,12 +39,12 @@ open class LMFeedQnAFeedFragment :
         savedInstanceState: Bundle?
     ): View {
         binding = LmFeedFragmentQnaFeedBinding.inflate(layoutInflater)
-
         binding.apply {
             customizeCreateNewPostButton(fabNewPost)
             customizeQnAFeedHeaderView(headerViewQna)
             customizePostHeadingView()
             customizePostContentView()
+            customizePostTopResponseView()
         }
         return binding.root
     }
@@ -92,7 +93,7 @@ open class LMFeedQnAFeedFragment :
             .build()
     }
 
-    // customizes the post content view in the post
+    // customizes the post content view
     protected open fun customizePostContentView() {
         LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
             .postContentTextStyle(
@@ -101,6 +102,49 @@ open class LMFeedQnAFeedFragment :
                     .textSize(R.dimen.lm_feed_text_medium)
                     .maxLines(3)
                     .fontResource(R.font.lm_feed_roboto_medium)
+                    .build()
+            )
+            .build()
+    }
+
+    // customizes the post top response view
+    protected open fun customizePostTopResponseView() {
+        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
+            .postTopResponseViewStyle(
+                LMFeedPostTopResponseViewStyle.Builder()
+                    .authorImageViewStyle(
+                        LMFeedImageStyle.Builder()
+                            .isCircle(true)
+                            .showGreyScale(false)
+                            .build()
+                    )
+                    .authorNameTextStyle(
+                        LMFeedTextStyle.Builder()
+                            .textColor(R.color.lm_feed_dark_grey)
+                            .textSize(R.dimen.lm_feed_text_medium)
+                            .maxLines(1)
+                            .ellipsize(TextUtils.TruncateAt.END)
+                            .fontResource(R.font.lm_feed_roboto_bold)
+                            .build()
+                    )
+                    .timestampTextStyle(
+                        LMFeedTextStyle.Builder()
+                            .textColor(R.color.lm_feed_brown_grey)
+                            .textSize(R.dimen.lm_feed_text_small)
+                            .fontResource(R.font.lm_feed_roboto)
+                            .build()
+                    )
+                    .contentTextStyle(
+                        LMFeedTextStyle.Builder()
+                            .textColor(R.color.lm_feed_grey)
+                            .textSize(R.dimen.lm_feed_text_medium)
+                            .maxLines(5)
+                            .fontResource(R.font.lm_feed_roboto)
+                            .expandableCTAText("...Read More")
+                            .expandableCTAColor(R.color.lm_feed_dark_grey)
+                            .build()
+                    )
+                    .backgroundColor(R.color.lm_feed_light_grayish_blue_50)
                     .build()
             )
             .build()

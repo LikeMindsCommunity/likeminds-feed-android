@@ -11,6 +11,7 @@ import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollViewS
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.*
+import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 import com.likeminds.feed.android.core.utils.model.LMFeedPadding
@@ -25,23 +26,26 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * @property postActionViewStyle: [LMFeedPostActionViewStyle] this will help you to customize the action view of the post [LMFeedPostActionView]
  * @property postTopicsGroupStyle: [LMFeedChipGroupStyle] this will help you to customize the chip group in the post [LMFeedChipGroup]
  * @property postTopicChipsStyle: [LMFeedChipStyle] this will help you to customize the chips of the chip group in the post [LMFeedChip]
+ * @property postTopResponseViewStyle: [LMFeedPostTopResponseViewStyle] this will help you to customize the top response in the post [LMFeedPostTopResponseView]
  *
  * */
 class LMFeedPostViewStyle private constructor(
-    //post header style
+    // post header style
     val postHeaderViewStyle: LMFeedPostHeaderViewStyle,
     // post text content style
     val postContentTextStyle: LMFeedTextStyle,
     // post heading style
     val postHeadingTextStyle: LMFeedTextStyle?,
-    //post media style
+    // post media style
     val postMediaViewStyle: LMFeedPostMediaViewStyle,
-    //post action style
+    // post action style
     val postActionViewStyle: LMFeedPostActionViewStyle,
-    //post topics chip group style
+    // post topics chip group style
     val postTopicsGroupStyle: LMFeedChipGroupStyle,
-    //post topics chip style
-    val postTopicChipsStyle: LMFeedChipStyle
+    // post topics chip style
+    val postTopicChipsStyle: LMFeedChipStyle,
+    // post top response view style
+    val postTopResponseViewStyle: LMFeedPostTopResponseViewStyle?
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -341,6 +345,8 @@ class LMFeedPostViewStyle private constructor(
                 .chipTextSize(R.dimen.lm_feed_text_medium)
                 .build()
 
+        private var postTopResponseViewStyle: LMFeedPostTopResponseViewStyle? = null
+
         fun postHeaderViewStyle(postHeaderViewStyle: LMFeedPostHeaderViewStyle) = apply {
             this.postHeaderViewStyle = postHeaderViewStyle
         }
@@ -369,6 +375,11 @@ class LMFeedPostViewStyle private constructor(
             this.postTopicChipStyle = postTopicChipStyle
         }
 
+        fun postTopResponseViewStyle(postTopResponseViewStyle: LMFeedPostTopResponseViewStyle?) =
+            apply {
+                this.postTopResponseViewStyle = postTopResponseViewStyle
+            }
+
         fun build() = LMFeedPostViewStyle(
             postHeaderViewStyle,
             postContentTextStyle,
@@ -376,7 +387,8 @@ class LMFeedPostViewStyle private constructor(
             postMediaViewStyle,
             postActionViewStyle,
             postTopicsGroupStyle,
-            postTopicChipStyle
+            postTopicChipStyle,
+            postTopResponseViewStyle
         )
     }
 
@@ -388,5 +400,6 @@ class LMFeedPostViewStyle private constructor(
             .postActionViewStyle(postActionViewStyle)
             .postTopicsGroupStyle(postTopicsGroupStyle)
             .postTopicChipStyle(postTopicChipsStyle)
+            .postTopResponseViewStyle(postTopResponseViewStyle)
     }
 }
