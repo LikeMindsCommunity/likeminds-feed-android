@@ -5,7 +5,6 @@ import android.text.*
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -211,6 +210,19 @@ object LMFeedPostBinderUtils {
                     )
 
                     contentView.setText(tvPostText, TextView.BufferType.SPANNABLE)
+
+                    //highlighting web links or email addresses or phone numbers in post content
+                    val linkifyLinks =
+                        (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
+                    LinkifyCompat.addLinks(this, linkifyLinks)
+                    movementMethod = LMFeedLinkMovementMethod { url ->
+                        setOnClickListener {
+                            return@setOnClickListener
+                        }
+
+                        postAdapterListener.onPostContentLinkClicked(url)
+                        true
+                    }
                 }
             } else {
                 //in normal cases
@@ -316,7 +328,7 @@ object LMFeedPostBinderUtils {
                         seeMoreSpannableStringBuilder
                     )
 
-                    //highlighting web links in post content
+                    //highlighting web links or email addresses or phone numbers in post content
                     val linkifyLinks =
                         (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
                     LinkifyCompat.addLinks(this, linkifyLinks)

@@ -7,7 +7,7 @@ import android.text.style.*
 import androidx.annotation.ColorInt
 
 object LMFeedSearchUtil {
-    // finds the keyword in the post's text and highlight it
+    // trims the post text to show only the part of the post that matches the keyword
     fun getTrimmedText(
         text: String,
         keywords: List<String>,
