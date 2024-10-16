@@ -4,10 +4,8 @@ import android.text.TextUtils
 import androidx.annotation.ColorRes
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
-import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollOptionViewStyle
-import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 import com.likeminds.feed.android.core.utils.model.LMFeedPadding
@@ -71,7 +69,7 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
                     .fontResource(R.font.lm_feed_roboto_medium)
                     .build()
             )
-            .activeSubmitColor(LMFeedTheme.getButtonColor())
+            .activeSubmitColor(LMFeedThemeConstants.getButtonColor())
             .build()
 
         private var authorViewStyle: LMFeedPostHeaderViewStyle = LMFeedPostHeaderViewStyle.Builder()
@@ -96,7 +94,7 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
             .chipStartPadding(R.dimen.lm_feed_regular_padding)
             .chipIcon(R.drawable.lm_feed_ic_add_topics)
             .chipIconSize(R.dimen.lm_feed_chip_default_icon_size)
-            .chipIconTint(LMFeedTheme.getButtonColor())
+            .chipIconTint(LMFeedThemeConstants.getButtonColor())
             .build()
 
         private var editChipStyle: LMFeedChipStyle = LMFeedChipStyle.Builder()
@@ -105,7 +103,7 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
             .chipStartPadding(R.dimen.lm_feed_edit_chip_end_size)
             .chipIcon(R.drawable.lm_feed_ic_edit_topic)
             .chipIconSize(R.dimen.lm_feed_chip_default_icon_size)
-            .chipIconTint(LMFeedTheme.getButtonColor())
+            .chipIconTint(LMFeedThemeConstants.getButtonColor())
             .build()
 
         private var postComposerStyle: LMFeedEditTextStyle = LMFeedEditTextStyle.Builder()
@@ -125,12 +123,12 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
             .textStyle(
                 LMFeedTextStyle.Builder()
                     .textSize(R.dimen.lm_feed_text_medium)
-                    .textColor(LMFeedTheme.getButtonColor())
+                    .textColor(LMFeedThemeConstants.getButtonColor())
                     .fontResource(R.font.lm_feed_roboto_medium)
                     .textAllCaps(false)
                     .build()
             )
-            .iconTint(LMFeedTheme.getButtonColor())
+            .iconTint(LMFeedThemeConstants.getButtonColor())
             .icon(R.drawable.lm_feed_ic_plus)
             .build()
 

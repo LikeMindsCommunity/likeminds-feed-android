@@ -43,7 +43,7 @@ import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedEditText
 import com.likeminds.feed.android.core.ui.base.views.LMFeedProgressBar
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
@@ -292,7 +292,7 @@ open class LMFeedEditPostFragment :
         val config = UserTaggingConfig.Builder()
             .editText(binding.etPostComposer)
             .maxHeightInPercentage(0.4f)
-            .color(LMFeedTheme.getTextLinkColor())
+            .color(LMFeedThemeConstants.getTextLinkColor())
             .hasAtRateSymbol(true)
             .build()
 
@@ -514,7 +514,7 @@ open class LMFeedEditPostFragment :
             UserTaggingDecoder.decode(
                 etPostComposer,
                 post.contentViewData.text,
-                ContextCompat.getColor(requireContext(), LMFeedTheme.getTextLinkColor())
+                ContextCompat.getColor(requireContext(), LMFeedThemeConstants.getTextLinkColor())
             )
 
             // sets the cursor to the end and opens keyboard

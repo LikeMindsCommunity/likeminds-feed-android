@@ -2,7 +2,7 @@ package com.likeminds.feed.android.core.ui.theme.model
 
 import androidx.annotation.*
 
-class LMFeedSetThemeRequest private constructor(
+class LMFeedSetThemeConstantsRequest private constructor(
     @FontRes
     val fontResource: Int?,
     val fontAssetsPath: String?,
@@ -52,7 +52,7 @@ class LMFeedSetThemeRequest private constructor(
             this.notificationIcon = notificationIcon
         }
 
-        fun build() = LMFeedSetThemeRequest(
+        fun build() = LMFeedSetThemeConstantsRequest(
             fontResource,
             fontAssetsPath,
             textLinkColor,

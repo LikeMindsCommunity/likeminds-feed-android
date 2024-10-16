@@ -34,7 +34,7 @@ import com.likeminds.feed.android.core.report.view.*
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.view.LMFeedCommentComposerView
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
@@ -214,7 +214,7 @@ open class LMFeedPostDetailFragment :
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    LMFeedTheme.getButtonColor()
+                    LMFeedThemeConstants.getButtonColor()
                 )
             )
 
@@ -237,7 +237,7 @@ open class LMFeedPostDetailFragment :
         val config = UserTaggingConfig.Builder()
             .editText(binding.commentComposer.etComment)
             .maxHeightInPercentage(0.4f)
-            .color(LMFeedTheme.getTextLinkColor())
+            .color(LMFeedThemeConstants.getTextLinkColor())
             .hasAtRateSymbol(true)
             .build()
 
@@ -1204,7 +1204,7 @@ open class LMFeedPostDetailFragment :
             UserTaggingDecoder.decode(
                 commentComposer.etComment,
                 commentText,
-                ContextCompat.getColor(requireContext(), LMFeedTheme.getTextLinkColor())
+                ContextCompat.getColor(requireContext(), LMFeedThemeConstants.getTextLinkColor())
             )
             commentComposer.etComment.setSelection(commentComposer.etComment.length())
             commentComposer.etComment.setSelection(commentComposer.etComment.length())

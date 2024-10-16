@@ -2,9 +2,9 @@ package com.likeminds.feed.android.core.ui.theme
 
 import androidx.annotation.*
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeRequest
+import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeConstantsRequest
 
-object LMFeedTheme {
+object LMFeedThemeConstants {
     private const val DEFAULT_POST_CHARACTER_LIMIT = 500
     const val DEFAULT_POST_MAX_LINES = 3
     const val DEFAULT_VISIBLE_DOCUMENTS_LIMIT = 3
@@ -30,33 +30,33 @@ object LMFeedTheme {
     private var notificationIcon: Int? = null
 
     /**
-     * @param lmFeedSetThemeRequest - Request to set base theme
+     * @param lmFeedSetThemeConstantsRequest - Request to set base theme
      * sets fonts, used throughout the app as base theme
      * */
-    fun setTheme(lmFeedSetThemeRequest: LMFeedSetThemeRequest?) {
-        if (lmFeedSetThemeRequest == null) {
+    fun setTheme(lmFeedSetThemeConstantsRequest: LMFeedSetThemeConstantsRequest?) {
+        if (lmFeedSetThemeConstantsRequest == null) {
             return
         }
 
-        fontResource = lmFeedSetThemeRequest.fontResource
+        fontResource = lmFeedSetThemeConstantsRequest.fontResource
 
-        lmFeedSetThemeRequest.fontAssetsPath?.let {
+        lmFeedSetThemeConstantsRequest.fontAssetsPath?.let {
             fontAssetsPath = it
         }
 
-        lmFeedSetThemeRequest.textLinkColor?.let {
+        lmFeedSetThemeConstantsRequest.textLinkColor?.let {
             textLinkColor = it
         }
 
-        lmFeedSetThemeRequest.buttonColor?.let {
+        lmFeedSetThemeConstantsRequest.buttonColor?.let {
             buttonColor = it
         }
 
-        lmFeedSetThemeRequest.postCharacterLimit?.let {
+        lmFeedSetThemeConstantsRequest.postCharacterLimit?.let {
             postCharacterLimit = it
         }
 
-        notificationIcon = lmFeedSetThemeRequest.notificationIcon
+        notificationIcon = lmFeedSetThemeConstantsRequest.notificationIcon
     }
 
     //returns the pair of theme font resource and assets path

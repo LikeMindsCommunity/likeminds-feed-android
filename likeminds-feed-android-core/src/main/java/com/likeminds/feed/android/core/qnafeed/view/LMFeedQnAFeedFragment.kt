@@ -15,7 +15,7 @@ import com.likeminds.feed.android.core.qnafeed.viewmodel.LMFeedQnAFeedViewModel
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
 import com.likeminds.feed.android.core.utils.*
@@ -185,7 +185,7 @@ open class LMFeedQnAFeedFragment :
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    LMFeedTheme.getButtonColor()
+                    LMFeedThemeConstants.getButtonColor()
                 )
             )
 

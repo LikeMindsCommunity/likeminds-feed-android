@@ -18,7 +18,7 @@ import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
@@ -155,7 +155,7 @@ object LMFeedPostBinderUtils {
             val postContent = contentViewData.text ?: return
 
             val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-            val maxLines = (postContentStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
+            val maxLines = (postContentStyle.maxLines ?: LMFeedThemeConstants.DEFAULT_POST_MAX_LINES)
 
             /**
              * Text is modified as Linkify doesn't accept texts with these specific unicode characters
@@ -184,7 +184,7 @@ object LMFeedPostBinderUtils {
                     enableClick = true,
                     highlightColor = ContextCompat.getColor(
                         context,
-                        LMFeedTheme.getTextLinkColor()
+                        LMFeedThemeConstants.getTextLinkColor()
                     ),
                     hasAtRateSymbol = true,
                 ) { route ->
@@ -200,7 +200,7 @@ object LMFeedPostBinderUtils {
                 val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
                     this,
                     maxLines,
-                    LMFeedTheme.getPostCharacterLimit()
+                    LMFeedThemeConstants.getPostCharacterLimit()
                 )
 
                 val trimmedText =

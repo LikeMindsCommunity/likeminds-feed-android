@@ -128,7 +128,7 @@ class LMFeedPostQnAActionHorizontalView : ConstraintLayout {
      *
      * @param isUpvoted - whether the post is upvoted or not.
      */
-    fun setLikesIcon(isUpvoted: Boolean = false) {
+    fun setUpvoteIcon(isUpvoted: Boolean = false) {
         val iconStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle.likeIconStyle
 
         val upvoteIcon = if (isUpvoted) {

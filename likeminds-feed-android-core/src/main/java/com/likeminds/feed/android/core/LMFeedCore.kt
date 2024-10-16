@@ -2,8 +2,8 @@ package com.likeminds.feed.android.core
 
 import android.app.Application
 import android.content.Context
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
-import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeRequest
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeConstantsRequest
 import com.likeminds.feed.android.core.utils.user.*
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.user.model.InitiateUserRequest
@@ -12,22 +12,27 @@ import kotlinx.coroutines.*
 
 object LMFeedCore {
 
+    private var theme: LMFeedTheme = LMFeedTheme.SOCIAL_FEED
+
     /**
      * Initial setup function for customers and blocker function
      * @param application: Instance of the application class
-     * @param lmFeedTheme: Object of [LMFeedTheme] to add your customizable theme in whole feed
+     * @param lmFeedTheme: Object of [LMFeedThemeConstants] to add your customizable theme in whole feed
      * @param lmFeedCoreCallback: Instance of [LMFeedCoreCallback] so that we can share data/events to customers code
      */
     fun setup(
         application: Application,
+        theme: LMFeedTheme,
         domain: String? = null,
         enablePushNotifications: Boolean = false,
         deviceId: String? = null,
-        lmFeedTheme: LMFeedSetThemeRequest? = null,
+        lmFeedTheme: LMFeedSetThemeConstantsRequest? = null,
         lmFeedCoreCallback: LMFeedCoreCallback? = null
     ) {
         //set theme
-        LMFeedTheme.setTheme(lmFeedTheme)
+        LMFeedThemeConstants.setTheme(lmFeedTheme)
+
+        this.theme = theme
 
         //initialize core application
         val coreApplication = LMFeedCoreApplication.getInstance()
@@ -65,9 +70,9 @@ object LMFeedCore {
 
                 val response = lmFeedClient.initiateUser(initiateUserRequest)
                 if (response.success) {
-                    success?.let {success ->
+                    success?.let { success ->
                         //return user response
-                        response.data?.let {data->
+                        response.data?.let { data ->
                             val userResponse = UserResponseConvertor.getUserResponse(data)
                             success(userResponse)
                         }
@@ -110,7 +115,7 @@ object LMFeedCore {
 
             val response = lmFeedClient.validateUser(validateUserRequest)
             if (response.success) {
-                success?.let {success ->
+                success?.let { success ->
                     //return user response
                     response.data?.let { data ->
                         val userResponse = UserResponseConvertor.getUserResponse(data)

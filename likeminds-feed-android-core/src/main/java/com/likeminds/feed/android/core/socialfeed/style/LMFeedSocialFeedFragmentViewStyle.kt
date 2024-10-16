@@ -3,7 +3,7 @@ package com.likeminds.feed.android.core.socialfeed.style
 import android.text.TextUtils
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.style.LMFeedNoEntityLayoutViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
@@ -87,7 +87,7 @@ class LMFeedSocialFeedFragmentViewStyle private constructor(
 
         private var createNewPostButtonViewStyle = LMFeedFABStyle.Builder()
             .isExtended(false)
-            .backgroundColor(LMFeedTheme.getButtonColor())
+            .backgroundColor(LMFeedThemeConstants.getButtonColor())
             .icon(R.drawable.lm_feed_ic_new_post_plus)
             .iconTint(R.color.lm_feed_white)
             .iconSize(R.dimen.lm_feed_create_new_post_icon_size)

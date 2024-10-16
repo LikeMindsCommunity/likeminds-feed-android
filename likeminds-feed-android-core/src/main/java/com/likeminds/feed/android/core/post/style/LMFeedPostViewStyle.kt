@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollOptionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
@@ -72,7 +72,7 @@ class LMFeedPostViewStyle private constructor(
                         .textSize(R.dimen.lm_feed_text_small)
                         .maxLines(1)
                         .fontResource(R.font.lm_feed_roboto_medium)
-                        .backgroundColor(LMFeedTheme.getButtonColor())
+                        .backgroundColor(LMFeedThemeConstants.getButtonColor())
                         .build()
                 )
                 .pinIconStyle(
@@ -165,7 +165,7 @@ class LMFeedPostViewStyle private constructor(
                     LMFeedPostVideoMediaViewStyle.Builder()
                         .videoProgressStyle(
                             LMFeedProgressBarStyle.Builder()
-                                .progressColor(LMFeedTheme.getButtonColor())
+                                .progressColor(LMFeedThemeConstants.getButtonColor())
                                 .build()
                         )
                         .backgroundColor(R.color.lm_feed_black)
@@ -225,7 +225,7 @@ class LMFeedPostViewStyle private constructor(
                         .documentShowMoreStyle(
                             LMFeedTextStyle.Builder()
                                 .fontResource(R.font.lm_feed_roboto)
-                                .textColor(LMFeedTheme.getButtonColor())
+                                .textColor(LMFeedThemeConstants.getButtonColor())
                                 .textSize(R.dimen.lm_feed_text_large)
                                 .build()
                         )
@@ -254,7 +254,7 @@ class LMFeedPostViewStyle private constructor(
                                         .fontResource(R.font.lm_feed_roboto)
                                         .build()
                                 )
-                                .backgroundColor(LMFeedTheme.getButtonColor())
+                                .backgroundColor(LMFeedThemeConstants.getButtonColor())
                                 .cornerRadius(R.dimen.lm_feed_corner_radius_medium)
                                 .build()
                         )
@@ -277,7 +277,7 @@ class LMFeedPostViewStyle private constructor(
                             LMFeedTextStyle.Builder()
                                 .fontResource(R.font.lm_feed_roboto)
                                 .textSize(R.dimen.lm_feed_text_medium)
-                                .textColor(LMFeedTheme.getButtonColor())
+                                .textColor(LMFeedThemeConstants.getButtonColor())
                                 .build()
                         )
                         .pollExpiryTextStyle(
@@ -305,7 +305,7 @@ class LMFeedPostViewStyle private constructor(
                                 )
                                 .pollOptionCheckIconStyle(
                                     LMFeedIconStyle.Builder()
-                                        .iconTint(LMFeedTheme.getButtonColor())
+                                        .iconTint(LMFeedThemeConstants.getButtonColor())
                                         .inActiveSrc(R.drawable.lm_feed_ic_check_circle)
                                         .build()
                                 )
@@ -313,7 +313,7 @@ class LMFeedPostViewStyle private constructor(
                         )
                         .editPollVoteTextStyle(
                             LMFeedTextStyle.Builder()
-                                .textColor(LMFeedTheme.getButtonColor())
+                                .textColor(LMFeedThemeConstants.getButtonColor())
                                 .fontResource(R.font.lm_feed_roboto)
                                 .textSize(R.dimen.lm_feed_text_medium)
                                 .ellipsize(TextUtils.TruncateAt.END)
@@ -325,7 +325,7 @@ class LMFeedPostViewStyle private constructor(
                     LMFeedPostVideoMediaViewStyle.Builder()
                         .videoProgressStyle(
                             LMFeedProgressBarStyle.Builder()
-                                .progressColor(LMFeedTheme.getButtonColor())
+                                .progressColor(LMFeedThemeConstants.getButtonColor())
                                 .build()
                         )
                         .backgroundColor(R.color.lm_feed_black)
@@ -341,7 +341,7 @@ class LMFeedPostViewStyle private constructor(
             LMFeedChipStyle.Builder()
                 .chipBackgroundColor(R.color.lm_feed_majorelle_blue_10)
                 .chipCornerRadius(R.dimen.lm_feed_corner_radius_regular)
-                .chipTextColor(LMFeedTheme.getButtonColor())
+                .chipTextColor(LMFeedThemeConstants.getButtonColor())
                 .chipTextSize(R.dimen.lm_feed_text_medium)
                 .build()
 
