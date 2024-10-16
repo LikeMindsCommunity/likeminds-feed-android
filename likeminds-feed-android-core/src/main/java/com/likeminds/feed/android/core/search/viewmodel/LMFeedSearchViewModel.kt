@@ -111,7 +111,7 @@ class LMFeedSearchViewModel : ViewModel() {
 
                 //convert to view data
                 val listOfPostViewData =
-                    LMFeedViewDataConvertor.getSearchedPosts(
+                    LMFeedViewDataConvertor.convertSearchedPosts(
                         searchString,
                         posts,
                         usersMap,

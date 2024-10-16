@@ -4,9 +4,7 @@ import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -41,7 +39,8 @@ import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
-import com.likeminds.feed.android.core.ui.widgets.poll.view.*
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetFragment
+import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAnonymousPollDialogFragment
 import com.likeminds.feed.android.core.ui.widgets.searchbar.view.LMFeedSearchBarListener
 import com.likeminds.feed.android.core.ui.widgets.searchbar.view.LMFeedSearchBarView
 import com.likeminds.feed.android.core.utils.*
@@ -738,20 +737,39 @@ open class LMFeedSearchFragment : Fragment(),
         feedSearchViewModel.deletePost(post)
     }
 
-    //callback when publisher publishes any updated postData
     override fun update(postData: Pair<String, LMFeedPostViewData?>) {
         val postId = postData.first
         // fetches post from adapter
         binding.rvSearch.apply {
             val postIndex = getIndexAndPostFromAdapter(postId)?.first ?: return
 
-            val updatedPost = postData.second
+
+            //updated post:{} from event
+            var updatedPost = postData.second
+
+            //existing post in adapter
+            val existingPost = getPostFromAdapter(postIndex) ?: return
 
             // updates the item in adapter
             if (updatedPost == null) {
                 // Post was deleted!
                 removePostAtIndex(postIndex)
             } else {
+                //updated post content
+                val updatedPostContent = updatedPost.contentViewData
+
+                //existing matched keywords
+                val existingKeywords = existingPost.contentViewData.keywordMatchedInPostText
+
+                //add the matched keywords into updated post
+                updatedPost = updatedPost.toBuilder()
+                    .contentViewData(
+                        updatedPostContent.toBuilder()
+                            .keywordMatchedInPostText(existingKeywords)
+                            .build()
+                    )
+                    .build()
+
                 // Post was updated
                 updatePostItem(postIndex, updatedPost)
             }

@@ -882,7 +882,7 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
-    fun getSearchedPosts(
+    fun convertSearchedPosts(
         searchString: String,
         posts: List<Post>,
         usersMap: Map<String, User>,

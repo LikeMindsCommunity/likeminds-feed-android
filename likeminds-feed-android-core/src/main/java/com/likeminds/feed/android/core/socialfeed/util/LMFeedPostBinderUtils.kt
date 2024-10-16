@@ -100,7 +100,10 @@ object LMFeedPostBinderUtils {
                 data.headerViewData
             )
 
-            Log.d("Test123","matchedKeyword in setPostBindData:{${data.contentViewData.keywordMatchedInPostText}}")
+            Log.d(
+                "Test123",
+                "matchedKeyword in setPostBindData:{${data.contentViewData.keywordMatchedInPostText}}"
+            )
             // sets the text content of the post
             setPostContentViewData(
                 contentView,
@@ -123,7 +126,6 @@ object LMFeedPostBinderUtils {
         headerView: LMFeedPostHeaderView,
         headerViewData: LMFeedPostHeaderViewData
     ) {
-//        Log.d("Test123","setPostHeaderViewData called")
         headerView.apply {
             setPinIcon(headerViewData.isPinned)
             setPostEdited(headerViewData.isEdited)
@@ -145,7 +147,6 @@ object LMFeedPostBinderUtils {
         postAdapterListener: LMFeedPostAdapterListener,
         position: Int
     ) {
-        Log.d("Test123","matchedKeyword in setPostContentViewData:{${postViewData.contentViewData.keywordMatchedInPostText}}")
         contentView.apply {
             val contentViewData = postViewData.contentViewData
             val postContent = contentViewData.text ?: return
@@ -157,8 +158,6 @@ object LMFeedPostBinderUtils {
 
             val maxLines = (postTextStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
 
-//            Log.d("Test123","postViewData:{$postViewData}")
-//            Log.d("Test123","matchedKeyword:{$matchedKeyword}")
             // if used while searching a post
             if (!matchedKeyword.isNullOrEmpty()) {
                 val textForLinkify = postContent.getValidTextForLinkify()
@@ -174,7 +173,10 @@ object LMFeedPostBinderUtils {
                     setOnClickListener {
                         postAdapterListener.onPostContentClicked(position, postViewData)
                     }
-                    Log.d("Test123","matchedKeyword in setPostContentViewData post block:{${postViewData.contentViewData.keywordMatchedInPostText}}")
+                    Log.d(
+                        "Test123",
+                        "matchedKeyword in setPostContentViewData post block:{${postViewData.contentViewData.keywordMatchedInPostText}}"
+                    )
                     UserTaggingDecoder.decodeRegexIntoSpannableText(
                         this,
                         textForLinkify.trim(),
@@ -200,7 +202,8 @@ object LMFeedPostBinderUtils {
 
                     // get the color of text and background
                     val textColor = searchHighlightedStyle?.textColor ?: R.color.lm_feed_black
-                    val backgroundColor = searchHighlightedStyle?.backgroundColor ?: R.color.lm_feed_transparent
+                    val backgroundColor =
+                        searchHighlightedStyle?.backgroundColor ?: R.color.lm_feed_transparent
 
                     // update the post's text
                     tvPostText.append(
