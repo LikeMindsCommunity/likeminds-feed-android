@@ -117,17 +117,6 @@ open class LMFeedSearchFragment : Fragment(),
         }
     }
 
-
-    // handles the back press of search bar for this fragment
-    protected open fun onSearchViewClosed() {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
-    }
-
-    // handles the cross press of search bar for this fragment
-    protected open fun onSearchCrossed() {
-        binding.rvSearch.hide()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
@@ -160,32 +149,19 @@ open class LMFeedSearchFragment : Fragment(),
         binding.rvSearch.destroyVideoAutoPlayer()
     }
 
-    private fun checkPostsAndReplace(posts: List<LMFeedPostViewData>) {
-        binding.rvSearch.apply {
-            checkForNoPost(posts)
-            replacePosts(posts)
-            scrollToPosition(0)
-            refreshVideoAutoPlayer()
-        }
-    }
-
-    private fun checkForNoPost(feed: List<LMFeedBaseViewType>) {
-        binding.apply {
-            if (feed.isNotEmpty()) {
-                layoutNoResultFound.hide()
-                rvSearch.show()
-            } else {
-                binding.apply {
-                    layoutNoResultFound.show()
-                    rvSearch.clearPostsAndNotify()
-                }
-            }
-        }
-    }
-
     private fun initUI() {
         initSearchView()
         initRecyclerView()
+    }
+
+    // handles the back press of search bar for this fragment
+    protected open fun onSearchViewClosed() {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    // handles the cross press of search bar for this fragment
+    protected open fun onSearchCrossed() {
+        binding.rvSearch.hide()
     }
 
     private fun initSearchView() {
@@ -266,6 +242,30 @@ open class LMFeedSearchFragment : Fragment(),
                     }
                 }
             setPaginationScrollListener(paginationScrollListener)
+        }
+    }
+
+    // checks for no posts and replaces the adapter with the new posts
+    private fun checkPostsAndReplace(posts: List<LMFeedPostViewData>) {
+        binding.rvSearch.apply {
+            checkForNoPost(posts)
+            replacePosts(posts)
+            scrollToPosition(0)
+            refreshVideoAutoPlayer()
+        }
+    }
+
+    private fun checkForNoPost(feed: List<LMFeedBaseViewType>) {
+        binding.apply {
+            if (feed.isNotEmpty()) {
+                layoutNoResultFound.hide()
+                rvSearch.show()
+            } else {
+                binding.apply {
+                    layoutNoResultFound.show()
+                    rvSearch.clearPostsAndNotify()
+                }
+            }
         }
     }
 

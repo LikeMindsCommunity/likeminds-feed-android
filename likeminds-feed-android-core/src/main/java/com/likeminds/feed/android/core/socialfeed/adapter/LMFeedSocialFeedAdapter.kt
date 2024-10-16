@@ -10,7 +10,6 @@ class LMFeedSocialFeedAdapter(
 ) : LMFeedBaseRecyclerAdapter<LMFeedBaseViewType>() {
 
     init {
-        Log.d("Adapter123123", "Adapter called")
         initViewDataBinders()
     }
 

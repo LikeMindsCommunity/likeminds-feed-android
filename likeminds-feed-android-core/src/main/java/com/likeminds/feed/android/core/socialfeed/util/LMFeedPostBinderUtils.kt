@@ -100,10 +100,6 @@ object LMFeedPostBinderUtils {
                 data.headerViewData
             )
 
-            Log.d(
-                "Test123",
-                "matchedKeyword in setPostBindData:{${data.contentViewData.keywordMatchedInPostText}}"
-            )
             // sets the text content of the post
             setPostContentViewData(
                 contentView,
@@ -121,7 +117,7 @@ object LMFeedPostBinderUtils {
         }
     }
 
-    // sets the data in the post header view
+    //sets the data in the post header view
     private fun setPostHeaderViewData(
         headerView: LMFeedPostHeaderView,
         headerViewData: LMFeedPostHeaderViewData
@@ -158,7 +154,7 @@ object LMFeedPostBinderUtils {
 
             val maxLines = (postTextStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
 
-            // if used while searching a post
+            //if used while searching a post, when matchedKeyword is not null
             if (!matchedKeyword.isNullOrEmpty()) {
                 val textForLinkify = postContent.getValidTextForLinkify()
 
@@ -173,10 +169,8 @@ object LMFeedPostBinderUtils {
                     setOnClickListener {
                         postAdapterListener.onPostContentClicked(position, postViewData)
                     }
-                    Log.d(
-                        "Test123",
-                        "matchedKeyword in setPostContentViewData post block:{${postViewData.contentViewData.keywordMatchedInPostText}}"
-                    )
+
+                    //highlighting tagged users in post content
                     UserTaggingDecoder.decodeRegexIntoSpannableText(
                         this,
                         textForLinkify.trim(),
@@ -193,6 +187,7 @@ object LMFeedPostBinderUtils {
                             ?: route.lastPathSegment
                             ?: return@decodeRegexIntoSpannableText
 
+                        //notify listener to handel click
                         postAdapterListener.onPostTaggedMemberClicked(position, uuid)
                     }
 
@@ -214,13 +209,11 @@ object LMFeedPostBinderUtils {
                             ContextCompat.getColor(context, backgroundColor)
                         )
                     )
-//                    Log.d("Test123","Post text:{$tvPostText}")
-//                    Log.d("Test123","postContent in Search:{$postContent}")
 
                     contentView.setText(tvPostText, TextView.BufferType.SPANNABLE)
-//                    Log.d("tvPostText", "$tvPostText")
                 }
-            } else { // in normal cases
+            } else {
+                //in normal cases
                 var alreadySeenFullContent = contentViewData.alreadySeenFullContent == true
 
                 val textForLinkify = postContent.getValidTextForLinkify()
@@ -237,6 +230,7 @@ object LMFeedPostBinderUtils {
                         postAdapterListener.onPostContentClicked(position, postViewData)
                     }
 
+                    //highlighting tagged users in post content
                     UserTaggingDecoder.decodeRegexIntoSpannableText(
                         this,
                         textForLinkify.trim(),
@@ -253,9 +247,11 @@ object LMFeedPostBinderUtils {
                             ?: route.lastPathSegment
                             ?: return@decodeRegexIntoSpannableText
 
+                        //notify listener to handel click
                         postAdapterListener.onPostTaggedMemberClicked(position, uuid)
                     }
 
+                    //shortens the text of the post to that of maxLines
                     val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
                         this,
                         maxLines,
@@ -269,6 +265,7 @@ object LMFeedPostBinderUtils {
                             editableText
                         }
 
+                    //creating see more spannable text for expanding post content.
                     val seeMoreSpannableStringBuilder = SpannableStringBuilder()
                     val expandableText = postContentStyle.postTextViewStyle.expandableCTAText
 
@@ -286,6 +283,7 @@ object LMFeedPostBinderUtils {
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
 
+                        //handling click of spannable text
                         val seeMoreClickableSpan = object : ClickableSpan() {
                             override fun onClick(view: View) {
                                 setOnClickListener {
@@ -318,10 +316,7 @@ object LMFeedPostBinderUtils {
                         seeMoreSpannableStringBuilder
                     )
 
-//                    Log.d("Test123","matchedKeyword in else ie null:{$matchedKeyword}")
-//                    Log.d("Test123","Post text:{$text}")
-//                    Log.d("tvPostText", "$text")
-
+                    //highlighting web links in post content
                     val linkifyLinks =
                         (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
                     LinkifyCompat.addLinks(this, linkifyLinks)
@@ -338,7 +333,7 @@ object LMFeedPostBinderUtils {
         }
     }
 
-    // sets the data in the post horizontal action view
+    //sets the data in the post horizontal action view
     fun setPostHorizontalActionViewData(
         horizontalActionView: LMFeedPostActionHorizontalView,
         postActionViewData: LMFeedPostActionViewData

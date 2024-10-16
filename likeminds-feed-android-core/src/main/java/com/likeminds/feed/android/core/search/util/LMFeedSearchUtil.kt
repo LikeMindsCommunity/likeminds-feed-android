@@ -79,7 +79,7 @@ object LMFeedSearchUtil {
         return str
     }
 
-    // gives keyword color and highlightColor to the post's text
+    // gives text color and highlightColor to the keyword in post's text
     private fun highlightMatchedText(
         str: SpannableStringBuilder,
         @ColorInt color: Int,

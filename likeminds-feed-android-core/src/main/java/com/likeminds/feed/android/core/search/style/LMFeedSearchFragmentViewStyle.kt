@@ -15,10 +15,11 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  *
  * @property feedSearchBarViewStyle : [LMFeedSearchBarViewStyle] this will help you to customize the search bar in the search feed fragment
  * @property noSearchResultLayoutViewStyle : [LMFeedNoEntityLayoutViewStyle] this will help you to customize the no search result layout in the feed search fragment
+ * @property backgroundColor:  [Int] should be in format of [ColorRes] to add background color of the search bar | Default value = [null]
  *
  * */
 class LMFeedSearchFragmentViewStyle private constructor(
-    // search bar
+    //search bar
     val feedSearchBarViewStyle: LMFeedSearchBarViewStyle,
     //no search result layout
     val noSearchResultLayoutViewStyle: LMFeedNoEntityLayoutViewStyle,

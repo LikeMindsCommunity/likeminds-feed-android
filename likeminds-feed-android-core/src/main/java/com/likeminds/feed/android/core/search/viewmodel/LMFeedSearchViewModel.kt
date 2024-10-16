@@ -26,7 +26,7 @@ class LMFeedSearchViewModel : ViewModel() {
         LMFeedClient.getInstance()
     }
 
-
+    // it holds the Pair of [page] and list of [postViewData]
     private val _searchFeedResponse by lazy {
         MutableLiveData<Pair<Int, List<LMFeedPostViewData>>>()
     }
@@ -51,6 +51,7 @@ class LMFeedSearchViewModel : ViewModel() {
         _postPinnedResponse
     }
 
+    //it holds the [postId]
     private val _deletePostResponse by lazy {
         MutableLiveData<String>()
     }
@@ -59,6 +60,7 @@ class LMFeedSearchViewModel : ViewModel() {
         _deletePostResponse
     }
 
+    // it holds [postViewData]
     private val _postResponse by lazy {
         MutableLiveData<LMFeedPostViewData>()
     }
