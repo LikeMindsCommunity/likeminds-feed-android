@@ -19,9 +19,6 @@ class LMFeedNotificationHandler {
     //icon of notification
     private var notificationIcon: Int = 0
 
-    //color of notification text
-    private var notificationTextColor: Int = 0
-
     companion object {
         private var notificationHandler: LMFeedNotificationHandler? = null
 
@@ -48,10 +45,8 @@ class LMFeedNotificationHandler {
     fun create(application: Application) {
         mApplication = application
 
-        notificationIcon = LMFeedTheme.getNotificationIcon() ?: com.likeminds.customgallery.R.drawable.ic_notification
-
-        notificationTextColor =
-            LMFeedTheme.getNotificationTextColor() ?: LMFeedTheme.getButtonColor()
+        notificationIcon = LMFeedTheme.getNotificationIcon()
+            ?: com.likeminds.customgallery.R.drawable.ic_notification
 
         createNotificationChannel()
     }
@@ -140,13 +135,14 @@ class LMFeedNotificationHandler {
                 category,
                 subcategory
             )
-        val notificationBuilder = NotificationCompat.Builder(mApplication, LM_FEED_GENERAL_CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(subTitle)
-            .setSmallIcon(notificationIcon)
-            .setAutoCancel(true)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(subTitle))
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
+        val notificationBuilder =
+            NotificationCompat.Builder(mApplication, LM_FEED_GENERAL_CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(subTitle)
+                .setSmallIcon(notificationIcon)
+                .setAutoCancel(true)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(subTitle))
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
         if (resultPendingIntent != null) {
             notificationBuilder.setContentIntent(resultPendingIntent)
         }
