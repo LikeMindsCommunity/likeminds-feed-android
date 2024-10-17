@@ -95,7 +95,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private var poll: LMFeedPollViewData? = null
 
     companion object {
-        const val TAG = "LMFeedCreatePostFragment"
+        const val TAG = "CreatePostFragment"
         const val LM_FEED_CREATE_POST_FRAGMENT_EXTRAS = "LM_FEED_CREATE_POST_FRAGMENT_EXTRAS"
         const val TYPE_OF_ATTACHMENT_CLICKED = "image, video"
 

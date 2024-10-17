@@ -17,17 +17,21 @@ class LMFeedVideoFeedViewModel : ViewModel() {
         const val PAGE_SIZE = 20
     }
 
+    private var pageToCall = 0
+    var previousTotal: Int = 0
+    val adapterItems: MutableList<LMFeedPostViewData> = mutableListOf()
+    var postsFinished = false
+    var adapterPosition = 0
+
     private val lmFeedClient: LMFeedClient by lazy {
         LMFeedClient.getInstance()
     }
 
-    private val _videoFeedResponse by lazy {
+    private val _videoFeedResponse =
         MutableLiveData<Pair<Int, List<LMFeedPostViewData>>>()
-    }
 
-    val videoFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
+    val videoFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> =
         _videoFeedResponse
-    }
 
     private val errorMessageChannel by lazy {
         Channel<ErrorMessageEvent>(Channel.BUFFERED)
@@ -44,10 +48,14 @@ class LMFeedVideoFeedViewModel : ViewModel() {
     }
 
     //gets video feed
-    fun getFeed(page: Int, topicsIds: List<String>? = null) {
+    fun getFeed(isRefreshed: Boolean = false, topicsIds: List<String>? = null) {
         viewModelScope.launchIO {
+            if (isRefreshed) {
+                pageToCall = 0
+            }
+            pageToCall++
             val request = GetFeedRequest.Builder()
-                .page(page)
+                .page(pageToCall)
                 .pageSize(PAGE_SIZE)
                 .topicIds(topicsIds)
                 .build()
@@ -71,10 +79,16 @@ class LMFeedVideoFeedViewModel : ViewModel() {
                         widgetsMap
                     )
 
+                // update the variable that no new posts are available now
+                if (listOfPostViewData.isEmpty()) {
+                    postsFinished = true
+                }
+
                 //send it to ui
-                _videoFeedResponse.postValue(Pair(page, listOfPostViewData))
+                _videoFeedResponse.postValue(Pair(pageToCall, listOfPostViewData))
             } else {
                 //for error
+                pageToCall--
                 errorMessageChannel.send(ErrorMessageEvent.VideoFeed(response.errorMessage))
             }
         }
@@ -111,5 +125,12 @@ class LMFeedVideoFeedViewModel : ViewModel() {
                 )
             }
         }
+    }
+
+    // stores the state of the view pager by saving the current position and items in adapter
+    fun setViewPagerState(position: Int, items: List<LMFeedPostViewData>) {
+        adapterPosition = position
+        adapterItems.clear()
+        adapterItems.addAll(items)
     }
 }

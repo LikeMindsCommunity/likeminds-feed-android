@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.videofeed.view
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -71,10 +72,6 @@ open class LMFeedVideoFeedFragment :
         LMFeedPostVideoPreviewAutoPlayHelper.getInstance()
     }
 
-    private var pageToCall: Int = 0
-
-    private var previousTotal: Int = 0
-
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
         private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
@@ -88,29 +85,14 @@ open class LMFeedVideoFeedFragment :
     ): View {
         binding = LmFeedFragmentVideoFeedBinding.inflate(layoutInflater)
 
+        setVerticalVideoPostViewStyle()
         setupVideoFeed()
         binding.apply {
             customizeVideoFeedListView(binding.vp2VideoFeed, videoFeedAdapter)
         }
+        setViewPagerAdapter()
 
         return binding.root
-    }
-
-    //sets up the video feed
-    private fun setupVideoFeed() {
-        binding.vp2VideoFeed.apply {
-            for (i in 0 until childCount) {
-                if (getChildAt(i) is RecyclerView) {
-                    val recyclerView = getChildAt(i) as RecyclerView
-                    val itemAnimator = recyclerView.itemAnimator
-                    if (itemAnimator != null && itemAnimator is SimpleItemAnimator) {
-                        itemAnimator.supportsChangeAnimations = false
-                    }
-                }
-            }
-        }
-        videoFeedAdapter = LMFeedVideoFeedAdapter(this)
-        setVerticalVideoPostViewStyle()
     }
 
     //sets view style to vertical video post
@@ -177,31 +159,18 @@ open class LMFeedVideoFeedFragment :
             .build()
     }
 
-    protected open fun customizeVideoFeedListView(
-        vp2VideoFeed: ViewPager2,
-        videoFeedAdapter: LMFeedVideoFeedAdapter
-    ) {
-        //customize video feed view here
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        fetchData()
-        initViewPager()
-        initSwipeRefreshLayout()
-        observeResponses()
-    }
-
-    //calls the getFeed() function to fetch feed videos
-    private fun fetchData() {
-        pageToCall++
-        videoFeedViewModel.getFeed(pageToCall)
-    }
-
-    //initializes the view pager
-    private fun initViewPager() {
+    private fun setupVideoFeed() {
         binding.vp2VideoFeed.apply {
+            for (i in 0 until childCount) {
+                if (getChildAt(i) is RecyclerView) {
+                    val recyclerView = getChildAt(i) as RecyclerView
+                    val itemAnimator = recyclerView.itemAnimator
+                    if (itemAnimator != null && itemAnimator is SimpleItemAnimator) {
+                        itemAnimator.supportsChangeAnimations = false
+                    }
+                }
+            }
+
             registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
@@ -224,16 +193,50 @@ open class LMFeedVideoFeedFragment :
 
                     // Call API if the [VIDEO_PRELOAD_THRESHOLD] is reached
                     if (currentItem > 0 && currentItem >= size - VIDEO_PRELOAD_THRESHOLD) {
-                        if (videoFeedAdapter.itemCount > previousTotal) {
-                            previousTotal = videoFeedAdapter.itemCount
+                        if (size > videoFeedViewModel.previousTotal && !videoFeedViewModel.postsFinished) {
+                            videoFeedViewModel.previousTotal = size
                             fetchData()
                         }
                     }
                 }
             })
 
-            adapter = videoFeedAdapter
+            videoFeedAdapter = LMFeedVideoFeedAdapter(this@LMFeedVideoFeedFragment)
         }
+    }
+
+    protected open fun customizeVideoFeedListView(
+        vp2VideoFeed: ViewPager2,
+        videoFeedAdapter: LMFeedVideoFeedAdapter
+    ) {
+        //customize video feed view here
+    }
+
+    //sets adapter to the view pager
+    private fun setViewPagerAdapter() {
+        binding.vp2VideoFeed.adapter = videoFeedAdapter
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (videoFeedViewModel.adapterItems.isEmpty()) {
+            fetchData()
+        } else {
+            videoFeedAdapter.replace(videoFeedViewModel.adapterItems.toList())
+            binding.vp2VideoFeed.apply {
+                post {
+                    setCurrentItem(videoFeedViewModel.adapterPosition, true)
+                }
+            }
+        }
+        initSwipeRefreshLayout()
+        observeResponses()
+    }
+
+    //calls the getFeed() function to fetch feed videos
+    private fun fetchData() {
+        videoFeedViewModel.getFeed()
     }
 
     //initializes the refresh layout
@@ -257,7 +260,7 @@ open class LMFeedVideoFeedFragment :
     protected open fun onFeedRefreshed() {
         binding.apply {
             mSwipeRefreshLayout.isRefreshing = true
-            videoFeedViewModel.getFeed(1)
+            videoFeedViewModel.getFeed(isRefreshed = true)
         }
     }
 
@@ -359,7 +362,9 @@ open class LMFeedVideoFeedFragment :
                 postVideoPreviewAutoPlayHelper.removePlayer()
                 return
             }
+
             val videoView = replaceVideoView(position) ?: return
+
             val url = data.mediaViewData.attachments.firstOrNull()?.attachmentMeta?.url ?: ""
 
             //plays the video in the [postVideoView]
@@ -419,6 +424,25 @@ open class LMFeedVideoFeedFragment :
         }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        if (hidden) {
+            // remove the player when fragment is hidden
+            postVideoPreviewAutoPlayHelper.removePlayer()
+        } else {
+            // play the video when fragment is not hidden
+            val currentItem = binding.vp2VideoFeed.currentItem
+
+            if (currentItem >= 0
+                && videoFeedAdapter.itemCount > currentItem
+                && videoFeedAdapter.items()[currentItem] != null
+            ) {
+                playVideoInViewPager(currentItem)
+            }
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         postVideoPreviewAutoPlayHelper.removePlayer()
@@ -426,6 +450,10 @@ open class LMFeedVideoFeedFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (this::videoFeedAdapter.isInitialized && videoFeedAdapter.items().isNotEmpty()) {
+            val postItems = videoFeedAdapter.items().filterIsInstance<LMFeedPostViewData>()
+            videoFeedViewModel.setViewPagerState(binding.vp2VideoFeed.currentItem, postItems)
+        }
         postVideoPreviewAutoPlayHelper.removePlayer()
     }
 
