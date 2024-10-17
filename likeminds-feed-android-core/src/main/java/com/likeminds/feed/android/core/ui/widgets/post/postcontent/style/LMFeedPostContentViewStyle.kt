@@ -24,10 +24,7 @@ class LMFeedPostContentViewStyle private constructor(
             LMFeedTextStyle.Builder()
                 .textColor(R.color.lm_feed_grey)
                 .textSize(R.dimen.lm_feed_text_large)
-                .maxLines(3)
                 .fontResource(R.font.lm_feed_roboto)
-                .expandableCTAText("... See more")
-                .expandableCTAColor(R.color.lm_feed_brown_grey)
                 .build()
         private var searchHighlightedViewStyle: LMFeedTextStyle? = null
 
