@@ -882,6 +882,15 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    /**
+     * convert list of [Post] to [LMFeedPostViewData]
+     * @param searchString: [String]
+     * @param posts: List of [Post]
+     * @param usersMap: [Map] of String to [User]
+     * @param topicsMap: [Map] of String to [Topic]
+     * @param widgetsMap: [Map] of String to [Widget]
+     * @return [LMFeedPostViewData]
+     * */
     fun convertSearchedPosts(
         searchString: String,
         posts: List<Post>,
