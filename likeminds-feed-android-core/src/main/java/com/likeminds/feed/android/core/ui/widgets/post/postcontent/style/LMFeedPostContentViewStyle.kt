@@ -1,11 +1,21 @@
 package com.likeminds.feed.android.core.ui.widgets.post.postcontent.style
 
 import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.search.view.LMFeedSearchFragment
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
+/**
+ * [LMFeedPostContentViewStyle] helps you to customize the content of the post in the search feed fragment [LMFeedSearchFragment]
+ *
+ * @property postTextViewStyle : [LMFeedTextStyle] this will help you to customize the text of the post
+ * @property searchHighlightedViewStyle : [LMFeedTextStyle] this will help you to customize the text of highlighted keyword in the post | Default value = [null]
+ *
+ * */
 class LMFeedPostContentViewStyle private constructor(
+    // post text style
     val postTextViewStyle: LMFeedTextStyle,
+    // highlighted search text style
     val searchHighlightedViewStyle: LMFeedTextStyle?
 ) : LMFeedViewStyle {
 

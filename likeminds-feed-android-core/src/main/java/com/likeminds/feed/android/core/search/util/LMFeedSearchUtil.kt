@@ -4,7 +4,6 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.*
-import android.util.Log
 import androidx.annotation.ColorInt
 import com.likeminds.usertagging.util.UserTaggingDecoder
 
@@ -20,14 +19,17 @@ object LMFeedSearchUtil {
         val trimmedText: String
         val ind: Int
         var wordPos = -1
+        //split text into words
         val listOfWords = text.split(" ").map { it.trim() }
 
+        //loop to find the position of the word that matches the keyword
         for (i in listOfWords.indices) {
             if (listOfWords[i].startsWith(keyword, ignoreCase = true)) {
                 wordPos = i
                 break
             }
         }
+        //trim the text based on the position of the keyword
         if (wordPos <= 3) {
             trimmedText = text
         } else if (wordPos > 3 && wordPos < listOfWords.size - 5) {
@@ -50,6 +52,7 @@ object LMFeedSearchUtil {
         return getHighlightedText(trimmedText, keywords, color, highlightColor)
     }
 
+    //highlights the matched keywords in the provided text
     private fun getHighlightedText(
         stringToBeMatched: String,
         keywordsMatched: List<String>,
@@ -57,17 +60,22 @@ object LMFeedSearchUtil {
         highlightColor: Int? = null
     ): SpannableStringBuilder {
         val str = SpannableStringBuilder(stringToBeMatched)
+        //loop through each keyword to highlight in the post text
         keywordsMatched.forEach { keyword ->
+            //check for if text starts with the keyword
             if (str.startsWith(keyword, ignoreCase = true)) {
                 highlightMatchedText(str, color, highlightColor, 0, keyword.length)
             }
+            //check for if the keyword appears elsewhere in the text
             if (str.contains(" $keyword", ignoreCase = true) ||
                 str.contains(" @$keyword", ignoreCase = true)
             ) {
                 var lastIndex = 0
+                //loop to find all occurrences of keyword in text
                 while (lastIndex != -1) {
                     lastIndex = str.indexOf(keyword, lastIndex, ignoreCase = true)
                     if (lastIndex != -1) {
+                        //highlighting the keyword in the text
                         highlightMatchedText(
                             str,
                             color,
@@ -92,6 +100,7 @@ object LMFeedSearchUtil {
         endIndex: Int,
         applyBoldSpan: Boolean = true
     ) {
+        // check if the bold styling should be applied
         if (applyBoldSpan) {
             str.setSpan(
                 StyleSpan(Typeface.BOLD),
@@ -100,6 +109,7 @@ object LMFeedSearchUtil {
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
+        //setting color of the keyword
         str.setSpan(
             ForegroundColorSpan(color),
             startIndex,
@@ -128,18 +138,12 @@ object LMFeedSearchUtil {
         val stringDecoded = UserTaggingDecoder.decode(string)
 
         if (!listOfKeywords.isNullOrEmpty() && !string.isNullOrEmpty()) {
+            // loop to find matches in the text
             listOfKeywords.forEach { keyword ->
-                Log.d(
-                    "PUI", """
-                    keywordSearched: $keyword
-                    string: $string
-                """.trimIndent()
-                )
                 if (stringDecoded.lowercase().contains(" ${keyword.lowercase()}") ||
                     stringDecoded.lowercase().contains(" @${keyword.lowercase()}") ||
                     stringDecoded.lowercase().startsWith(keyword.lowercase())
                 ) {
-                    Log.d("PUI", "condition matched")
                     matchedKeywords.add(keyword)
                 }
             }

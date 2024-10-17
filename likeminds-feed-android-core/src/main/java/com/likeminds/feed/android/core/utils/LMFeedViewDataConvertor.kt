@@ -1,7 +1,6 @@
 package com.likeminds.feed.android.core.utils
 
 import android.util.Base64
-import android.util.Log
 import com.likeminds.customgallery.media.model.SingleUriData
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityEntityViewData
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
@@ -240,11 +239,6 @@ object LMFeedViewDataConvertor {
             .menuItems(convertOverflowMenuItems(post.menuItems))
             .build()
 
-        Log.d("PUI","""
-            -------------------------
-            post.id: ${post.id}
-            post.text: ${post.text}
-        """.trimIndent())
         //post content view data
         val postContentViewData = LMFeedPostContentViewData.Builder()
             .text(post.text)

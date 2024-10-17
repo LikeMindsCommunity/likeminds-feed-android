@@ -5,7 +5,6 @@ import android.text.*
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -156,11 +155,6 @@ object LMFeedPostBinderUtils {
 
             //if used while searching a post, when matchedKeyword is not null
             if (!matchedKeyword.isNullOrEmpty()) {
-                Log.d(
-                    "PUI", """
-                      matchedKeywords: $matchedKeyword
-                """.trimIndent()
-                )
                 val textForLinkify = postContent.getValidTextForLinkify()
 
                 if (textForLinkify.isEmpty()) {
