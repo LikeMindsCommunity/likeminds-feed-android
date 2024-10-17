@@ -5,6 +5,7 @@ import android.text.*
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.util.Linkify
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -169,7 +170,16 @@ object LMFeedPostBinderUtils {
                         postAdapterListener.onPostContentClicked(position, postViewData)
                     }
 
-                    //highlighting tagged users in post content
+                    val tvPostText = SpannableStringBuilder()
+
+                    // get the color of text and background
+                    val textColor = searchHighlightedStyle?.textColor ?: R.color.lm_feed_black
+                    val backgroundColor =
+                        searchHighlightedStyle?.backgroundColor ?: R.color.lm_feed_transparent
+
+                    val textWithTags = UserTaggingDecoder.decode(postContent)
+
+                    //handling click of tagged users in post content
                     UserTaggingDecoder.decodeRegexIntoSpannableText(
                         this,
                         textForLinkify.trim(),
@@ -190,15 +200,6 @@ object LMFeedPostBinderUtils {
                         postAdapterListener.onPostTaggedMemberClicked(position, uuid)
                     }
 
-                    val textWithTags = UserTaggingDecoder.decode(postContent)
-
-                    val tvPostText = SpannableStringBuilder()
-
-                    // get the color of text and background
-                    val textColor = searchHighlightedStyle?.textColor ?: R.color.lm_feed_black
-                    val backgroundColor =
-                        searchHighlightedStyle?.backgroundColor ?: R.color.lm_feed_transparent
-
                     // update the post's text
                     tvPostText.append(
                         LMFeedSearchUtil.getTrimmedText(
@@ -211,7 +212,7 @@ object LMFeedPostBinderUtils {
 
                     contentView.setText(tvPostText, TextView.BufferType.SPANNABLE)
 
-                    //highlighting web links or email addresses or phone numbers in post content
+                    //handling click of web links or email addresses or phone numbers in post content
                     val linkifyLinks =
                         (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
                     LinkifyCompat.addLinks(this, linkifyLinks)
@@ -242,7 +243,7 @@ object LMFeedPostBinderUtils {
                         postAdapterListener.onPostContentClicked(position, postViewData)
                     }
 
-                    //highlighting tagged users in post content
+                    //handling click of tagged users in post content
                     UserTaggingDecoder.decodeRegexIntoSpannableText(
                         this,
                         textForLinkify.trim(),
@@ -328,7 +329,7 @@ object LMFeedPostBinderUtils {
                         seeMoreSpannableStringBuilder
                     )
 
-                    //highlighting web links or email addresses or phone numbers in post content
+                    //handling click of web links or email addresses or phone numbers in post content
                     val linkifyLinks =
                         (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
                     LinkifyCompat.addLinks(this, linkifyLinks)
