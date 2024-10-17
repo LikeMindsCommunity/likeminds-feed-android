@@ -156,6 +156,11 @@ object LMFeedPostBinderUtils {
 
             //if used while searching a post, when matchedKeyword is not null
             if (!matchedKeyword.isNullOrEmpty()) {
+                Log.d(
+                    "PUI", """
+                      matchedKeywords: $matchedKeyword
+                """.trimIndent()
+                )
                 val textForLinkify = postContent.getValidTextForLinkify()
 
                 if (textForLinkify.isEmpty()) {
@@ -178,27 +183,6 @@ object LMFeedPostBinderUtils {
                         searchHighlightedStyle?.backgroundColor ?: R.color.lm_feed_transparent
 
                     val textWithTags = UserTaggingDecoder.decode(postContent)
-
-                    //handling click of tagged users in post content
-                    UserTaggingDecoder.decodeRegexIntoSpannableText(
-                        this,
-                        textForLinkify.trim(),
-                        enableClick = true,
-                        highlightColor = ContextCompat.getColor(
-                            context,
-                            LMFeedTheme.getTextLinkColor()
-                        ),
-                        hasAtRateSymbol = true,
-                    ) { route ->
-                        val uuid = route.getQueryParameter("member_id")
-                            ?: route.getQueryParameter("user_id")
-                            ?: route.getQueryParameter("uuid")
-                            ?: route.lastPathSegment
-                            ?: return@decodeRegexIntoSpannableText
-
-                        //notify listener to handel click
-                        postAdapterListener.onPostTaggedMemberClicked(position, uuid)
-                    }
 
                     // update the post's text
                     tvPostText.append(

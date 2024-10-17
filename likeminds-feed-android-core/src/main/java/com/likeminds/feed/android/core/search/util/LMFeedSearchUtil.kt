@@ -4,7 +4,9 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.*
+import android.util.Log
 import androidx.annotation.ColorInt
+import com.likeminds.usertagging.util.UserTaggingDecoder
 
 object LMFeedSearchUtil {
     // trims the post text to show only the part of the post that matches the keyword
@@ -59,7 +61,9 @@ object LMFeedSearchUtil {
             if (str.startsWith(keyword, ignoreCase = true)) {
                 highlightMatchedText(str, color, highlightColor, 0, keyword.length)
             }
-            if (str.contains(" $keyword", ignoreCase = true)) {
+            if (str.contains(" $keyword", ignoreCase = true) ||
+                str.contains(" @$keyword", ignoreCase = true)
+            ) {
                 var lastIndex = 0
                 while (lastIndex != -1) {
                     lastIndex = str.indexOf(keyword, lastIndex, ignoreCase = true)
@@ -121,11 +125,21 @@ object LMFeedSearchUtil {
         val listOfKeywords = keywordSearched?.split(" ")?.map { it.trim() }
         val matchedKeywords = mutableListOf<String>()
 
+        val stringDecoded = UserTaggingDecoder.decode(string)
+
         if (!listOfKeywords.isNullOrEmpty() && !string.isNullOrEmpty()) {
             listOfKeywords.forEach { keyword ->
-                if (string.lowercase().contains(" ${keyword.lowercase()}") ||
-                    string.lowercase().startsWith(keyword.lowercase())
+                Log.d(
+                    "PUI", """
+                    keywordSearched: $keyword
+                    string: $string
+                """.trimIndent()
+                )
+                if (stringDecoded.lowercase().contains(" ${keyword.lowercase()}") ||
+                    stringDecoded.lowercase().contains(" @${keyword.lowercase()}") ||
+                    stringDecoded.lowercase().startsWith(keyword.lowercase())
                 ) {
+                    Log.d("PUI", "condition matched")
                     matchedKeywords.add(keyword)
                 }
             }
