@@ -9,8 +9,8 @@
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedImageView
             android:id="@+id/iv_image"
-            android:layout_width="@dimen/lm_feed_header_view_height"
-            android:layout_height="@dimen/lm_feed_header_view_height"
+            android:layout_width="@dimen/lm_feed_no_entity_image_icon_size"
+            android:layout_height="@dimen/lm_feed_no_entity_image_icon_size"
             android:layout_marginTop="@dimen/lm_feed_no_entity_image_top_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

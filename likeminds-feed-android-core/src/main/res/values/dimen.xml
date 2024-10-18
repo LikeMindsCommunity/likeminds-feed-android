@@ -61,6 +61,7 @@
     <dimen name="lm_feed_standard_icon_size">24dp</dimen>
     <dimen name="lm_feed_large_icon_size">48dp</dimen>
     <dimen name="lm_feed_launcher_icon_size">108dp</dimen>
+    <dimen name="lm_feed_no_entity_image_icon_size">100dp</dimen>
 
     <!-- Dot view-->
     <dimen name="lm_feed_dot_view_size">4dp</dimen>

@@ -69,6 +69,20 @@ class LMFeedSocialFeedFragmentViewStyle private constructor(
                     .textColor(R.color.lm_feed_white)
                     .build()
             )
+            .searchIconStyle(
+                LMFeedIconStyle.Builder()
+                    .inActiveSrc(R.drawable.lm_feed_ic_search_icon)
+                    .iconTint(R.color.lm_feed_black)
+                    .iconPadding(
+                        LMFeedPadding(
+                            R.dimen.lm_feed_icon_padding,
+                            R.dimen.lm_feed_icon_padding,
+                            R.dimen.lm_feed_icon_padding,
+                            R.dimen.lm_feed_icon_padding
+                        )
+                    )
+                    .build()
+            )
             .build()
 
         private var createNewPostButtonViewStyle = LMFeedFABStyle.Builder()
