@@ -3,12 +3,15 @@ package com.likeminds.feed.android.core.search.viewmodel
 import android.content.Context
 import androidx.lifecycle.*
 import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.poll.util.LMFeedPollUtil
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
+import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel.ErrorMessageEvent
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.poll.model.AddPollOptionRequest
 import com.likeminds.likemindsfeed.poll.model.SubmitVoteRequest
 import com.likeminds.likemindsfeed.post.model.*
 import com.likeminds.likemindsfeed.search.model.SearchPostsRequest
@@ -80,11 +83,19 @@ class LMFeedSearchViewModel : ViewModel() {
 
     sealed class ErrorMessageEvent {
         data class SearchPost(val errorMessage: String?) : ErrorMessageEvent()
+
         data class SavePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
+
         data class LikePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
+
         data class PinPost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
+
         data class DeletePost(val errorMessage: String?) : ErrorMessageEvent()
+
         data class SubmitVote(val errorMessage: String?) : ErrorMessageEvent()
+
+        data class AddPollOption(val errorMessage: String?) : ErrorMessageEvent()
+
         data class GetPost(val errorMessage: String?) : ErrorMessageEvent()
     }
 
@@ -307,6 +318,42 @@ class LMFeedSearchViewModel : ViewModel() {
                 )
             } else {
                 errorMessageChannel.send(ErrorMessageEvent.GetPost(response.errorMessage))
+            }
+        }
+    }
+
+    //calls api to add option on the poll
+    fun addPollOption(
+        post: LMFeedPostViewData,
+        addedOptionText: String
+    ) {
+        viewModelScope.launchIO {
+            val pollAttachment = post.mediaViewData.attachments.firstOrNull() ?: return@launchIO
+            val poll = pollAttachment.attachmentMeta.poll ?: return@launchIO
+
+            val isDuplicationOption =
+                LMFeedPollUtil.isDuplicationOption(poll, addedOptionText)
+
+            if (isDuplicationOption) {
+                errorMessageChannel.send(
+                    ErrorMessageEvent.AddPollOption(
+                        "Poll options cannot contain similar text"
+                    )
+                )
+                return@launchIO
+            }
+
+            val request = AddPollOptionRequest.Builder()
+                .pollId(poll.id)
+                .text(addedOptionText)
+                .build()
+
+            val response = lmFeedClient.addPollOption(request)
+
+            if (response.success) {
+                getPost(post.id)
+            } else {
+                errorMessageChannel.send(ErrorMessageEvent.AddPollOption(response.errorMessage))
             }
         }
     }

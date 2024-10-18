@@ -39,8 +39,7 @@ import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
-import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetFragment
-import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAnonymousPollDialogFragment
+import com.likeminds.feed.android.core.ui.widgets.poll.view.*
 import com.likeminds.feed.android.core.ui.widgets.searchbar.view.LMFeedSearchBarListener
 import com.likeminds.feed.android.core.ui.widgets.searchbar.view.LMFeedSearchBarView
 import com.likeminds.feed.android.core.utils.*
@@ -60,6 +59,7 @@ open class LMFeedSearchFragment : Fragment(),
     LMFeedPostAdapterListener,
     LMFeedAdminDeleteDialogListener,
     LMFeedSelfDeleteDialogListener,
+    LMFeedAddPollOptionBottomSheetListener,
     LMFeedPostObserver {
 
     private lateinit var binding: LmFeedSearchFragmentBinding
@@ -76,7 +76,7 @@ open class LMFeedSearchFragment : Fragment(),
         }
     }
 
-    private val postPublisher by lazy {
+    private val postEvent by lazy {
         LMFeedPostEvent.getPublisher()
     }
 
@@ -125,7 +125,7 @@ open class LMFeedSearchFragment : Fragment(),
 
     override fun onStart() {
         super.onStart()
-        postPublisher.subscribe(this)
+        postEvent.subscribe(this)
     }
 
     override fun onResume() {
@@ -141,7 +141,7 @@ open class LMFeedSearchFragment : Fragment(),
     override fun onDestroy() {
         super.onDestroy()
         // unsubscribes itself from the [PostPublisher]
-        postPublisher.unsubscribe(this)
+        postEvent.unsubscribe(this)
     }
 
     override fun onDestroyView() {
@@ -198,11 +198,9 @@ open class LMFeedSearchFragment : Fragment(),
                     if (keyword.isNotEmpty()) {
                         updateSearchedPosts(keyword)
                     } else {
-                        Log.d("Keytword", "Entered in else of onKeywordEntered()")
                         binding.apply {
                             layoutNoResultFound.hide()
                             rvSearch.clearPostsAndNotify()
-                            Log.d("Keytword", "Cleared rv ")
                         }
                     }
                 }
@@ -225,7 +223,6 @@ open class LMFeedSearchFragment : Fragment(),
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
         binding.rvSearch.apply {
             setAdapter()
-            Log.d("Adapter123", "Adapter set")
             //set scroll listener
             val paginationScrollListener =
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -303,6 +300,8 @@ open class LMFeedSearchFragment : Fragment(),
 
         // observes deletePostResponse LiveData
         feedSearchViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
+            postEvent.notify(Pair(postId, null))
+
             binding.rvSearch.apply {
                 val indexToRemove = getIndexAndPostFromAdapter(postId)?.first ?: return@observe
                 removePostAtIndex(indexToRemove)
@@ -405,6 +404,9 @@ open class LMFeedSearchFragment : Fragment(),
                         .fromPostLiked(true)
                         .build()
 
+                    // notifies the subscribers about the change
+                    postEvent.notify(Pair(updatedPostData.id, updatedPostData))
+
                     binding.rvSearch.updatePostItem(index, updatedPostData)
 
                     //show error message
@@ -470,6 +472,10 @@ open class LMFeedSearchFragment : Fragment(),
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
 
+                is LMFeedSearchViewModel.ErrorMessageEvent.AddPollOption -> {
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
+
                 is LMFeedSearchViewModel.ErrorMessageEvent.GetPost -> {
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
@@ -492,6 +498,9 @@ open class LMFeedSearchFragment : Fragment(),
     override fun onPostLikeClicked(position: Int, postViewData: LMFeedPostViewData) {
         val userPreferences = LMFeedUserPreferences(requireContext())
         val loggedInUUID = userPreferences.getUUID()
+
+        // notifies the subscribers about the change
+        postEvent.notify(Pair(postViewData.id, postViewData))
 
         //call api
         feedSearchViewModel.likePost(
@@ -532,6 +541,10 @@ open class LMFeedSearchFragment : Fragment(),
 
     //callback when the user clicks on the save post button
     override fun onPostSaveClicked(position: Int, postViewData: LMFeedPostViewData) {
+
+        // notifies the subscribers about the change
+        postEvent.notify(Pair(postViewData.id, postViewData))
+
         //call api
         feedSearchViewModel.savePost(postViewData)
 
@@ -1099,6 +1112,23 @@ open class LMFeedSearchFragment : Fragment(),
                 getString(R.string.lm_feed_the_results_will_be_visible_after_the_poll_has_ended)
             )
         }
+    }
+
+    //callback when an option is submitted
+    override fun onAddOptionSubmitted(
+        postId: String,
+        pollId: String,
+        option: String
+    ) {
+        val post = binding.rvSearch.getIndexAndPostFromAdapter(postId)?.second ?: return
+
+        // notifies the subscribers about the change
+        postEvent.notify(Pair(postId, post))
+
+        feedSearchViewModel.addPollOption(
+            post,
+            option
+        )
     }
 
     //callback when the user clicks on the post menu icon
