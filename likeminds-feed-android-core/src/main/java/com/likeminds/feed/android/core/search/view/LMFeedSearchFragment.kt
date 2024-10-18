@@ -270,12 +270,12 @@ open class LMFeedSearchFragment : Fragment(),
             resetScrollListenerData()
             clearPostsAndNotify()
         }
-        searchKeyword = keyword
+        searchKeyword = keyword?.trim()
         //call apis
-        keyword?.let {
+        searchKeyword?.let {
             feedSearchViewModel.searchPosts(
                 1,
-                keyword
+                it
             )
         }
     }

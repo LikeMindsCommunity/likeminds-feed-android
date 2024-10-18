@@ -1,7 +1,6 @@
 package com.likeminds.feed.android.core.search.viewmodel
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.poll.util.LMFeedPollUtil
@@ -125,8 +124,6 @@ class LMFeedSearchViewModel : ViewModel() {
             val response = lmFeedClient.searchPosts(request)
 
             if (response.success) {
-                Log.d("SearchKeyword", "Response is successfull")
-                Log.d("SearchKeyword", "${response.data}")
                 val data = response.data ?: return@launchIO
                 val posts = data.posts
                 val usersMap = data.users
