@@ -3,7 +3,6 @@ package com.likeminds.feed.android.core.search.view
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -283,6 +282,17 @@ open class LMFeedSearchFragment : Fragment(),
 
     private fun observeResponses() {
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
+        //observers post response
+        feedSearchViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
+            binding.rvSearch.apply {
+                val index = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return@observe
+                updatePostItem(index, postViewData)
+
+                //notifies the subscribers about the change in post data
+                postEvent.notify(Pair(postViewData.id, postViewData))
+            }
+        }
+
         // observe search post response
         feedSearchViewModel.searchFeedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
@@ -1018,7 +1028,7 @@ open class LMFeedSearchFragment : Fragment(),
                 if (pollViewData.isPollSubmitted) {
                     return
                 }
-
+                
                 //update the clicked poll option view data
                 val updatedPollOptionViewData = if (pollOptionViewData.isSelected) {
                     pollOptionViewData.toBuilder()

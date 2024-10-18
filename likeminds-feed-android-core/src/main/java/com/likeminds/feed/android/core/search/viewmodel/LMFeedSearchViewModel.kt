@@ -1,12 +1,12 @@
 package com.likeminds.feed.android.core.search.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.poll.util.LMFeedPollUtil
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
-import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel.ErrorMessageEvent
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
@@ -36,6 +36,15 @@ class LMFeedSearchViewModel : ViewModel() {
 
     val searchFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
         _searchFeedResponse
+    }
+
+    // it holds [postViewData]
+    private val _getPostResponse by lazy {
+        MutableLiveData<LMFeedPostViewData>()
+    }
+
+    val getPostResponse: LiveData<LMFeedPostViewData> by lazy {
+        _getPostResponse
     }
 
     private val _postSavedResponse by lazy {
@@ -116,6 +125,8 @@ class LMFeedSearchViewModel : ViewModel() {
             val response = lmFeedClient.searchPosts(request)
 
             if (response.success) {
+                Log.d("SearchKeyword", "Response is successfull")
+                Log.d("SearchKeyword", "${response.data}")
                 val data = response.data ?: return@launchIO
                 val posts = data.posts
                 val usersMap = data.users
