@@ -270,7 +270,10 @@ open class LMFeedSearchFragment : Fragment(),
             resetScrollListenerData()
             clearPostsAndNotify()
         }
+
+        //trims the keyword for leading and trailing spaces before api call
         searchKeyword = keyword?.trim()
+
         //call apis
         searchKeyword?.let {
             feedSearchViewModel.searchPosts(
