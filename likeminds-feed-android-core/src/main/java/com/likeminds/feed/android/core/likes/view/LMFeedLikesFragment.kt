@@ -87,7 +87,7 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
             setTitleText(
                 getString(
                     R.string.lm_feed_s_likes,
-                    LMFeedCommunityUtil.getPostVariable()
+                    LMFeedCommunityUtil.getLikeVariable()
                         .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
                 )
             )

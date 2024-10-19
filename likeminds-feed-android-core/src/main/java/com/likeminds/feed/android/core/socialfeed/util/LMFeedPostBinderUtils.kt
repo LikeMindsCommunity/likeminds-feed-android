@@ -387,6 +387,13 @@ object LMFeedPostBinderUtils {
                     upvoteString
                 )
             }
+            setUpvoteText(
+                context.getString(
+                    R.string.lm_feed_s_likes,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            )
             setUpvoteCount(upvoteCountText)
 
             val commentsCount = postActionViewData.commentsCount

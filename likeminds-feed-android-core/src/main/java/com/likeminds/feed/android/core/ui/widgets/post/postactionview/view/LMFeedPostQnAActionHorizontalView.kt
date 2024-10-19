@@ -106,6 +106,15 @@ class LMFeedPostQnAActionHorizontalView : ConstraintLayout {
     }
 
     /**
+     * Sets upvote text to the upvote text view.
+     *
+     * @param upvoteText - string to be set for upvote.
+     */
+    fun setUpvoteText(upvoteText: String) {
+        binding.tvUpvote.text = upvoteText
+    }
+
+    /**
      * Sets upvote count text to the upvote count text view.
      *
      * @param upvoteCount - string to be set for upvote count.

@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.qnafeed.view
 
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -22,6 +23,7 @@ import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMF
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 open class LMFeedQnAFeedFragment :
@@ -47,8 +49,9 @@ open class LMFeedQnAFeedFragment :
         binding.apply {
             rvQna.initAdapterAndSetListener(this@LMFeedQnAFeedFragment)
 
-            customizeCreateNewPostButton(fabNewPost)
             customizeQnAFeedHeaderView(headerViewQna)
+            customizeCreateNewPostButton(fabNewPost)
+            customizePostHeaderView()
             customizePostHeadingView()
             customizePostContentView()
             customizePostTopResponseView()
@@ -61,6 +64,8 @@ open class LMFeedQnAFeedFragment :
     protected open fun customizeCreateNewPostButton(fabNewPost: LMFeedFAB) {
         fabNewPost.apply {
             setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.createNewPostButtonViewStyle)
+
+            Log.d("PUI", "customizeCreateNewPostButton: ${LMFeedCommunityUtil.getPostVariable()}")
 
             text = getString(
                 R.string.lm_feed_ask_question_s,
@@ -77,6 +82,29 @@ open class LMFeedQnAFeedFragment :
 
             setTitleText(getString(R.string.lm_feed_feed))
         }
+    }
+
+    // customizes the post header view
+    protected open fun customizePostHeaderView() {
+        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
+            .postHeaderViewStyle(
+                LMFeedStyleTransformer.postViewStyle.postHeaderViewStyle.toBuilder()
+                    .menuIconStyle(
+                        LMFeedIconStyle.Builder()
+                            .inActiveSrc(R.drawable.lm_feed_ic_overflow_menu_vertical)
+                            .iconPadding(
+                                LMFeedPadding(
+                                    R.dimen.lm_feed_icon_padding,
+                                    R.dimen.lm_feed_icon_padding,
+                                    R.dimen.lm_feed_icon_padding,
+                                    R.dimen.lm_feed_icon_padding
+                                )
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
     }
 
     // customizes the heading view in the post
