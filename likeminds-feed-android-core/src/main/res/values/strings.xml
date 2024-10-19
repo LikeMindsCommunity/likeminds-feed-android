@@ -16,6 +16,7 @@
         <item quantity="other">%d %s</item>
     </plurals>
     <string name="lm_feed_add_s_comment">Add %s</string>
+    <string name="lm_feed_s_answer">%s</string>
     <plurals name="lm_feed_s_comments">
         <item quantity="one">%d %s</item>
         <item quantity="other">%d %s</item>
@@ -202,7 +203,7 @@
     </string-array>
     <string name="lm_feed_you_re_all_caught_up">You’re All Caught Up</string>
     <string name="lm_feed_view_older_posts">View older posts</string>
-    <string name="lm_feed_ask_question">Ask Question</string>
+    <string name="lm_feed_ask_question_s">Ask %s</string>
     <string name="lm_feed_top_response">Top Response</string>
     <string name="lm_feed_upvote">Upvote</string>
 

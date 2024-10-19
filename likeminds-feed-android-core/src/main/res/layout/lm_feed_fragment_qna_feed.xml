@@ -56,7 +56,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.likeminds.feed.android.core.qnafeed.view.LMFeedQnAFeedListView
+                <com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedListView
                     android:id="@+id/rv_qna"
                     android:layout_width="@dimen/lm_feed_zero_dp"
                     android:layout_height="@dimen/lm_feed_zero_dp"

@@ -84,6 +84,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_post_cw" />
 
+        <com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostQnAActionHorizontalView
+            android:id="@+id/qna_post_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_post_cw" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

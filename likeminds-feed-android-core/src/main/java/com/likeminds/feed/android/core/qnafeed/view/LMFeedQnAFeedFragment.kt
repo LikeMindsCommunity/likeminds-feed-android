@@ -12,6 +12,7 @@ import com.likeminds.feed.android.core.databinding.LmFeedFragmentQnaFeedBinding
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
 import com.likeminds.feed.android.core.qnafeed.viewmodel.LMFeedQnAFeedViewModel
+import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
@@ -19,10 +20,14 @@ import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
 import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 open class LMFeedQnAFeedFragment :
     Fragment(),
-    LMFeedPostObserver {
+    LMFeedPostObserver,
+    LMFeedPostAdapterListener {
 
     private lateinit var binding: LmFeedFragmentQnaFeedBinding
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
@@ -40,24 +45,16 @@ open class LMFeedQnAFeedFragment :
     ): View {
         binding = LmFeedFragmentQnaFeedBinding.inflate(layoutInflater)
         binding.apply {
+            rvQna.initAdapterAndSetListener(this@LMFeedQnAFeedFragment)
+
             customizeCreateNewPostButton(fabNewPost)
             customizeQnAFeedHeaderView(headerViewQna)
             customizePostHeadingView()
             customizePostContentView()
             customizePostTopResponseView()
+            customizePostActionView()
         }
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        initUI()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        postPublisher.subscribe(this)
     }
 
     //customizes the create new post fab
@@ -65,7 +62,11 @@ open class LMFeedQnAFeedFragment :
         fabNewPost.apply {
             setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.createNewPostButtonViewStyle)
 
-            text = getString(R.string.lm_feed_ask_question)
+            text = getString(
+                R.string.lm_feed_ask_question_s,
+                LMFeedCommunityUtil.getPostVariable()
+                    .pluralizeOrCapitalize(LMFeedWordAction.ALL_CAPITAL_SINGULAR)
+            )
         }
     }
 
@@ -148,6 +149,94 @@ open class LMFeedQnAFeedFragment :
                     .build()
             )
             .build()
+    }
+
+    protected open fun customizePostActionView() {
+        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
+            .postActionViewStyle(
+                LMFeedStyleTransformer.postViewStyle.postActionViewStyle.toBuilder()
+                    .likeIconStyle(
+                        LMFeedIconStyle.Builder()
+                            .activeSrc(R.drawable.lm_feed_ic_upvote_filled)
+                            .inActiveSrc(R.drawable.lm_feed_ic_upvote_unfilled)
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initUI()
+        fetchData()
+        observeResponses()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        postPublisher.subscribe(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // sends feed opened event
+        LMFeedAnalytics.sendFeedOpenedEvent()
+
+        qnaFeedViewModel.fetchPendingPostFromDB()
+        binding.rvQna.initiateVideoAutoPlayer()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        if (hidden) {
+            // destroy the video player when fragment is not hidden
+            binding.rvQna.destroyVideoAutoPlayer()
+        } else {
+            // initiate the video player when fragment is not hidden
+            binding.rvQna.initiateVideoAutoPlayer()
+        }
+    }
+
+    private fun fetchData() {
+//        qnaFeedViewModel.getLoggedInUser()
+//        qnaFeedViewModel.getCreatePostRights()
+//        qnaFeedViewModel.getUnreadNotificationCount()
+        qnaFeedViewModel.getFeed(1, null)
+    }
+
+    private fun observeResponses() {
+
+        qnaFeedViewModel.socialFeedResponse.observe(viewLifecycleOwner) { response ->
+            LMFeedProgressBarHelper.hideProgress(binding.progressBar)
+            val page = response.first
+            val posts = response.second
+
+            if (mSwipeRefreshLayout.isRefreshing) {
+                checkPostsAndReplace(posts)
+                mSwipeRefreshLayout.isRefreshing = false
+                return@observe
+            }
+
+            if (page == 1) {
+                checkPostsAndReplace(posts)
+            } else {
+                binding.rvQna.addPosts(posts)
+                binding.rvQna.refreshVideoAutoPlayer()
+            }
+        }
+    }
+
+    private fun checkPostsAndReplace(posts: List<LMFeedPostViewData>) {
+        binding.rvQna.apply {
+//            checkForNoPost(posts)
+            replacePosts(posts)
+            scrollToPosition(0)
+            refreshVideoAutoPlayer()
+        }
     }
 
     private fun initUI() {

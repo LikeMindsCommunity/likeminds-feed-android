@@ -47,7 +47,7 @@ class LMQnAFeed : Application(), LMFeedCoreCallback {
             )
 
             val task = GetTokensTask()
-            val tokens = task.getTokens(applicationContext, true)
+            val tokens = task.getTokens(applicationContext, false)
             Log.d(LM_QNA_FEED_TAG, "tokens: $tokens")
             tokens
         }

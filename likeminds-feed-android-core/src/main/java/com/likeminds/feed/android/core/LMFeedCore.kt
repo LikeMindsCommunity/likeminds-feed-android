@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeConstantsRequest
 import com.likeminds.feed.android.core.utils.user.*
@@ -12,7 +13,7 @@ import kotlinx.coroutines.*
 
 object LMFeedCore {
 
-    private var theme: LMFeedTheme = LMFeedTheme.SOCIAL_FEED
+    var theme: LMFeedTheme = LMFeedTheme.SOCIAL_FEED
 
     /**
      * Initial setup function for customers and blocker function
@@ -57,10 +58,12 @@ object LMFeedCore {
             val lmFeedClient = LMFeedClient.getInstance()
             val tokens = lmFeedClient.getTokens().data
 
+            Log.d("PUI", "showFeed: ${tokens?.first} ${tokens?.second}")
+
             val userMeta = LMFeedUserMetaData.getInstance()
             val deviceId = userMeta.deviceId
 
-            if (tokens?.first == null || tokens.second == null) {
+            if (tokens?.first == null) {
                 val initiateUserRequest = InitiateUserRequest.Builder()
                     .apiKey(apiKey)
                     .userName(userName)

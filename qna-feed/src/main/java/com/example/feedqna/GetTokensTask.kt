@@ -49,8 +49,8 @@ class GetTokensTask {
             val request = JSONObject().apply {
                 put("uuid", lmQnAFeedAuthPreferences.getUserId())
                 put("user_name", lmQnAFeedAuthPreferences.getUserName())
-                put("token_expiry_beta", 1)
-                put("rtm_token_expiry_beta", 2)
+//                put("token_expiry_beta", 1)
+//                put("rtm_token_expiry_beta", 2)
             }
 
             // Write POST data

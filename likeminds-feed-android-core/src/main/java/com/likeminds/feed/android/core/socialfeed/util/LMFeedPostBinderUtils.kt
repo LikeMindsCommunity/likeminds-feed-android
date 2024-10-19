@@ -21,8 +21,7 @@ import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
-import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
-import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionVerticalView
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.*
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
 import com.likeminds.feed.android.core.utils.*
@@ -55,6 +54,12 @@ object LMFeedPostBinderUtils {
     fun customizePostActionHorizontalView(postActionHorizontalView: LMFeedPostActionHorizontalView) {
         val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
         postActionHorizontalView.setStyle(postActionViewStyle)
+    }
+
+    // customizes the horizontal post qna action view
+    fun customizePostQnAActionHorizontalView(postAQnAActionHorizontalView: LMFeedPostQnAActionHorizontalView) {
+        val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+        postAQnAActionHorizontalView.setStyle(postActionViewStyle)
     }
 
     // customizes the vertical post action view
@@ -155,7 +160,8 @@ object LMFeedPostBinderUtils {
             val postContent = contentViewData.text ?: return
 
             val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-            val maxLines = (postContentStyle.maxLines ?: LMFeedThemeConstants.DEFAULT_POST_MAX_LINES)
+            val maxLines =
+                (postContentStyle.maxLines ?: LMFeedThemeConstants.DEFAULT_POST_MAX_LINES)
 
             /**
              * Text is modified as Linkify doesn't accept texts with these specific unicode characters
@@ -348,6 +354,51 @@ object LMFeedPostBinderUtils {
                     commentsCount,
                     commentString
                 )
+            }
+            setCommentsCount(commentsCountText)
+        }
+    }
+
+    // sets the data in the post qna horizontal action view
+    fun setPostQnAHorizontalActionViewData(
+        qnaHorizontalActionView: LMFeedPostQnAActionHorizontalView,
+        postActionViewData: LMFeedPostActionViewData
+    ) {
+        qnaHorizontalActionView.apply {
+            setUpvoteIcon(postActionViewData.isLiked)
+            setSaveIcon(postActionViewData.isSaved)
+
+            val upvoteCount = postActionViewData.likesCount
+
+            val upvoteCountText = if (upvoteCount == 0) {
+                ""
+            } else {
+                val upvoteString = if (upvoteCount == 1) {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
+                context.resources.getQuantityString(
+                    R.plurals.lm_feed_s_likes,
+                    upvoteCount,
+                    upvoteCount,
+                    upvoteString
+                )
+            }
+            setUpvoteCount(upvoteCountText)
+
+            val commentsCount = postActionViewData.commentsCount
+
+            val commentsCountText = if (commentsCount == 0) {
+                context.getString(
+                    R.string.lm_feed_s_answer,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            } else {
+                commentsCount.toString()
             }
             setCommentsCount(commentsCountText)
         }

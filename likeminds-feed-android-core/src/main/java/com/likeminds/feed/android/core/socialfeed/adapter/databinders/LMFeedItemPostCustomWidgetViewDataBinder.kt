@@ -2,6 +2,8 @@ package com.likeminds.feed.android.core.socialfeed.adapter.databinders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.likeminds.feed.android.core.LMFeedCore
+import com.likeminds.feed.android.core.LMFeedTheme
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostCustomWidgetBinding
 import com.likeminds.feed.android.core.post.model.CUSTOM_WIDGET
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
@@ -30,7 +32,19 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
-            LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
+            when (LMFeedCore.theme) {
+                LMFeedTheme.SOCIAL_FEED -> {
+                    LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
+                }
+
+                LMFeedTheme.QNA_FEED -> {
+                    LMFeedPostBinderUtils.customizePostQnAActionHorizontalView(qnaPostAction)
+                }
+
+                else -> {
+                    LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
+                }
+            }
 
             LMFeedPostBinderUtils.customizePostTopicsGroup(postTopicsGroup)
 
@@ -50,10 +64,37 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
             postViewData = data
 
             // updates the data in the post action view
-            LMFeedPostBinderUtils.setPostHorizontalActionViewData(
-                postAction,
-                data.actionViewData
-            )
+            when (LMFeedCore.theme) {
+                LMFeedTheme.SOCIAL_FEED -> {
+                    qnaPostAction.hide()
+                    postAction.show()
+
+                    LMFeedPostBinderUtils.setPostHorizontalActionViewData(
+                        postAction,
+                        data.actionViewData
+                    )
+                }
+
+                LMFeedTheme.QNA_FEED -> {
+                    postAction.hide()
+                    qnaPostAction.show()
+
+                    LMFeedPostBinderUtils.setPostQnAHorizontalActionViewData(
+                        qnaPostAction,
+                        data.actionViewData
+                    )
+                }
+
+                else -> {
+                    qnaPostAction.hide()
+                    postAction.show()
+
+                    LMFeedPostBinderUtils.setPostHorizontalActionViewData(
+                        postAction,
+                        data.actionViewData
+                    )
+                }
+            }
 
             // checks whether to bind complete data or not and execute corresponding lambda function
             LMFeedPostBinderUtils.setPostBindData(

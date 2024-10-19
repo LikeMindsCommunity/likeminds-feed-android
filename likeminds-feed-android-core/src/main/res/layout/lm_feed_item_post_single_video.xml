@@ -32,8 +32,8 @@
             android:id="@+id/post_topics_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/lm_feed_regular_margin"
             android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
+            android:layout_marginTop="@dimen/lm_feed_regular_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_header" />
@@ -42,6 +42,7 @@
             android:id="@+id/tv_post_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             android:layout_marginTop="@dimen/lm_feed_large_margin"
             android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
             app:layout_constraintEnd_toEndOf="parent"
@@ -55,6 +56,7 @@
             android:id="@+id/tv_post_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             android:layout_marginTop="@dimen/lm_feed_large_margin"
             android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,6 +81,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/post_video_view" />
+
+        <com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostQnAActionHorizontalView
+            android:id="@+id/qna_post_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_video_view" />

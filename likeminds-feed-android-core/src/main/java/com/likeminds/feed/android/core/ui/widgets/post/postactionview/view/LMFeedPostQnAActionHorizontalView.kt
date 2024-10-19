@@ -111,7 +111,16 @@ class LMFeedPostQnAActionHorizontalView : ConstraintLayout {
      * @param upvoteCount - string to be set for upvote count.
      */
     fun setUpvoteCount(upvoteCount: String) {
-        binding.tvUpvotesCount.text = upvoteCount
+        binding.apply {
+            if (upvoteCount.isEmpty()) {
+                tvUpvotesCount.hide()
+                viewDotUpvotesCount.hide()
+            } else {
+                tvUpvotesCount.show()
+                viewDotUpvotesCount.show()
+                tvUpvotesCount.text = upvoteCount
+            }
+        }
     }
 
     /**
