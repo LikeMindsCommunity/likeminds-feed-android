@@ -115,7 +115,6 @@ open class LMFeedQnAFeedFragment :
             customizeCreateNewPostButton(fabNewPost)
             customizePostHeaderView()
             customizePostHeadingView()
-            customizePostContentView()
             customizePostTopResponseView()
             customizePostActionView()
         }
@@ -177,20 +176,6 @@ open class LMFeedQnAFeedFragment :
                 LMFeedTextStyle.Builder()
                     .textColor(R.color.lm_feed_dark_grey)
                     .textSize(R.dimen.lm_feed_text_large)
-                    .maxLines(3)
-                    .fontResource(R.font.lm_feed_roboto_medium)
-                    .build()
-            )
-            .build()
-    }
-
-    // customizes the post content view
-    protected open fun customizePostContentView() {
-        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
-            .postContentTextStyle(
-                LMFeedTextStyle.Builder()
-                    .textColor(R.color.lm_feed_dark_grey)
-                    .textSize(R.dimen.lm_feed_text_medium)
                     .maxLines(3)
                     .fontResource(R.font.lm_feed_roboto_medium)
                     .build()

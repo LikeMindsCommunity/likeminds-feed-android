@@ -31,6 +31,8 @@ class LMFeedItemPostSingleVideoViewDataBinder(
         binding.apply {
             LMFeedPostBinderUtils.customizePostHeaderView(postHeader)
 
+            LMFeedPostBinderUtils.customizePostHeadingView(tvPostHeading)
+
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
             when (LMFeedCore.theme) {

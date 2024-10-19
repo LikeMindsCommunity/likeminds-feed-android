@@ -30,6 +30,10 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
         binding.apply {
             LMFeedPostBinderUtils.customizePostHeaderView(postHeader)
 
+            LMFeedPostBinderUtils.customizePostHeadingView(tvPostHeading)
+
+            LMFeedPostBinderUtils.customizePostHeadingView(tvPostHeading)
+
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
             when (LMFeedCore.theme) {

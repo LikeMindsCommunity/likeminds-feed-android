@@ -42,6 +42,17 @@ object LMFeedPostBinderUtils {
         postHeaderView.setStyle(postHeaderViewStyle)
     }
 
+    // customizes the heading view of the post
+    fun customizePostHeadingView(postHeading: LMFeedTextView) {
+        val postHeadingViewStyle = LMFeedStyleTransformer.postViewStyle.postHeadingTextStyle
+        if (postHeadingViewStyle != null) {
+            postHeading.show()
+            postHeading.setStyle(postHeadingViewStyle)
+        } else {
+            postHeading.hide()
+        }
+    }
+
     // customizes the content view of the post
     fun customizePostContentView(
         postContent: LMFeedTextView,
