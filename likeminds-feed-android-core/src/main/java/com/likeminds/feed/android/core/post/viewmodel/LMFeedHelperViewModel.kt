@@ -2,9 +2,13 @@ package com.likeminds.feed.android.core.post.viewmodel
 
 import androidx.lifecycle.*
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
+import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
+import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
+import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.post.model.*
 import com.likeminds.likemindsfeed.topic.model.GetTopicRequest
@@ -41,12 +45,28 @@ class LMFeedHelperViewModel : ViewModel() {
         _deletePostResponse
     }
 
+    private val _unreadNotificationCount by lazy {
+        MutableLiveData<Int>()
+    }
+
+    val unreadNotificationCount: LiveData<Int> by lazy {
+        _unreadNotificationCount
+    }
+
     private val _showTopicFilter by lazy {
         MutableLiveData<Boolean>()
     }
 
     val showTopicFilter: LiveData<Boolean> by lazy {
         _showTopicFilter
+    }
+
+    private val _userResponse by lazy {
+        MutableLiveData<LMFeedUserViewData>()
+    }
+
+    val userResponse: LiveData<LMFeedUserViewData> by lazy {
+        _userResponse
     }
 
     private val errorMessageChannel by lazy {
@@ -63,6 +83,8 @@ class LMFeedHelperViewModel : ViewModel() {
         data class SavePost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
 
         data class DeletePost(val errorMessage: String?) : ErrorMessageEvent()
+
+        data class GetUnreadNotificationCount(val errorMessage: String?) : ErrorMessageEvent()
 
         data class PinPost(val postId: String, val errorMessage: String?) : ErrorMessageEvent()
 
@@ -185,6 +207,24 @@ class LMFeedHelperViewModel : ViewModel() {
         }
     }
 
+    //get unread notification count
+    fun getUnreadNotificationCount() {
+        viewModelScope.launchIO {
+            //call unread notification count api
+            val response = lmFeedClient.getUnreadNotificationCount()
+
+            if (response.success) {
+                val data = response.data ?: return@launchIO
+                val count = data.count
+
+                _unreadNotificationCount.postValue(count)
+            } else {
+                //for error
+                errorMessageChannel.send(ErrorMessageEvent.GetUnreadNotificationCount(response.errorMessage))
+            }
+        }
+    }
+
     //calls to topics api and check whether to show topics view or not
     fun getAllTopics(showEnabledTopicsOnly: Boolean) {
         viewModelScope.launchIO {
@@ -215,6 +255,29 @@ class LMFeedHelperViewModel : ViewModel() {
                     )
                 )
             }
+        }
+    }
+
+    //gets logged in user
+    fun getLoggedInUser() {
+        viewModelScope.launchIO {
+            val response = lmFeedClient.getLoggedInUserWithRights()
+
+            if (response.success) {
+                val user = response.data?.user ?: return@launchIO
+
+                val userViewData = LMFeedViewDataConvertor.convertUser(user)
+
+                //post the user response in LiveData
+                _userResponse.postValue(userViewData)
+            }
+        }
+    }
+
+    //get ids from topic selected adapter
+    fun getTopicIdsFromAdapterList(items: List<LMFeedBaseViewType>): List<String> {
+        return items.map {
+            (it as LMFeedTopicViewData).id
         }
     }
 }

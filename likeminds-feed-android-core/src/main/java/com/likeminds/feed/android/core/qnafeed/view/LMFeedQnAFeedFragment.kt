@@ -213,7 +213,7 @@ open class LMFeedQnAFeedFragment :
         // sends feed opened event
         LMFeedAnalytics.sendFeedOpenedEvent()
 
-        qnaFeedViewModel.fetchPendingPostFromDB()
+        qnaFeedViewModel.postViewModel.fetchPendingPostFromDB()
         binding.rvQna.initiateVideoAutoPlayer()
     }
 
@@ -233,12 +233,12 @@ open class LMFeedQnAFeedFragment :
 //        qnaFeedViewModel.getLoggedInUser()
 //        qnaFeedViewModel.getCreatePostRights()
 //        qnaFeedViewModel.getUnreadNotificationCount()
-        qnaFeedViewModel.getFeed(1, null)
+        qnaFeedViewModel.postViewModel.getFeed(1, null)
     }
 
     private fun observeResponses() {
 
-        qnaFeedViewModel.socialFeedResponse.observe(viewLifecycleOwner) { response ->
+        qnaFeedViewModel.postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
             LMFeedProgressBarHelper.hideProgress(binding.progressBar)
             val page = response.first
             val posts = response.second
