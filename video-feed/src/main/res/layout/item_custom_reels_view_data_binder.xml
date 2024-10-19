@@ -32,10 +32,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
-            android:layout_marginBottom="@dimen/lm_feed_regular_margin"
-            app:layout_constraintBottom_toTopOf="@id/tv_post_content"
+            android:layout_marginBottom="@dimen/lm_feed_large_margin"
+            app:layout_constraintBottom_toTopOf="@id/tv_post_heading"
             app:layout_constraintEnd_toStartOf="@id/post_action_view"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_goneMarginBottom="@dimen/lm_feed_regular_margin" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
             android:id="@+id/post_topics_group"
@@ -46,6 +47,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_header" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+            android:id="@+id/tv_post_heading"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/lm_feed_large_margin"
+            android:layout_marginEnd="@dimen/lm_feed_extra_extra_large_margin"
+            android:layout_marginBottom="@dimen/lm_feed_large_margin"
+            android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/tv_post_content"
+            app:layout_constraintEnd_toStartOf="@id/post_action_view"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:fontFamily="@font/roboto_medium"
+            tools:textColor="@color/lm_feed_dark_grey"
+            tools:textSize="@dimen/lm_feed_text_large" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_post_content"

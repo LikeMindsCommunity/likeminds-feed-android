@@ -11,11 +11,11 @@ import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
-import com.likeminds.feed.android.core.socialfeed.style.LMFeedSocialTopicSelectorBarViewStyle
+import com.likeminds.feed.android.core.socialfeed.style.LMFeedTopicSelectorBarViewStyle
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
 
-class LMFeedSocialTopicSelectorBarView : ConstraintLayout {
+class LMFeedTopicSelectorBarView : ConstraintLayout {
 
     constructor(context: Context) : super(context)
 
@@ -34,7 +34,7 @@ class LMFeedSocialTopicSelectorBarView : ConstraintLayout {
         LmFeedSocialTopicSelectorBarBinding.inflate(inflater, this, true)
 
     //sets the provided [topicSelectorBarStyle] to the topic selector bar
-    fun setStyle(topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle) {
+    fun setStyle(topicSelectorBarStyle: LMFeedTopicSelectorBarViewStyle) {
         topicSelectorBarStyle.apply {
 
             //sets background color
@@ -44,7 +44,7 @@ class LMFeedSocialTopicSelectorBarView : ConstraintLayout {
 
             //sets the elevation of the header view
             elevation?.let {
-                this@LMFeedSocialTopicSelectorBarView.elevation = resources.getDimension(it)
+                this@LMFeedTopicSelectorBarView.elevation = resources.getDimension(it)
             }
 
             //configures all the views in the topic selector bar

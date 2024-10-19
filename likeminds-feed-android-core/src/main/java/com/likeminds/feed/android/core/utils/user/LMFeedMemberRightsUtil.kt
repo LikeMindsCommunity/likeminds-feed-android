@@ -1,5 +1,6 @@
 package com.likeminds.feed.android.core.utils.user
 
+import android.util.Log
 import com.likeminds.feed.android.core.utils.user.LMFeedMemberState.Companion.isAdmin
 import com.likeminds.feed.android.core.utils.user.LMFeedMemberState.Companion.isMember
 import com.likeminds.likemindsfeed.user.model.ManagementRightPermissionData
@@ -10,6 +11,7 @@ object LMFeedMemberRightsUtil {
         memberState: Int,
         memberRights: List<ManagementRightPermissionData>
     ): Boolean {
+        Log.d("PUI", "hasCreatePostsRight: $memberState")
         return when {
             isAdmin(memberState) -> {
                 true
@@ -33,6 +35,7 @@ object LMFeedMemberRightsUtil {
         memberState: Int,
         memberRights: List<ManagementRightPermissionData>
     ): Boolean {
+        Log.d("PUI", "hasCommentRight: $memberState")
         return when {
             isAdmin(memberState) -> {
                 true

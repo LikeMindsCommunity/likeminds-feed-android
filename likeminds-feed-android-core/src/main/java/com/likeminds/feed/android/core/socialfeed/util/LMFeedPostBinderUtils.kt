@@ -18,11 +18,10 @@ import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
-import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
-import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionVerticalView
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.*
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
 import com.likeminds.feed.android.core.utils.*
@@ -57,6 +56,12 @@ object LMFeedPostBinderUtils {
         postActionHorizontalView.setStyle(postActionViewStyle)
     }
 
+    // customizes the horizontal post qna action view
+    fun customizePostQnAActionHorizontalView(postAQnAActionHorizontalView: LMFeedPostQnAActionHorizontalView) {
+        val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+        postAQnAActionHorizontalView.setStyle(postActionViewStyle)
+    }
+
     // customizes the vertical post action view
     fun customizePostActionVerticalView(postActionVerticalView: LMFeedPostActionVerticalView) {
         val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
@@ -76,6 +81,7 @@ object LMFeedPostBinderUtils {
     //bind post data to specific views
     fun setPostBindData(
         headerView: LMFeedPostHeaderView,
+        headingView: LMFeedTextView,
         contentView: LMFeedTextView,
         data: LMFeedPostViewData,
         position: Int,
@@ -97,6 +103,14 @@ object LMFeedPostBinderUtils {
                 data.headerViewData
             )
 
+            // sets data to the heading view
+            setPostHeadingViewData(
+                headingView,
+                data,
+                postAdapterListener,
+                position
+            )
+
             // sets the text content of the post
             setPostContentViewData(
                 contentView,
@@ -105,6 +119,7 @@ object LMFeedPostBinderUtils {
                 position
             )
 
+            // sets the topics view of the post
             setPostTopicsViewData(
                 topicsView,
                 data.topicsViewData
@@ -145,7 +160,8 @@ object LMFeedPostBinderUtils {
             val postContent = contentViewData.text ?: return
 
             val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-            val maxLines = (postContentStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
+            val maxLines =
+                (postContentStyle.maxLines ?: LMFeedThemeConstants.DEFAULT_POST_MAX_LINES)
 
             /**
              * Text is modified as Linkify doesn't accept texts with these specific unicode characters
@@ -174,7 +190,7 @@ object LMFeedPostBinderUtils {
                     enableClick = true,
                     highlightColor = ContextCompat.getColor(
                         context,
-                        LMFeedTheme.getTextLinkColor()
+                        LMFeedThemeConstants.getTextLinkColor()
                     ),
                     hasAtRateSymbol = true,
                 ) { route ->
@@ -190,7 +206,7 @@ object LMFeedPostBinderUtils {
                 val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
                     this,
                     maxLines,
-                    LMFeedTheme.getPostCharacterLimit()
+                    LMFeedThemeConstants.getPostCharacterLimit()
                 )
 
                 val trimmedText =
@@ -261,6 +277,27 @@ object LMFeedPostBinderUtils {
         }
     }
 
+    // sets data in post heading view
+    private fun setPostHeadingViewData(
+        headingView: LMFeedTextView,
+        postViewData: LMFeedPostViewData,
+        postAdapterListener: LMFeedPostAdapterListener,
+        position: Int
+    ) {
+        headingView.apply {
+            val postHeadingTextStyle = LMFeedStyleTransformer.postViewStyle.postHeadingTextStyle
+
+            if (postHeadingTextStyle == null || postViewData.headingViewData.heading.isNullOrEmpty()) {
+                headingView.hide()
+            } else {
+                headingView.show()
+                headingView.text = postViewData.headingViewData.heading
+
+                postAdapterListener.onPostHeadingClicked(position, postViewData)
+            }
+        }
+    }
+
     // sets the data in the post horizontal action view
     fun setPostHorizontalActionViewData(
         horizontalActionView: LMFeedPostActionHorizontalView,
@@ -273,12 +310,24 @@ object LMFeedPostBinderUtils {
             val likesCount = postActionViewData.likesCount
 
             val likesCountText = if (likesCount == 0) {
-                context.getString(R.string.lm_feed_like)
+                context.getString(
+                    R.string.lm_feed_s_like,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
+                val likeString = if (likesCount == 1) {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
                 context.resources.getQuantityString(
-                    R.plurals.lm_feed_likes,
+                    R.plurals.lm_feed_s_likes,
                     likesCount,
-                    likesCount
+                    likesCount,
+                    likeString
                 )
             }
             setLikesCount(likesCountText)
@@ -286,13 +335,77 @@ object LMFeedPostBinderUtils {
             val commentsCount = postActionViewData.commentsCount
 
             val commentsCountText = if (commentsCount == 0) {
-                context.getString(R.string.lm_feed_add_comment)
-            } else {
-                context.resources.getQuantityString(
-                    R.plurals.lm_feed_comments,
-                    commentsCount,
-                    commentsCount
+                context.getString(
+                    R.string.lm_feed_add_s_comment,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_PLURAL)
                 )
+            } else {
+                val commentString = if (commentsCount == 1) {
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
+                context.resources.getQuantityString(
+                    R.plurals.lm_feed_s_comments,
+                    commentsCount,
+                    commentsCount,
+                    commentString
+                )
+            }
+            setCommentsCount(commentsCountText)
+        }
+    }
+
+    // sets the data in the post qna horizontal action view
+    fun setPostQnAHorizontalActionViewData(
+        qnaHorizontalActionView: LMFeedPostQnAActionHorizontalView,
+        postActionViewData: LMFeedPostActionViewData
+    ) {
+        qnaHorizontalActionView.apply {
+            setUpvoteIcon(postActionViewData.isLiked)
+            setSaveIcon(postActionViewData.isSaved)
+
+            val upvoteCount = postActionViewData.likesCount
+
+            val upvoteCountText = if (upvoteCount == 0) {
+                ""
+            } else {
+                val upvoteString = if (upvoteCount == 1) {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
+                context.resources.getQuantityString(
+                    R.plurals.lm_feed_s_likes,
+                    upvoteCount,
+                    upvoteCount,
+                    upvoteString
+                )
+            }
+            setUpvoteText(
+                context.getString(
+                    R.string.lm_feed_s_likes,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            )
+            setUpvoteCount(upvoteCountText)
+
+            val commentsCount = postActionViewData.commentsCount
+
+            val commentsCountText = if (commentsCount == 0) {
+                context.getString(
+                    R.string.lm_feed_s_answer,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            } else {
+                commentsCount.toString()
             }
             setCommentsCount(commentsCountText)
         }
@@ -309,7 +422,11 @@ object LMFeedPostBinderUtils {
             val likesCount = postActionViewData.likesCount
 
             val likesCountText = if (likesCount == 0) {
-                context.getString(R.string.lm_feed_like)
+                context.getString(
+                    R.string.lm_feed_s_like,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
                 likesCount.toLong().getFormatedNumber()
             }

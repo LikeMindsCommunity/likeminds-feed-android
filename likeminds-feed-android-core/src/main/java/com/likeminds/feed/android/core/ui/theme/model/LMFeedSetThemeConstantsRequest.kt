@@ -2,7 +2,7 @@ package com.likeminds.feed.android.core.ui.theme.model
 
 import androidx.annotation.*
 
-class LMFeedSetThemeRequest private constructor(
+class LMFeedSetThemeConstantsRequest private constructor(
     @FontRes
     val fontResource: Int?,
     val fontAssetsPath: String?,
@@ -10,7 +10,6 @@ class LMFeedSetThemeRequest private constructor(
     @ColorRes val buttonColor: Int?,
     val postCharacterLimit: Int?,
     @DrawableRes val notificationIcon: Int?,
-    @ColorRes val notificationTextColor: Int?,
 ) {
     class Builder {
         @FontRes
@@ -28,9 +27,6 @@ class LMFeedSetThemeRequest private constructor(
 
         @DrawableRes
         private var notificationIcon: Int? = null
-
-        @ColorRes
-        private var notificationTextColor: Int? = null
 
         fun fontResource(@FontRes fontResource: Int?) = apply {
             this.fontResource = fontResource
@@ -56,18 +52,13 @@ class LMFeedSetThemeRequest private constructor(
             this.notificationIcon = notificationIcon
         }
 
-        fun notificationTextColor(@ColorRes notificationTextColor: Int?) = apply {
-            this.notificationTextColor = notificationTextColor
-        }
-
-        fun build() = LMFeedSetThemeRequest(
+        fun build() = LMFeedSetThemeConstantsRequest(
             fontResource,
             fontAssetsPath,
             textLinkColor,
             buttonColor,
             postCharacterLimit,
-            notificationIcon,
-            notificationTextColor,
+            notificationIcon
         )
     }
 
@@ -78,6 +69,5 @@ class LMFeedSetThemeRequest private constructor(
             .buttonColor(buttonColor)
             .postCharacterLimit(postCharacterLimit)
             .notificationIcon(notificationIcon)
-            .notificationTextColor(notificationTextColor)
     }
 }

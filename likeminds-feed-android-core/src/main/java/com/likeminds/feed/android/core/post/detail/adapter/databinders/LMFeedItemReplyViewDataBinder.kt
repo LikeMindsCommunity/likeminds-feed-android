@@ -7,9 +7,12 @@ import com.likeminds.feed.android.core.databinding.LmFeedItemReplyViewBinding
 import com.likeminds.feed.android.core.post.detail.adapter.LMFeedReplyAdapterListener
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.detail.util.LMFeedPostDetailBinderUtils
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_REPLY
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 class LMFeedItemReplyViewDataBinder(
     private val replyAdapterListener: LMFeedReplyAdapterListener
@@ -68,10 +71,18 @@ class LMFeedItemReplyViewDataBinder(
             val likesCountText = if (data.likesCount == 0) {
                 ""
             } else {
+                val likeString = if (data.likesCount == 1) {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
                 context.resources.getQuantityString(
-                    R.plurals.lm_feed_likes,
+                    R.plurals.lm_feed_s_likes,
                     data.likesCount,
-                    data.likesCount
+                    data.likesCount,
+                    likeString
                 )
             }
             replyView.setLikesCount(likesCountText)

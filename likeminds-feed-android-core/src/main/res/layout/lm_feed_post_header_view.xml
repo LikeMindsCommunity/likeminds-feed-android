@@ -27,7 +27,7 @@
             android:textSize="@dimen/lm_feed_text_large"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/tv_time"
-            app:layout_constraintEnd_toStartOf="@+id/tv_custom_title"
+            app:layout_constraintEnd_toStartOf="@+id/guide_author_name"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/iv_author_image"
             app:layout_constraintTop_toTopOf="@+id/iv_author_image"
@@ -35,20 +35,27 @@
             tools:ignore="UnusedAttribute"
             tools:text="@string/lm_feed_sample_name" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_author_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.6"/>
+
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_custom_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/lm_feed_regular_margin"
             android:background="@drawable/lm_feed_background_round_2dp"
-            app:layout_constrainedWidth="true"
             android:includeFontPadding="false"
             android:maxLines="1"
             android:paddingHorizontal="@dimen/lm_feed_regular_padding"
             android:paddingVertical="@dimen/lm_feed_small_padding"
-            android:textColor="@color/lm_feed_white"
+            android:textColor="@color/lm_feed_majorelle_blue"
             android:textSize="@dimen/lm_feed_text_small"
             android:visibility="gone"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@id/tv_author_name"
             app:layout_constraintEnd_toStartOf="@+id/iv_pin"
             app:layout_constraintHorizontal_bias="0.0"

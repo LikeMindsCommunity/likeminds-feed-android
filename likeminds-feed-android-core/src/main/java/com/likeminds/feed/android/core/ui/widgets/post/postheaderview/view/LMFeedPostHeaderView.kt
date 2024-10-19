@@ -114,7 +114,7 @@ class LMFeedPostHeaderView : ConstraintLayout {
     }
 
     private fun configureAuthorName(authorNameViewStyle: LMFeedTextStyle) {
-        binding.tvAuthorName.setStyle(authorNameViewStyle, 1)
+        binding.tvAuthorName.setStyle(authorNameViewStyle)
     }
 
     private fun configureAuthorImage(authorImageViewStyle: LMFeedImageStyle) {

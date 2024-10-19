@@ -4,7 +4,7 @@ import android.graphics.Typeface
 import android.text.TextUtils
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.alertdialog.style.LMFeedAlertDialogViewStyle
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
@@ -71,7 +71,7 @@ class LMFeedEditPostFragmentViewStyle private constructor(
                     .fontResource(R.font.lm_feed_roboto_medium)
                     .build()
             )
-            .activeSubmitColor(LMFeedTheme.getButtonColor())
+            .activeSubmitColor(LMFeedThemeConstants.getButtonColor())
             .build()
 
         private var postHeaderViewStyle: LMFeedPostHeaderViewStyle =
@@ -110,7 +110,7 @@ class LMFeedEditPostFragmentViewStyle private constructor(
             .chipStartPadding(R.dimen.lm_feed_regular_padding)
             .chipIcon(R.drawable.lm_feed_ic_add_topics)
             .chipIconSize(R.dimen.lm_feed_chip_default_icon_size)
-            .chipIconTint(LMFeedTheme.getButtonColor())
+            .chipIconTint(LMFeedThemeConstants.getButtonColor())
             .build()
 
         private var editTopicsChipStyle: LMFeedChipStyle = LMFeedChipStyle.Builder()
@@ -119,12 +119,12 @@ class LMFeedEditPostFragmentViewStyle private constructor(
             .chipStartPadding(R.dimen.lm_feed_edit_chip_end_size)
             .chipIcon(R.drawable.lm_feed_ic_edit_topic)
             .chipIconSize(R.dimen.lm_feed_chip_default_icon_size)
-            .chipIconTint(LMFeedTheme.getButtonColor())
+            .chipIconTint(LMFeedThemeConstants.getButtonColor())
             .build()
 
         private var progressBarStyle: LMFeedProgressBarStyle = LMFeedProgressBarStyle.Builder()
             .isIndeterminate(false)
-            .progressColor(LMFeedTheme.getButtonColor())
+            .progressColor(LMFeedThemeConstants.getButtonColor())
             .build()
 
         private var disabledTopicsAlertDialogStyle: LMFeedAlertDialogViewStyle =
@@ -140,7 +140,7 @@ class LMFeedEditPostFragmentViewStyle private constructor(
                 .alertPositiveButtonStyle(
                     LMFeedTextStyle.Builder()
                         .textAllCaps(true)
-                        .textColor(LMFeedTheme.getButtonColor())
+                        .textColor(LMFeedThemeConstants.getButtonColor())
                         .textSize(R.dimen.lm_feed_text_small)
                         .typeface(Typeface.NORMAL)
                         .fontResource(R.font.lm_feed_roboto_medium)

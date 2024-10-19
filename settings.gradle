@@ -21,3 +21,4 @@ rootProject.name = "likeminds-feed-android"
 include ':social-feed'
 include ':likeminds-feed-android-core'
 include ':video-feed'
+include ':qna-feed'

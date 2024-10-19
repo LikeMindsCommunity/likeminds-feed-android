@@ -44,7 +44,7 @@ import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionA
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
@@ -72,7 +72,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
-import org.json.JSONObject
 
 open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private lateinit var binding: LmFeedFragmentCreatePostBinding
@@ -337,7 +336,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         val config = UserTaggingConfig.Builder()
             .editText(binding.etPostComposer)
             .maxHeightInPercentage(0.4f)
-            .color(LMFeedTheme.getTextLinkColor())
+            .color(LMFeedThemeConstants.getTextLinkColor())
             .hasAtRateSymbol(true)
             .build()
 

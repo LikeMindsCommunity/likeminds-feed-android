@@ -6,15 +6,15 @@ import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityEntityVi
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.delete.model.LMFeedReasonChooseViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
-import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.post.create.model.LMFeedFileUploadViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountViewData
 import com.likeminds.feed.android.core.post.model.*
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.report.model.LMFeedReportTagViewData
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.socialfeed.model.*
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
@@ -118,6 +118,11 @@ object LMFeedViewDataConvertor {
             .text(post.text)
             .build()
 
+        //post heading view data
+        val postHeadingViewData = LMFeedPostHeadingViewData.Builder()
+            .heading(post.heading)
+            .build()
+
         //post media view data
         val postMediaViewData = LMFeedMediaViewData.Builder()
             .attachments(
@@ -132,6 +137,7 @@ object LMFeedViewDataConvertor {
 
         return LMFeedPostViewData.Builder()
             .contentViewData(postContentViewData)
+            .headingViewData(postHeadingViewData)
             .mediaViewData(postMediaViewData)
             .topicsViewData(convertTopics(topics))
             .isPosted(post.isPosted)
@@ -242,6 +248,11 @@ object LMFeedViewDataConvertor {
             .text(post.text)
             .build()
 
+        //post heading view data
+        val postHeadingViewData = LMFeedPostHeadingViewData.Builder()
+            .heading(post.heading)
+            .build()
+
         //post media view data
         val postMediaViewData = LMFeedMediaViewData.Builder()
             .attachments(
@@ -274,6 +285,7 @@ object LMFeedViewDataConvertor {
             .id(postId)
             .headerViewData(postHeaderViewData)
             .contentViewData(postContentViewData)
+            .headingViewData(postHeadingViewData)
             .mediaViewData(postMediaViewData)
             .actionViewData(postActionViewData)
             .topicsViewData(topicsViewData)
