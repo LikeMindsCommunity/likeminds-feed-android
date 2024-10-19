@@ -715,6 +715,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    // callback when the user clicks on the post content
     override fun onPostContentClicked(position: Int, postViewData: LMFeedPostViewData) {
         // sends comment list open event
         LMFeedAnalytics.sendCommentListOpenEvent()
