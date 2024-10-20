@@ -191,6 +191,21 @@ class LMFeedPostQnAActionHorizontalView : ConstraintLayout {
      *
      * @param listener [LMFeedOnClickListener] interface to have click listener
      */
+    fun setUpvoteIconClickListener(listener: LMFeedOnClickListener) {
+        binding.ivUpvote.setOnClickListener {
+            listener.onClick()
+        }
+
+        binding.tvUpvote.setOnClickListener {
+            listener.onClick()
+        }
+    }
+
+    /**
+     * Sets click listener on the upvote icon
+     *
+     * @param listener [LMFeedOnClickListener] interface to have click listener
+     */
     fun setUpvoteCountClickListener(listener: LMFeedOnClickListener) {
         binding.tvUpvotesCount.setOnClickListener {
             listener.onClick()

@@ -24,6 +24,7 @@ import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.*
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
+import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.view.LMFeedPostTopResponseView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getFormatedNumber
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
@@ -89,11 +90,27 @@ object LMFeedPostBinderUtils {
         }
     }
 
+    // customizes the top response view of the post
+    fun customizePostTopResponseView(postTopResponseView: LMFeedPostTopResponseView) {
+        postTopResponseView.apply {
+            val postTopResponseViewStyle =
+                LMFeedStyleTransformer.postViewStyle.postTopResponseViewStyle
+
+            if (postTopResponseViewStyle == null) {
+                postTopResponseView.hide()
+            } else {
+                postTopResponseView.show()
+                postTopResponseView.setStyle(postTopResponseViewStyle)
+            }
+        }
+    }
+
     //bind post data to specific views
     fun setPostBindData(
         headerView: LMFeedPostHeaderView,
         headingView: LMFeedTextView,
         contentView: LMFeedTextView,
+        postTopResponseView: LMFeedPostTopResponseView,
         data: LMFeedPostViewData,
         position: Int,
         topicsView: LMFeedChipGroup,
@@ -134,6 +151,14 @@ object LMFeedPostBinderUtils {
             setPostTopicsViewData(
                 topicsView,
                 data.topicsViewData
+            )
+
+            // sets the top response view of the post
+            setPostTopResponse(
+                position,
+                postAdapterListener,
+                postTopResponseView,
+                data
             )
 
             executeBinder()
@@ -464,6 +489,44 @@ object LMFeedPostBinderUtils {
         }
     }
 
+    // sets the data in post top response view
+    private fun setPostTopResponse(
+        position: Int,
+        postAdapterListener: LMFeedPostAdapterListener,
+        postTopResponseView: LMFeedPostTopResponseView,
+        postViewData: LMFeedPostViewData
+    ) {
+        postTopResponseView.apply {
+            val topResponses = postViewData.topResponses
+            if (topResponses.isEmpty()) {
+                hide()
+            } else {
+                show()
+
+                val topResponse = topResponses.first()
+
+                setTopResponseTitle(context.getString(R.string.lm_feed_top_response))
+                setAuthorImage(topResponse.user)
+                setAuthorName(topResponse.user.name)
+                setTimestamp(topResponse.createdAt)
+                postTopResponseView.setTopResponseContent(
+                    topResponse.text,
+                    topResponse.alreadySeenFullContent,
+                    onTopResponseSeeMoreClickListener = {
+                        val updatedPost = updatePostForSeeFullTopResponseContent(postViewData)
+                        postAdapterListener.onPostTopResponseSeeMoreClicked(
+                            position,
+                            updatedPost
+                        )
+                    },
+                    onMemberTagClickListener = { uuid ->
+                        postAdapterListener.onPostTopResponseTaggedMemberClicked(position, uuid)
+                    }
+                )
+            }
+        }
+    }
+
     // update post object for a like action
     fun updatePostForLike(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
         val postActionData = oldPostViewData.actionViewData
@@ -594,7 +657,7 @@ object LMFeedPostBinderUtils {
     }
 
     //updates post object for a see full content action and returns updated post
-    fun updatePostForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
+    private fun updatePostForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
         val contentViewData = oldPostViewData.contentViewData.toBuilder()
             .alreadySeenFullContent(true)
             .build()
@@ -602,6 +665,17 @@ object LMFeedPostBinderUtils {
         //return updated comment view data
         return oldPostViewData.toBuilder()
             .contentViewData(contentViewData)
+            .build()
+    }
+
+    //updates post object for a see full content action on the top response view and returns updated post
+    private fun updatePostForSeeFullTopResponseContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
+        val topResponseViewData = oldPostViewData.topResponses.first().toBuilder()
+            .alreadySeenFullContent(true)
+            .build()
+
+        return oldPostViewData.toBuilder()
+            .topResponses(listOf(topResponseViewData))
             .build()
     }
 

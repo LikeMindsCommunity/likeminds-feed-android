@@ -182,6 +182,6 @@
     <!-- QnA Feed Action View  -->
     <dimen name="lm_qna_upvote_action_view">1dp</dimen>
     <dimen name="lm_qna_action_view_vertical_padding">6dp</dimen>
-    <dimen name="lm_qna_action_view_vertical_margin">1dp</dimen>
+    <dimen name="lm_qna_action_view_vertical_margin">6dp</dimen>
 
 </resources>

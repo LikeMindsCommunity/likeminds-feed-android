@@ -188,14 +188,16 @@ object LMFeedViewDataConvertor {
         posts: List<Post>,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
-        widgetsMap: Map<String, Widget>
+        widgetsMap: Map<String, Widget>,
+        filteredCommentsMap: Map<String, Comment>,
     ): List<LMFeedPostViewData> {
         return posts.map { post ->
             convertPost(
                 post,
                 usersMap,
                 topicsMap,
-                widgetsMap
+                widgetsMap,
+                filteredCommentsMap
             )
         }
     }
@@ -210,13 +212,15 @@ object LMFeedViewDataConvertor {
         post: Post,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
-        widgetsMap: Map<String, Widget>
+        widgetsMap: Map<String, Widget>,
+        filteredCommentsMap: Map<String, Comment>? = null
     ): LMFeedPostViewData {
         val postCreatorUUID = post.uuid
         val postCreator = usersMap[postCreatorUUID]
         val postId = post.id
         val replies = post.replies?.toMutableList()
         val topicsIds = post.topicIds ?: emptyList()
+        val commentIds = post.commentIds ?: emptyList()
 
         //get user view data
         val userViewData = if (postCreator == null) {
@@ -225,7 +229,7 @@ object LMFeedViewDataConvertor {
             convertUser(postCreator)
         }
 
-        //get topics view data
+        // get topics view data
         val topicsViewData = topicsIds.mapNotNull { topicId ->
             topicsMap[topicId]
         }.map { topic ->
@@ -280,6 +284,21 @@ object LMFeedViewDataConvertor {
             )
             .build()
 
+        // get top responses
+        val topResponses = if (filteredCommentsMap == null) {
+            emptyList()
+        } else {
+            commentIds.mapNotNull { commentId ->
+                filteredCommentsMap[commentId]
+            }.map { comment ->
+                convertComment(
+                    comment,
+                    usersMap,
+                    postId
+                )
+            }
+        }
+
         //creating a final instance
         return LMFeedPostViewData.Builder()
             .id(postId)
@@ -289,6 +308,7 @@ object LMFeedViewDataConvertor {
             .mediaViewData(postMediaViewData)
             .actionViewData(postActionViewData)
             .topicsViewData(topicsViewData)
+            .topResponses(topResponses)
             .build()
     }
 

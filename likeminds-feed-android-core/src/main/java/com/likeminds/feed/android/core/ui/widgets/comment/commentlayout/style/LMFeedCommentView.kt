@@ -190,7 +190,7 @@ class LMFeedCommentView : ConstraintLayout {
     }
 
     /**
-     * Sets the name of the commenter author
+     * Sets the content of the comment
      *
      * @param commentText - string to be set for comment text.
      * @param alreadySeenFullContent - whether the comment content was seen completely or not.
@@ -219,6 +219,7 @@ class LMFeedCommentView : ConstraintLayout {
                 show()
             }
 
+            // todo: take see more read more from styles
             // span for seeMore feature
             val seeMoreColor = ContextCompat.getColor(context, R.color.lm_feed_brown_grey)
             val seeMore = SpannableStringBuilder(context.getString(R.string.lm_feed_see_more))

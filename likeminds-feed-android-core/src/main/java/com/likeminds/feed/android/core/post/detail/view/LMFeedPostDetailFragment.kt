@@ -162,7 +162,7 @@ open class LMFeedPostDetailFragment :
         commentComposer.apply {
             setCommentInputBoxHint(
                 getString(
-                    R.string.lm_feed_write_a_s_comment,
+                    R.string.lm_feed_write_s_comment,
                     LMFeedCommunityUtil.getCommentVariable()
                         .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
                 )

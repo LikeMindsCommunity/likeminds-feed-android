@@ -1,20 +1,28 @@
 package com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.view
 
 import android.content.Context
+import android.text.*
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedPostTopResponseViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
+import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
-import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
-import com.likeminds.feed.android.core.utils.LMFeedTimeUtil
+import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
+import com.likeminds.feed.android.core.utils.listeners.LMFeedOnTaggedMemberClickListener
 import com.likeminds.feed.android.core.utils.user.LMFeedUserImageUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
+import com.likeminds.usertagging.util.UserTaggingDecoder
 
 class LMFeedPostTopResponseView : ConstraintLayout {
 
@@ -38,8 +46,11 @@ class LMFeedPostTopResponseView : ConstraintLayout {
         postTopResponseViewStyle.apply {
             //set background color of the card view
             backgroundColor?.let {
-                binding.cvTopResponse.setBackgroundColor(
-                    ContextCompat.getColor(context, backgroundColor)
+                binding.cvTopResponse.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        backgroundColor
+                    )
                 )
             }
 
@@ -94,6 +105,15 @@ class LMFeedPostTopResponseView : ConstraintLayout {
     }
 
     /**
+     * Sets title of the top response view
+     *
+     * @param title - string to be set as the title
+     */
+    fun setTopResponseTitle(title: String) {
+        binding.tvTopResponseTitle.text = title
+    }
+
+    /**
      * Sets author image view.
      *
      * @param user - data of the author.
@@ -122,6 +142,113 @@ class LMFeedPostTopResponseView : ConstraintLayout {
      */
     fun setAuthorName(authorName: String) {
         binding.tvTopResponseAuthorName.text = authorName
+    }
+
+    /**
+     * Sets the content of the top response
+     *
+     * @param topResponseText - string to be set for comment text.
+     * @param alreadySeenFullContent - whether the comment content was seen completely or not.
+     * @param onTopResponseSeeMoreClickListener [LMFeedOnClickListener] - interface to have click listener
+     */
+    fun setTopResponseContent(
+        topResponseText: String,
+        alreadySeenFullContent: Boolean?,
+        onTopResponseSeeMoreClickListener: LMFeedOnClickListener,
+        onMemberTagClickListener: LMFeedOnTaggedMemberClickListener
+    ) {
+        binding.tvTopResponseContent.apply {
+
+            /**
+             * Text is modified as Linkify doesn't accept texts with these specific unicode characters
+             * @see #Linkify.containsUnsupportedCharacters(String)
+             */
+            val textForLinkify = topResponseText.getValidTextForLinkify()
+
+            var alreadySeen = alreadySeenFullContent == true
+
+            if (textForLinkify.isEmpty()) {
+                hide()
+                return
+            } else {
+                show()
+            }
+
+            // todo: take see more read more from styles
+            // span for seeMore feature
+            val seeMoreColor = ContextCompat.getColor(context, R.color.lm_feed_brown_grey)
+            val seeMore = SpannableStringBuilder(context.getString(R.string.lm_feed_see_more))
+            seeMore.setSpan(
+                ForegroundColorSpan(seeMoreColor),
+                0,
+                seeMore.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            val seeMoreClickableSpan = object : ClickableSpan() {
+                override fun onClick(view: View) {
+                    alreadySeen = true
+                    onTopResponseSeeMoreClickListener.onClick()
+                }
+
+                override fun updateDrawState(textPaint: TextPaint) {
+                    textPaint.isUnderlineText = false
+                }
+            }
+
+            // post is used here to get lines count in the text view
+            post {
+                // decodes tags in text and creates span around those tags
+                UserTaggingDecoder.decodeRegexIntoSpannableText(
+                    this,
+                    textForLinkify,
+                    enableClick = true,
+                    highlightColor = ContextCompat.getColor(
+                        context,
+                        LMFeedThemeConstants.getTextLinkColor()
+                    ),
+                ) { route ->
+                    val uuid = route.getQueryParameter("member_id")
+                        ?: route.getQueryParameter("user_id")
+                        ?: route.getQueryParameter("uuid")
+                        ?: route.lastPathSegment
+                        ?: return@decodeRegexIntoSpannableText
+
+                    onMemberTagClickListener.onMemberTaggedClicked(uuid)
+                }
+
+                // gets short text to set with seeMore
+                val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
+                    this,
+                    3,
+                    500
+                )
+
+                val trimmedText =
+                    if (!alreadySeen && !shortText.isNullOrEmpty()) {
+                        editableText.subSequence(0, shortText.length)
+                    } else {
+                        editableText
+                    }
+
+                val seeMoreSpannableStringBuilder = SpannableStringBuilder()
+                if (!alreadySeen && !shortText.isNullOrEmpty()) {
+                    seeMoreSpannableStringBuilder.append("...")
+                    seeMoreSpannableStringBuilder.append(seeMore)
+                    seeMoreSpannableStringBuilder.setSpan(
+                        seeMoreClickableSpan,
+                        3,
+                        seeMore.length + 3,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+
+                // appends see more text at last
+                text = TextUtils.concat(
+                    trimmedText,
+                    seeMoreSpannableStringBuilder
+                )
+            }
+        }
     }
 
     /**

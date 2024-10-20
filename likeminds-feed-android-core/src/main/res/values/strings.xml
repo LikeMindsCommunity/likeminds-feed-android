@@ -40,7 +40,7 @@
     <string name="lm_feed_s_pinned_to_top">%s pinned to top!</string>
     <string name="lm_feed_s_unpinned">%s unpinned!</string>
     <string name="lm_feed_replying_to_s">Replying to %s</string>
-    <string name="lm_feed_write_a_s_comment">Write a %s</string>
+    <string name="lm_feed_write_s_comment">Write %s</string>
     <string name="lm_feed_you_do_not_have_permission_to_create_a_s">You do not have permission to create a %s</string>
     <string name="lm_feed_you_do_not_have_permission_to_s_comment">You do not have permission to %s</string>
     <string name="lm_feed_request_not_processed">Couldn\'t process your request</string>

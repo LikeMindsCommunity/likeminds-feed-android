@@ -15,7 +15,7 @@ import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_CUSTOM_WIDGET
 
 class LMFeedItemPostCustomWidgetViewDataBinder(
-    private val universalFeedAdapterListener: LMFeedPostAdapterListener
+    private val postAdapterListener: LMFeedPostAdapterListener
 ) : LMFeedViewDataBinder<LmFeedItemPostCustomWidgetBinding, LMFeedPostViewData>() {
     override val viewType: Int
         get() = ITEM_POST_CUSTOM_WIDGET
@@ -51,6 +51,8 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
             }
 
             LMFeedPostBinderUtils.customizePostTopicsGroup(postTopicsGroup)
+
+            LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
 
             setClickListeners(this)
         }
@@ -105,10 +107,11 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
                 postHeader,
                 tvPostHeading,
                 tvPostContent,
+                postTopResponse,
                 data,
                 position,
                 postTopicsGroup,
-                universalFeedAdapterListener,
+                postAdapterListener,
                 returnBinder = {
                     return@setPostBindData
                 }, executeBinder = {}
@@ -139,7 +142,7 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
         binding.apply {
             postHeader.setMenuIconClickListener {
                 val post = postViewData ?: return@setMenuIconClickListener
-                universalFeedAdapterListener.onPostMenuIconClicked(
+                postAdapterListener.onPostMenuIconClicked(
                     position,
                     postHeader.headerMenu,
                     post
@@ -148,19 +151,19 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
 
             postHeader.setAuthorFrameClickListener {
                 val post = this.postViewData ?: return@setAuthorFrameClickListener
-                universalFeedAdapterListener.onPostAuthorHeaderClicked(position, post)
+                postAdapterListener.onPostAuthorHeaderClicked(position, post)
             }
 
             postAction.setLikeIconClickListener {
                 val post = this.postViewData ?: return@setLikeIconClickListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
-                universalFeedAdapterListener.onPostLikeClicked(position, updatedPost)
+                postAdapterListener.onPostLikeClicked(position, updatedPost)
             }
 
             postAction.setLikesCountClickListener {
                 val post = this.postViewData ?: return@setLikesCountClickListener
                 if (post.actionViewData.likesCount > 0) {
-                    universalFeedAdapterListener.onPostLikesCountClicked(position, post)
+                    postAdapterListener.onPostLikesCountClicked(position, post)
                 } else {
                     return@setLikesCountClickListener
                 }
@@ -168,18 +171,49 @@ class LMFeedItemPostCustomWidgetViewDataBinder(
 
             postAction.setCommentsCountClickListener {
                 val post = this.postViewData ?: return@setCommentsCountClickListener
-                universalFeedAdapterListener.onPostCommentsCountClicked(position, post)
+                postAdapterListener.onPostCommentsCountClicked(position, post)
             }
 
             postAction.setSaveIconListener {
                 val post = this.postViewData ?: return@setSaveIconListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
-                universalFeedAdapterListener.onPostSaveClicked(position, updatedPost)
+                postAdapterListener.onPostSaveClicked(position, updatedPost)
             }
 
             postAction.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
-                universalFeedAdapterListener.onPostShareClicked(position, post)
+                postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            qnaPostAction.setUpvoteIconClickListener {
+                val post = this.postViewData ?: return@setUpvoteIconClickListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
+                postAdapterListener.onPostLikeClicked(position, updatedPost)
+            }
+
+            qnaPostAction.setUpvoteCountClickListener {
+                val post = this.postViewData ?: return@setUpvoteCountClickListener
+                if (post.actionViewData.likesCount > 0) {
+                    postAdapterListener.onPostLikesCountClicked(position, post)
+                } else {
+                    return@setUpvoteCountClickListener
+                }
+            }
+
+            qnaPostAction.setCommentsCountClickListener {
+                val post = this.postViewData ?: return@setCommentsCountClickListener
+                postAdapterListener.onPostCommentsCountClicked(position, post)
+            }
+
+            qnaPostAction.setSaveIconListener {
+                val post = this.postViewData ?: return@setSaveIconListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
+                postAdapterListener.onPostSaveClicked(position, updatedPost)
+            }
+
+            qnaPostAction.setShareIconListener {
+                val post = this.postViewData ?: return@setShareIconListener
+                postAdapterListener.onPostShareClicked(position, post)
             }
         }
     }

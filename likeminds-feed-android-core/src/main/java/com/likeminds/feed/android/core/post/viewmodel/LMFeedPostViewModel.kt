@@ -184,6 +184,7 @@ class LMFeedPostViewModel : ViewModel() {
                 val usersMap = data.users
                 val topicsMap = data.topics
                 val widgetsMap = data.widgets
+                val filteredCommentsMap = data.filteredComments
 
                 //convert to view data
                 val listOfPostViewData =
@@ -191,7 +192,8 @@ class LMFeedPostViewModel : ViewModel() {
                         posts,
                         usersMap,
                         topicsMap,
-                        widgetsMap
+                        widgetsMap,
+                        filteredCommentsMap
                     )
 
                 //send it to ui

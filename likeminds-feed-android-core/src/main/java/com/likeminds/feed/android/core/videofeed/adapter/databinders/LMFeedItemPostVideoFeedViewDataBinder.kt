@@ -64,6 +64,7 @@ class LMFeedItemPostVideoFeedViewDataBinder(
                 postHeader,
                 tvPostHeading,
                 tvPostContent,
+                postTopResponse,
                 data,
                 position,
                 postTopicsGroup,

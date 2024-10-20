@@ -52,6 +52,8 @@ class LMFeedItemPostLinkViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostTopicsGroup(postTopicsGroup)
 
+            LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
+
             setClickListeners(this)
 
             //sets link media style to post link view
@@ -118,6 +120,7 @@ class LMFeedItemPostLinkViewDataBinder(
                 postHeader,
                 tvPostHeading,
                 tvPostContent,
+                postTopResponse,
                 data,
                 position,
                 postTopicsGroup,
@@ -184,6 +187,37 @@ class LMFeedItemPostLinkViewDataBinder(
 
             postAction.setShareIconListener {
                 val post = postViewData ?: return@setShareIconListener
+                postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            qnaPostAction.setUpvoteIconClickListener {
+                val post = this.postViewData ?: return@setUpvoteIconClickListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
+                postAdapterListener.onPostLikeClicked(position, updatedPost)
+            }
+
+            qnaPostAction.setUpvoteCountClickListener {
+                val post = this.postViewData ?: return@setUpvoteCountClickListener
+                if (post.actionViewData.likesCount > 0) {
+                    postAdapterListener.onPostLikesCountClicked(position, post)
+                } else {
+                    return@setUpvoteCountClickListener
+                }
+            }
+
+            qnaPostAction.setCommentsCountClickListener {
+                val post = this.postViewData ?: return@setCommentsCountClickListener
+                postAdapterListener.onPostCommentsCountClicked(position, post)
+            }
+
+            qnaPostAction.setSaveIconListener {
+                val post = this.postViewData ?: return@setSaveIconListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
+                postAdapterListener.onPostSaveClicked(position, updatedPost)
+            }
+
+            qnaPostAction.setShareIconListener {
+                val post = this.postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
             }
         }

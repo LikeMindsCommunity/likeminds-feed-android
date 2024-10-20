@@ -1,5 +1,6 @@
 package com.likeminds.feed.android.core.socialfeed.model
 
+import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
@@ -16,7 +17,8 @@ class LMFeedPostViewData private constructor(
     val fromPostLiked: Boolean,
     val fromPostSaved: Boolean,
     val fromVideoAction: Boolean,
-    val isPosted: Boolean
+    val isPosted: Boolean,
+    val topResponses: List<LMFeedCommentViewData>
 ) : LMFeedBaseViewType {
 
     private val noOfCustomWidgets =
@@ -84,6 +86,7 @@ class LMFeedPostViewData private constructor(
         private var fromPostSaved: Boolean = false
         private var fromVideoAction: Boolean = false
         private var isPosted: Boolean = true
+        private var topResponses: List<LMFeedCommentViewData> = emptyList()
 
         fun id(id: String) = apply {
             this.id = id
@@ -129,6 +132,10 @@ class LMFeedPostViewData private constructor(
             this.isPosted = isPosted
         }
 
+        fun topResponses(topResponses: List<LMFeedCommentViewData>) = apply {
+            this.topResponses = topResponses
+        }
+
         fun build() = LMFeedPostViewData(
             id,
             headerViewData,
@@ -140,7 +147,8 @@ class LMFeedPostViewData private constructor(
             fromPostLiked,
             fromPostSaved,
             fromVideoAction,
-            isPosted
+            isPosted,
+            topResponses
         )
     }
 
@@ -157,6 +165,7 @@ class LMFeedPostViewData private constructor(
             .fromPostSaved(fromPostSaved)
             .fromVideoAction(fromVideoAction)
             .isPosted(isPosted)
+            .topResponses(topResponses)
     }
 
     override fun toString(): String {
@@ -179,6 +188,8 @@ class LMFeedPostViewData private constructor(
             append(fromPostLiked)
             append(", fromPostSaved=")
             append(fromPostSaved)
+            append(", topResponses=")
+            append(topResponses)
             append(")")
         }
     }
