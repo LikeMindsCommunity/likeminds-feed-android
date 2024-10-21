@@ -1,24 +1,17 @@
-package com.likeminds.feed.android.core.socialfeed.view
+package com.likeminds.feed.android.core.search.view
 
 import android.app.Activity
-import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
+import androidx.lifecycle.lifecycleScope
 import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.activityfeed.view.LMFeedActivityFeedActivity
-import com.likeminds.feed.android.core.databinding.LmFeedFragmentSocialFeedBinding
+import com.likeminds.feed.android.core.databinding.LmFeedSearchFragmentBinding
 import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.*
@@ -27,8 +20,6 @@ import com.likeminds.feed.android.core.likes.model.POST
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsActivity
-import com.likeminds.feed.android.core.post.create.model.LMFeedCreatePostExtras
-import com.likeminds.feed.android.core.post.create.view.LMFeedCreatePostActivity
 import com.likeminds.feed.android.core.post.detail.model.LMFeedPostDetailExtras
 import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailActivity
 import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
@@ -39,62 +30,54 @@ import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
 import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
-import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
-import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
-import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
-import com.likeminds.feed.android.core.search.view.LMFeedSearchActivity
+import com.likeminds.feed.android.core.report.view.*
+import com.likeminds.feed.android.core.search.viewmodel.LMFeedSearchViewModel
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
-import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
-import com.likeminds.feed.android.core.socialfeed.viewmodel.LMFeedSocialFeedViewModel
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
-import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
-import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionResultExtras
-import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionActivity
-import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionActivity.Companion.LM_FEED_TOPIC_SELECTION_RESULT_EXTRAS
-import com.likeminds.feed.android.core.ui.base.styles.setStyle
-import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
-import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
+import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedListView
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
 import com.likeminds.feed.android.core.ui.widgets.poll.view.*
+import com.likeminds.feed.android.core.ui.widgets.searchbar.view.LMFeedSearchBarListener
+import com.likeminds.feed.android.core.ui.widgets.searchbar.view.LMFeedSearchBarView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
-import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
-import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWorker
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
-import com.likeminds.feed.android.core.utils.user.*
+import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
+import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
 import kotlinx.coroutines.flow.onEach
-import java.util.UUID
 
-open class LMFeedSocialFeedFragment :
-    Fragment(),
+open class LMFeedSearchFragment : Fragment(),
     LMFeedPostAdapterListener,
     LMFeedAdminDeleteDialogListener,
     LMFeedSelfDeleteDialogListener,
-    LMFeedSelectedTopicAdapterListener,
     LMFeedAddPollOptionBottomSheetListener,
     LMFeedPostObserver {
 
-    private lateinit var binding: LmFeedFragmentSocialFeedBinding
-    private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var binding: LmFeedSearchFragmentBinding
 
-    private val socialFeedViewModel: LMFeedSocialFeedViewModel by viewModels()
+    private val searchViewModel: LMFeedSearchViewModel by viewModels()
 
-    // variable to check if there is a post already uploading
-    private var alreadyPosting: Boolean = false
-    private val workersMap by lazy { ArrayList<UUID>() }
+    // keyword entered in the search bar
+    private var searchKeyword: String? = null
 
-    private val postPublisher by lazy {
+    companion object {
+        const val TAG = "LMFeedSearchFragment"
+
+        fun getInstance(): LMFeedSearchFragment {
+            return LMFeedSearchFragment()
+        }
+    }
+
+    private val postEvent by lazy {
         LMFeedPostEvent.getPublisher()
     }
 
@@ -103,151 +86,248 @@ open class LMFeedSocialFeedFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = LmFeedFragmentSocialFeedBinding.inflate(layoutInflater)
+        binding = LmFeedSearchFragmentBinding.inflate(layoutInflater)
 
         binding.apply {
-            rvSocial.initAdapterAndSetListener(this@LMFeedSocialFeedFragment)
+            rvSearch.initAdapterAndSetListener(this@LMFeedSearchFragment)
 
-            customizeCreateNewPostButton(fabNewPost)
-            customizeSocialFeedHeaderView(headerViewSocial)
-            customizeNoPostLayout(layoutNoPost)
-            customizePostingLayout(layoutPosting)
-            customizeTopicSelectorBar(topicSelectorBar)
-            customizeUniversalFeedListView(rvSocial)
+            customizeFeedSearchBarView(feedSearchBarView)
+            customizeNoSearchResultLayout(layoutNoResultFound)
+            customizeSearchListView(rvSearch)
         }
+
         return binding.root
+    }
+
+    //customizes the search bar view
+    protected open fun customizeFeedSearchBarView(searchBarView: LMFeedSearchBarView) {
+        searchBarView.apply {
+            val searchBarStyle =
+                LMFeedStyleTransformer.searchFeedFragmentViewStyle.feedSearchBarViewStyle
+            setStyle(searchBarStyle)
+        }
+    }
+
+    //customizes the no search result layout
+    protected open fun customizeNoSearchResultLayout(layoutNoResult: LMFeedNoEntityLayoutView) {
+        layoutNoResult.apply {
+            val noSearchResultLayoutStyle =
+                LMFeedStyleTransformer.searchFeedFragmentViewStyle.noSearchResultLayoutViewStyle
+
+            setStyle(noSearchResultLayoutStyle)
+            setTitleText(getString(R.string.lm_feed_search_no_results))
+        }
+    }
+
+    //customizes the search list view
+    protected open fun customizeSearchListView(rvSearchListView: LMFeedSearchListView) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initUI()
-        fetchData()
-        initListeners()
         observeResponses()
     }
 
     override fun onStart() {
         super.onStart()
-        postPublisher.subscribe(this)
+        postEvent.subscribe(this)
     }
 
     override fun onResume() {
         super.onResume()
-
-        // sends feed opened event
-        LMFeedAnalytics.sendFeedOpenedEvent()
-
-        socialFeedViewModel.fetchPendingPostFromDB()
-        binding.rvSocial.initiateVideoAutoPlayer()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-
-        if (hidden) {
-            // destroy the video player when fragment is not hidden
-            binding.rvSocial.destroyVideoAutoPlayer()
-        } else {
-            // initiate the video player when fragment is not hidden
-            binding.rvSocial.initiateVideoAutoPlayer()
-        }
-    }
-
-    private fun fetchData() {
-        socialFeedViewModel.getLoggedInUser()
-        socialFeedViewModel.getCreatePostRights()
-        socialFeedViewModel.getUnreadNotificationCount()
-        socialFeedViewModel.getFeed(1, null)
-    }
-
-    private fun initUI() {
-        initSocialFeedRecyclerView()
-        initSwipeRefreshLayout()
-        initSelectedTopicRecyclerView()
+        binding.rvSearch.initiateVideoAutoPlayer()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.rvSocial.destroyVideoAutoPlayer()
+        binding.rvSearch.destroyVideoAutoPlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         // unsubscribes itself from the [PostPublisher]
-        postPublisher.unsubscribe(this)
+        postEvent.unsubscribe(this)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding.rvSocial.destroyVideoAutoPlayer()
+        binding.rvSearch.destroyVideoAutoPlayer()
     }
 
-    private fun initListeners() {
+    // initializes the UI by setting up the recycler view and search bar view
+    private fun initUI() {
+        initSearchView()
+        initRecyclerView()
+    }
+
+    // handles the back press of search bar for this fragment
+    protected open fun onSearchViewClosed() {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    // handles the cross press of search bar for this fragment
+    protected open fun onSearchCrossed() {
+        binding.rvSearch.hide()
+    }
+
+    // initializes the search bar view
+    private fun initSearchView() {
+        binding.feedSearchBarView.apply {
+            initialize(lifecycleScope)
+            //open search bar with animation
+            post {
+                openSearch()
+            }
+
+            //set search listener
+            val searchListener = object : LMFeedSearchBarListener {
+                override fun onSearchViewOpened() {
+                    super.onSearchViewOpened()
+                    binding.layoutNoResultFound.hide()
+                }
+
+                override fun onSearchViewClosed() {
+                    super.onSearchViewClosed()
+                    this@LMFeedSearchFragment.onSearchViewClosed()
+                }
+
+                override fun onSearchCrossed() {
+                    super.onSearchCrossed()
+                    this@LMFeedSearchFragment.onSearchCrossed()
+                    binding.apply {
+                        layoutNoResultFound.hide()
+                        rvSearch.clearPostsAndNotify()
+                    }
+                }
+
+                override fun onKeywordEntered(keyword: String) {
+                    super.onKeywordEntered(keyword)
+                    if (keyword.isNotEmpty()) {
+                        updateSearchedPosts(keyword)
+                    } else {
+                        binding.apply {
+                            layoutNoResultFound.hide()
+                            rvSearch.clearPostsAndNotify()
+                        }
+                    }
+                }
+
+                override fun onEmptyKeywordEntered() {
+                    super.onEmptyKeywordEntered()
+                    binding.apply {
+                        layoutNoResultFound.hide()
+                        rvSearch.clearPostsAndNotify()
+                    }
+                }
+            }
+
+            setSearchViewListener(searchListener)
+            observeSearchView(true)
+        }
+    }
+
+    // initializes the recycler view
+    private fun initRecyclerView() {
+        LMFeedProgressBarHelper.showProgress(binding.progressBar)
+        binding.rvSearch.apply {
+            setAdapter()
+            //set scroll listener
+            val paginationScrollListener =
+                object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
+                    override fun onLoadMore(currentPage: Int) {
+                        if (currentPage > 0) {
+                            // calls api for paginated data
+                            searchKeyword?.let { searchString->
+                                searchViewModel.searchPosts(
+                                    currentPage,
+                                    searchString
+                                )
+                            }
+                        }
+                    }
+                }
+            setPaginationScrollListener(paginationScrollListener)
+        }
+    }
+
+    // replaces the adapter with the new posts
+    private fun checkPostsAndReplace(posts: List<LMFeedPostViewData>) {
+        binding.rvSearch.apply {
+            checkForNoPost(posts)
+            replacePosts(posts)
+            scrollToPosition(0)
+            refreshVideoAutoPlayer()
+        }
+    }
+
+    // checks for no posts in response and shows the no result layout
+    private fun checkForNoPost(feed: List<LMFeedBaseViewType>) {
         binding.apply {
-            fabNewPost.setOnClickListener {
-                onCreateNewPostClick(true)
+            if (feed.isNotEmpty()) {
+                layoutNoResultFound.hide()
+                rvSearch.show()
+            } else {
+                binding.apply {
+                    layoutNoResultFound.show()
+                    rvSearch.clearPostsAndNotify()
+                }
             }
+        }
+    }
 
-            headerViewSocial.setNotificationIconClickListener {
-                onNotificationIconClicked()
-            }
+    // updates the searched posts
+    private fun updateSearchedPosts(keyword: String?) {
+        binding.rvSearch.apply {
+            resetScrollListenerData()
+            clearPostsAndNotify()
+        }
 
-            headerViewSocial.setSearchIconClickListener {
-                onSearchIconClicked()
-            }
+        //trims the keyword for leading and trailing spaces before api call
+        searchKeyword = keyword?.trim()
 
-            layoutNoPost.setActionFABClickListener {
-                onCreateNewPostClick(true)
-            }
-
-            topicSelectorBar.setAllTopicsClickListener {
-                onAllTopicsClicked()
-            }
+        //call apis
+        searchKeyword?.let { searchString->
+            searchViewModel.searchPosts(
+                1,
+                searchString
+            )
         }
     }
 
     private fun observeResponses() {
-        observePosting()
+        LMFeedProgressBarHelper.showProgress(binding.progressBar)
+        //observers post response
+        searchViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
+            binding.rvSearch.apply {
+                val index = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return@observe
+                updatePostItem(index, postViewData)
 
-        //observes user response LiveData
-        socialFeedViewModel.userResponse.observe(viewLifecycleOwner) {
-            binding.headerViewSocial.apply {
-                setUserProfileClickListener {
-                    onUserProfileClicked(it)
-                }
-                setUserProfileImage(it)
+                //notifies the subscribers about the change in post data
+                postEvent.notify(Pair(postViewData.id, postViewData))
             }
         }
 
-        // observes hasCreatePostRights LiveData
-        socialFeedViewModel.hasCreatePostRights.observe(viewLifecycleOwner) {
-            socialFeedViewModel.getLoggedInUser()
-            initNewPostClick(it)
-        }
-
-        socialFeedViewModel.socialFeedResponse.observe(viewLifecycleOwner) { response ->
-            LMFeedProgressBarHelper.hideProgress(binding.progressBar)
+        // observe search post response
+        searchViewModel.searchFeedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
             val posts = response.second
-
-            if (mSwipeRefreshLayout.isRefreshing) {
-                checkPostsAndReplace(posts)
-                mSwipeRefreshLayout.isRefreshing = false
-                return@observe
+            binding.apply {
+                if (page == 1) {
+                    checkPostsAndReplace(posts)
+                } else {
+                    rvSearch.addPosts(posts)
+                    rvSearch.refreshVideoAutoPlayer()
+                }
             }
-
-            if (page == 1) {
-                checkPostsAndReplace(posts)
-            } else {
-                binding.rvSocial.addPosts(posts)
-                binding.rvSocial.refreshVideoAutoPlayer()
-            }
+            LMFeedProgressBarHelper.hideProgress(binding.progressBar)
         }
 
         // observes deletePostResponse LiveData
-        socialFeedViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
-            binding.rvSocial.apply {
+        searchViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
+            postEvent.notify(Pair(postId, null))
+
+            binding.rvSearch.apply {
                 val indexToRemove = getIndexAndPostFromAdapter(postId)?.first ?: return@observe
                 removePostAtIndex(indexToRemove)
                 checkForNoPost(allPosts())
@@ -263,19 +343,7 @@ open class LMFeedSocialFeedFragment :
             }
         }
 
-        socialFeedViewModel.showTopicFilter.observe(viewLifecycleOwner) { showTopicFilter ->
-            binding.topicSelectorBar.apply {
-                isVisible = showTopicFilter
-                setAllTopicsTextVisibility(showTopicFilter)
-                setSelectedTopicFilterVisibility(false)
-            }
-        }
-
-        socialFeedViewModel.unreadNotificationCount.observe(viewLifecycleOwner) { unreadNotificationCount ->
-            binding.headerViewSocial.setNotificationCountText(unreadNotificationCount)
-        }
-
-        socialFeedViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
+        searchViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
             //create toast message
             val toastMessage = if (postViewData.actionViewData.isSaved) {
                 getString(
@@ -293,7 +361,7 @@ open class LMFeedSocialFeedFragment :
             LMFeedViewUtils.showShortToast(requireContext(), toastMessage)
         }
 
-        socialFeedViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
+        searchViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
             //show toast message
             val toastMessage = if (postViewData.headerViewData.isPinned) {
                 getString(
@@ -312,38 +380,32 @@ open class LMFeedSocialFeedFragment :
         }
 
         //observers get post response
-        socialFeedViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
-            binding.rvSocial.apply {
+        searchViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
+            binding.rvSearch.apply {
                 val index = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return@observe
                 updatePostItem(index, postViewData)
             }
         }
 
-        socialFeedViewModel.errorMessageEventFlow.onEach { response ->
+        searchViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SocialFeed -> {
+                is LMFeedSearchViewModel.ErrorMessageEvent.SearchPost -> {
                     val errorMessage = response.errorMessage
-                    mSwipeRefreshLayout.isRefreshing = false
                     LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.AddPost -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                    removePostingView()
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.DeletePost -> {
+                is LMFeedSearchViewModel.ErrorMessageEvent.DeletePost -> {
                     val errorMessage = response.errorMessage
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.LikePost -> {
+                is LMFeedSearchViewModel.ErrorMessageEvent.LikePost -> {
                     val postId = response.postId
 
                     //get post and index
                     val pair =
-                        binding.rvSocial.getIndexAndPostFromAdapter(postId) ?: return@onEach
+                        binding.rvSearch.getIndexAndPostFromAdapter(postId) ?: return@onEach
                     val post = pair.second
                     val index = pair.first
 
@@ -367,14 +429,17 @@ open class LMFeedSocialFeedFragment :
                         .fromPostLiked(true)
                         .build()
 
-                    binding.rvSocial.updatePostItem(index, updatedPostData)
+                    // notifies the subscribers about the change
+                    postEvent.notify(Pair(updatedPostData.id, updatedPostData))
+
+                    binding.rvSearch.updatePostItem(index, updatedPostData)
 
                     //show error message
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.PinPost -> {
-                    binding.rvSocial.apply {
+                is LMFeedSearchViewModel.ErrorMessageEvent.PinPost -> {
+                    binding.rvSearch.apply {
                         val postId = response.postId
 
                         //get post and index
@@ -400,8 +465,8 @@ open class LMFeedSocialFeedFragment :
                     }
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SavePost -> {
-                    binding.rvSocial.apply {
+                is LMFeedSearchViewModel.ErrorMessageEvent.SavePost -> {
+                    binding.rvSearch.apply {
                         val postId = response.postId
 
                         //get post and index
@@ -428,280 +493,22 @@ open class LMFeedSocialFeedFragment :
                     }
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetTopic -> {
-                    LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
-                    binding.headerViewSocial.setNotificationIconVisibility(false)
+                is LMFeedSearchViewModel.ErrorMessageEvent.SubmitVote -> {
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SubmitVote -> {
+                is LMFeedSearchViewModel.ErrorMessageEvent.AddPollOption -> {
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.AddPollOption -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetPost -> {
+                is LMFeedSearchViewModel.ErrorMessageEvent.GetPost -> {
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
             }
         }.observeInLifecycle(viewLifecycleOwner)
     }
 
-    // observes post live data
-    private fun observePosting() {
-        socialFeedViewModel.postDataEventFlow.onEach { response ->
-            when (response) {
-                // when the post data comes from local db
-                is LMFeedSocialFeedViewModel.PostDataEvent.PostDbData -> {
-                    val post = response.post
-                    if (post.isPosted) {
-                        removePostingView()
-                        return@onEach
-                    }
-                    if (!alreadyPosting) {
-                        alreadyPosting = true
-                        binding.layoutPosting.apply {
-                            show()
-                            val postThumbnail =
-                                post.mediaViewData.attachments.firstOrNull()?.attachmentMeta?.thumbnail
-
-                            if (postThumbnail.isNullOrEmpty()) {
-                                setAttachmentThumbnail(null)
-                            } else {
-                                setAttachmentThumbnail(Uri.parse(postThumbnail))
-                            }
-                            setProgress(0)
-                            setProgressVisibility(true)
-
-                            setPostSuccessfulVisibility(false)
-                            setRetryVisibility(false)
-                            observeMediaUpload(post)
-                        }
-                    }
-                }
-
-                // when the post data comes from api response
-                is LMFeedSocialFeedViewModel.PostDataEvent.PostResponseData -> {
-                    binding.apply {
-                        LMFeedViewUtils.showShortToast(
-                            requireContext(),
-                            getString(
-                                R.string.lm_feed_s_created,
-                                LMFeedCommunityUtil.getPostVariable()
-                                    .pluralizeOrCapitalize(
-                                        LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR
-                                    )
-                            )
-                        )
-                        onFeedRefreshed()
-                        removePostingView()
-                    }
-                }
-            }
-        }.observeInLifecycle(viewLifecycleOwner)
-    }
-
-    // removes the posting view and shows create post button
-    private fun removePostingView() {
-        binding.apply {
-            alreadyPosting = false
-            layoutPosting.hide()
-        }
-    }
-
-    // finds the upload worker by UUID and observes the worker
-    private fun observeMediaUpload(postingData: LMFeedPostViewData) {
-        if (postingData.mediaViewData.workerUUID.isEmpty()) {
-            return
-        }
-        val uuid = UUID.fromString(postingData.mediaViewData.workerUUID)
-        if (!workersMap.contains(uuid)) {
-            workersMap.add(uuid)
-            WorkManager.getInstance(requireContext()).getWorkInfoByIdLiveData(uuid)
-                .observe(viewLifecycleOwner) { workInfo ->
-                    observeMediaWorker(workInfo, postingData)
-                }
-        }
-    }
-
-    // observes the media worker through various worker lifecycle
-    private fun observeMediaWorker(
-        workInfo: WorkInfo,
-        postingData: LMFeedPostViewData
-    ) {
-        when (workInfo.state) {
-            WorkInfo.State.SUCCEEDED -> {
-                // uploading completed, call the add post api
-                binding.layoutPosting.apply {
-                    setProgressVisibility(false)
-                    setRetryVisibility(false)
-                    setPostSuccessfulVisibility(true)
-                }
-                socialFeedViewModel.addPost(postingData)
-            }
-
-            WorkInfo.State.FAILED -> {
-                // uploading failed, initiate retry mechanism
-                val indexList = workInfo.outputData.getIntArray(
-                    LMFeedMediaUploadWorker.ARG_MEDIA_INDEX_LIST
-                ) ?: return
-                initRetryAction(
-                    postingData.mediaViewData.temporaryId,
-                    indexList.size
-                )
-            }
-
-            else -> {
-                // uploading in progress, map the progress to progress bar
-                val progress = LMFeedMediaUploadWorker.getProgress(workInfo) ?: return
-                binding.layoutPosting.apply {
-                    val percentage = (((1.0 * progress.first) / progress.second) * 100)
-                    val progressValue = percentage.toInt()
-                    setProgress(progressValue)
-                }
-            }
-        }
-    }
-
-    // initializes retry mechanism for attachments uploading
-    private fun initRetryAction(temporaryId: Long?, attachmentCount: Int) {
-        binding.layoutPosting.apply {
-            setPostSuccessfulVisibility(false)
-            setProgressVisibility(false)
-            setRetryVisibility(true)
-            setRetryCTAClickListener {
-                onRetryUploadClicked(temporaryId, attachmentCount)
-            }
-        }
-    }
-
-    // initializes new post fab
-    private fun initNewPostClick(hasCreatePostRights: Boolean) {
-        binding.apply {
-
-            if (hasCreatePostRights) {
-                val fabButtonColor =
-                    LMFeedStyleTransformer.socialFeedFragmentViewStyle.createNewPostButtonViewStyle.backgroundColor
-
-                //sets color of fab button as per user rights
-                layoutNoPost.setActionFABColor(fabButtonColor)
-                fabNewPost.backgroundTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), fabButtonColor))
-            } else {
-                //sets color of fab button as per user rights
-                layoutNoPost.setActionFABColor(R.color.lm_feed_grey)
-                fabNewPost.backgroundTintList =
-                    ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.lm_feed_grey
-                        )
-                    )
-            }
-
-            layoutNoPost.setActionFABClickListener {
-                onCreateNewPostClick(hasCreatePostRights)
-            }
-
-            fabNewPost.setOnClickListener {
-                onCreateNewPostClick(hasCreatePostRights)
-            }
-        }
-    }
-
-    private fun checkPostsAndReplace(posts: List<LMFeedPostViewData>) {
-        binding.rvSocial.apply {
-            checkForNoPost(posts)
-            replacePosts(posts)
-            scrollToPosition(0)
-            refreshVideoAutoPlayer()
-        }
-    }
-
-    private fun initSocialFeedRecyclerView() {
-        LMFeedProgressBarHelper.showProgress(binding.progressBar)
-        binding.rvSocial.apply {
-            setAdapter()
-
-            val paginationScrollListener =
-                object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
-                    override fun onLoadMore(currentPage: Int) {
-                        if (currentPage > 0) {
-                            socialFeedViewModel.getFeed(
-                                currentPage,
-                                socialFeedViewModel.getTopicIdsFromAdapterList(binding.topicSelectorBar.getAllSelectedTopics())
-                            )
-                        }
-                    }
-                }
-            setPaginationScrollListener(paginationScrollListener)
-        }
-    }
-
-    private fun initSwipeRefreshLayout() {
-        mSwipeRefreshLayout = binding.swipeRefreshLayout
-        mSwipeRefreshLayout.apply {
-            setColorSchemeColors(
-                ContextCompat.getColor(
-                    requireContext(),
-                    LMFeedTheme.getButtonColor()
-                )
-            )
-
-            setOnRefreshListener {
-                onFeedRefreshed()
-            }
-        }
-    }
-
-    //init selected topic recycler view
-    private fun initSelectedTopicRecyclerView() {
-        binding.topicSelectorBar.apply {
-            socialFeedViewModel.getAllTopics(false)
-            setSelectedTopicAdapter(this@LMFeedSocialFeedFragment)
-
-            setClearSelectedTopicsClickListener {
-                clearSelectedTopics()
-            }
-        }
-    }
-
-    //clear all selected topics and reset data
-    private fun clearSelectedTopics() {
-        binding.apply {
-            //call api
-            topicSelectorBar.clearSelectedTopicsAndNotify()
-            rvSocial.resetScrollListenerData()
-            LMFeedProgressBarHelper.showProgress(progressBar, true)
-            socialFeedViewModel.getFeed(1, null)
-
-            //show layout accordingly
-            topicSelectorBar.setSelectedTopicFilterVisibility(false)
-            topicSelectorBar.setAllTopicsTextVisibility(true)
-        }
-    }
-
-    private fun checkForNoPost(feed: List<LMFeedBaseViewType>) {
-        binding.apply {
-            if (feed.isNotEmpty()) {
-                layoutNoPost.hide()
-                fabNewPost.show()
-                rvSocial.show()
-            } else {
-                binding.apply {
-                    layoutNoPost.show()
-                    fabNewPost.hide()
-                    rvSocial.hide()
-                }
-            }
-        }
-    }
-
+    //callback when the user clicks on the post content
     override fun onPostContentClicked(position: Int, postViewData: LMFeedPostViewData) {
         // sends comment list open event
         LMFeedAnalytics.sendCommentListOpenEvent()
@@ -718,14 +525,17 @@ open class LMFeedSocialFeedFragment :
         val userPreferences = LMFeedUserPreferences(requireContext())
         val loggedInUUID = userPreferences.getUUID()
 
+        // notifies the subscribers about the change
+        postEvent.notify(Pair(postViewData.id, postViewData))
+
         //call api
-        socialFeedViewModel.likePost(
+        searchViewModel.likePost(
             postViewData.id,
             postViewData.actionViewData.isLiked,
             loggedInUUID
         )
 
-        binding.rvSocial.apply {
+        binding.rvSearch.apply {
             val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
 
             //update recycler
@@ -757,10 +567,14 @@ open class LMFeedSocialFeedFragment :
 
     //callback when the user clicks on the save post button
     override fun onPostSaveClicked(position: Int, postViewData: LMFeedPostViewData) {
-        //call api
-        socialFeedViewModel.savePost(postViewData)
 
-        binding.rvSocial.apply {
+        // notifies the subscribers about the change
+        postEvent.notify(Pair(postViewData.id, postViewData))
+
+        //call api
+        searchViewModel.savePost(postViewData)
+
+        binding.rvSearch.apply {
             val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
 
             //update recycler
@@ -788,17 +602,7 @@ open class LMFeedSocialFeedFragment :
             .fromPostSaved(false)
             .build()
 
-        binding.rvSocial.updatePostWithoutNotifying(position, updatedPostData)
-    }
-
-    //updates [alreadySeenFullContent] for the post
-    override fun onPostContentSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
-        binding.rvSocial.apply {
-            val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
-
-            //update recycler
-            updatePostItem(adapterPosition, postViewData)
-        }
+        binding.rvSearch.updatePostWithoutNotifying(position, updatedPostData)
     }
 
     //callback when the user clicks on the link in the post content
@@ -921,12 +725,12 @@ open class LMFeedSocialFeedFragment :
     //called when the page in the multiple media post is changed
     override fun onPostMultipleMediaPageChangeCallback(position: Int, parentPosition: Int) {
         //processes the current video whenever view pager's page is changed
-        binding.rvSocial.refreshVideoAutoPlayer()
+        binding.rvSearch.refreshVideoAutoPlayer()
     }
 
     //called when show more is clicked in the documents type post
     override fun onPostMultipleDocumentsExpanded(position: Int, postViewData: LMFeedPostViewData) {
-        binding.rvSocial.apply {
+        binding.rvSearch.apply {
             if (position == itemCount - 1) {
                 scrollToPositionWithOffset(position)
             }
@@ -942,7 +746,7 @@ open class LMFeedSocialFeedFragment :
                 .fromPostLiked(false)
                 .build()
 
-            binding.rvSocial.apply {
+            binding.rvSearch.apply {
                 val adapterPosition =
                     getIndexAndPostFromAdapter(updatedPostViewData.id)?.first ?: return
 
@@ -962,53 +766,49 @@ open class LMFeedSocialFeedFragment :
 
     override fun onEntityDeletedByAdmin(deleteExtras: LMFeedDeleteExtras, reason: String) {
         val post =
-            binding.rvSocial.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        socialFeedViewModel.deletePost(post, reason)
+            binding.rvSearch.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
+        searchViewModel.deletePost(post, reason)
     }
 
     override fun onEntityDeletedByAuthor(deleteExtras: LMFeedDeleteExtras) {
         val post =
-            binding.rvSocial.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        socialFeedViewModel.deletePost(post)
+            binding.rvSearch.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
+        searchViewModel.deletePost(post)
     }
 
-    override fun onTopicRemoved(position: Int, topicViewData: LMFeedTopicViewData) {
-        super.onTopicRemoved(position, topicViewData)
-
-        binding.apply {
-            val selectedTopics = topicSelectorBar.getAllSelectedTopics()
-            if (selectedTopics.size == 1) {
-                clearSelectedTopics()
-            } else {
-                //remove from adapter
-                topicSelectorBar.removeTopicAndNotify(position)
-
-                //call apis
-                rvSocial.resetScrollListenerData()
-                rvSocial.clearPostsAndNotify()
-                LMFeedProgressBarHelper.showProgress(binding.progressBar, true)
-                socialFeedViewModel.getFeed(
-                    1,
-                    socialFeedViewModel.getTopicIdsFromAdapterList(selectedTopics)
-                )
-            }
-        }
-    }
-
-    //callback when publisher publishes any updated postData
     override fun update(postData: Pair<String, LMFeedPostViewData?>) {
         val postId = postData.first
         // fetches post from adapter
-        binding.rvSocial.apply {
+        binding.rvSearch.apply {
             val postIndex = getIndexAndPostFromAdapter(postId)?.first ?: return
 
-            val updatedPost = postData.second
+
+            //updated post:{} from event
+            var updatedPost = postData.second
+
+            //existing post in adapter
+            val existingPost = getPostFromAdapter(postIndex) ?: return
 
             // updates the item in adapter
             if (updatedPost == null) {
                 // Post was deleted!
                 removePostAtIndex(postIndex)
             } else {
+                //updated post content
+                val updatedPostContent = updatedPost.contentViewData
+
+                //existing matched keywords
+                val existingKeywords = existingPost.contentViewData.keywordMatchedInPostText
+
+                //add the matched keywords into updated post
+                updatedPost = updatedPost.toBuilder()
+                    .contentViewData(
+                        updatedPostContent.toBuilder()
+                            .keywordMatchedInPostText(existingKeywords)
+                            .build()
+                    )
+                    .build()
+
                 // Post was updated
                 updatePostItem(postIndex, updatedPost)
             }
@@ -1093,7 +893,7 @@ open class LMFeedSocialFeedFragment :
         val selectedOptionIds = selectedOptions.map { it.id }
 
         validateSelectedPollOptions(pollViewData, selectedOptions.size) {
-            socialFeedViewModel.submitPollVote(
+            searchViewModel.submitPollVote(
                 requireContext(),
                 postViewData.id,
                 pollViewData.id,
@@ -1161,7 +961,7 @@ open class LMFeedSocialFeedFragment :
     override fun onPostEditPollVoteClicked(position: Int, postViewData: LMFeedPostViewData) {
         super.onPostEditPollVoteClicked(position, postViewData)
 
-        binding.rvSocial.apply {
+        binding.rvSearch.apply {
             val postIndex = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
 
             val attachment = postViewData.mediaViewData.attachments.firstOrNull() ?: return
@@ -1209,7 +1009,7 @@ open class LMFeedSocialFeedFragment :
             pollOptionViewData
         )
 
-        val postViewData = binding.rvSocial.allPosts()[pollPosition] as LMFeedPostViewData
+        val postViewData = binding.rvSearch.allPosts()[pollPosition] as LMFeedPostViewData
         val attachment = postViewData.mediaViewData.attachments.firstOrNull() ?: return
         val pollViewData = attachment.attachmentMeta.poll ?: return
 
@@ -1232,7 +1032,7 @@ open class LMFeedSocialFeedFragment :
                 }
 
                 //call api to submit vote
-                socialFeedViewModel.submitPollVote(
+                searchViewModel.submitPollVote(
                     requireContext(),
                     postViewData.id,
                     pollViewData.id,
@@ -1244,7 +1044,7 @@ open class LMFeedSocialFeedFragment :
                 if (pollViewData.isPollSubmitted) {
                     return
                 }
-
+                
                 //update the clicked poll option view data
                 val updatedPollOptionViewData = if (pollOptionViewData.isSelected) {
                     pollOptionViewData.toBuilder()
@@ -1290,7 +1090,7 @@ open class LMFeedSocialFeedFragment :
                     .build()
 
                 //update the recycler view
-                binding.rvSocial.updatePostItem(pollPosition, updatedPostViewData)
+                binding.rvSearch.updatePostItem(pollPosition, updatedPostViewData)
             }
         }
 
@@ -1315,7 +1115,7 @@ open class LMFeedSocialFeedFragment :
             pollOptionViewData
         )
 
-        val postViewData = binding.rvSocial.allPosts()[pollPosition] as LMFeedPostViewData
+        val postViewData = binding.rvSearch.allPosts()[pollPosition] as LMFeedPostViewData
         val attachment = postViewData.mediaViewData.attachments.firstOrNull() ?: return
         val pollViewData = attachment.attachmentMeta.poll ?: return
 
@@ -1346,253 +1146,18 @@ open class LMFeedSocialFeedFragment :
         pollId: String,
         option: String
     ) {
-        val post = binding.rvSocial.getIndexAndPostFromAdapter(postId)?.second ?: return
+        val post = binding.rvSearch.getIndexAndPostFromAdapter(postId)?.second ?: return
 
-        socialFeedViewModel.addPollOption(
+        // notifies the subscribers about the change
+        postEvent.notify(Pair(postId, post))
+
+        searchViewModel.addPollOption(
             post,
             option
         )
     }
 
-    //customizes the create new post fab
-    protected open fun customizeCreateNewPostButton(fabNewPost: LMFeedFAB) {
-        fabNewPost.apply {
-            setStyle(LMFeedStyleTransformer.socialFeedFragmentViewStyle.createNewPostButtonViewStyle)
-
-            text = getString(
-                R.string.lm_feed_new_s,
-                LMFeedCommunityUtil.getPostVariable()
-                    .pluralizeOrCapitalize(LMFeedWordAction.ALL_CAPITAL_SINGULAR)
-            )
-        }
-    }
-
-    private val createPostLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            when (result.resultCode) {
-                Activity.RESULT_OK -> {
-                    // post of type text/link has been created and posted
-                    onFeedRefreshed()
-                }
-
-                LMFeedCreatePostActivity.RESULT_UPLOAD_POST -> {
-                    // post with attachments created, now upload and post it from db
-                    socialFeedViewModel.fetchPendingPostFromDB()
-                }
-            }
-        }
-
-    /**
-     * Processes the new post fab click
-     *
-     * @param hasCreatePostRights: whether the user has the rights to create a post or not
-     */
-    protected open fun onCreateNewPostClick(hasCreatePostRights: Boolean) {
-        binding.apply {
-            if (hasCreatePostRights) {
-                if (alreadyPosting) {
-                    LMFeedViewUtils.showShortToast(
-                        requireContext(),
-                        getString(
-                            R.string.lm_feed_a_s_is_already_uploading,
-                            LMFeedCommunityUtil.getPostVariable()
-                                .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
-                        )
-                    )
-                } else {
-                    // sends post creation started event
-                    LMFeedAnalytics.sendPostCreationStartedEvent(LMFeedScreenNames.UNIVERSAL_FEED)
-
-                    val createPostExtras = LMFeedCreatePostExtras.Builder()
-                        .source(LMFeedAnalytics.LMFeedSource.SOCIAL_FEED)
-                        .build()
-
-                    val intent = LMFeedCreatePostActivity.getIntent(
-                        requireContext(),
-                        createPostExtras
-                    )
-                    createPostLauncher.launch(intent)
-                }
-            } else {
-                LMFeedViewUtils.showShortSnack(
-                    root,
-                    getString(
-                        R.string.lm_feed_you_do_not_have_permission_to_create_a_s,
-                        LMFeedCommunityUtil.getPostVariable()
-                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
-                    )
-                )
-            }
-        }
-    }
-
-    //customizes the header view
-    protected open fun customizeSocialFeedHeaderView(headerViewSocial: LMFeedHeaderView) {
-        headerViewSocial.apply {
-            setStyle(LMFeedStyleTransformer.socialFeedFragmentViewStyle.headerViewStyle)
-
-            setTitleText(getString(R.string.lm_feed_feed))
-        }
-    }
-
-    //customizes the universal feed list view
-    protected open fun customizeUniversalFeedListView(rvUniversal: LMFeedSocialFeedListView) {
-    }
-
-    //processes the user profile clicked
-    protected open fun onUserProfileClicked(userViewData: LMFeedUserViewData) {
-        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
-        coreCallback?.openProfile(userViewData)
-    }
-
-    //processes the notification icon clicked
-    protected open fun onNotificationIconClicked() {
-        LMFeedAnalytics.sendNotificationPageOpenedEvent()
-        LMFeedActivityFeedActivity.start(requireContext())
-    }
-
-    //processes the search icon clicked
-    protected open fun onSearchIconClicked() {
-        LMFeedSearchActivity.start(requireContext())
-    }
-
-    //customizes the no post layout
-    protected open fun customizeNoPostLayout(layoutNoPost: LMFeedNoEntityLayoutView) {
-        layoutNoPost.apply {
-            val postAsVariable = LMFeedCommunityUtil.getPostVariable()
-
-            setStyle(LMFeedStyleTransformer.socialFeedFragmentViewStyle.noPostLayoutViewStyle)
-
-            setTitleText(
-                getString(
-                    R.string.lm_feed_no_s_to_show,
-                    postAsVariable.pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-                )
-            )
-            setSubtitleText(
-                getString(
-                    R.string.lm_feed_be_the_first_one_to_s_here,
-                    postAsVariable.pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-                )
-            )
-            setActionCTAText(
-                getString(
-                    R.string.lm_feed_new_s,
-                    postAsVariable.pluralizeOrCapitalize(LMFeedWordAction.ALL_CAPITAL_SINGULAR)
-                )
-            )
-        }
-    }
-
-    //customizes the posting layout
-    protected open fun customizePostingLayout(layoutPosting: LMFeedPostingView) {
-        layoutPosting.apply {
-            setStyle(LMFeedStyleTransformer.socialFeedFragmentViewStyle.postingViewStyle)
-
-            setPostingText(
-                getString(
-                    R.string.lm_feed_creating_s,
-                    LMFeedCommunityUtil.getPostVariable()
-                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-                )
-            )
-            setRetryCTAText(getString(R.string.lm_feed_retry))
-        }
-    }
-
-    //customizes the topic selector bar
-    protected open fun customizeTopicSelectorBar(topicSelectorBar: LMFeedSocialTopicSelectorBarView) {
-        topicSelectorBar.apply {
-            setStyle(LMFeedStyleTransformer.socialFeedFragmentViewStyle.topicSelectorBarStyle)
-
-            setAllTopicsText(getString(R.string.lm_feed_all_topics))
-            setClearTopicsText(getString(R.string.lm_feed_clear))
-        }
-    }
-
-    protected open fun onRetryUploadClicked(temporaryId: Long?, attachmentCount: Int) {
-        socialFeedViewModel.createRetryPostMediaWorker(
-            requireContext(),
-            temporaryId,
-            attachmentCount
-        )
-    }
-
-    private val topicSelectionLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val bundle = result.data?.extras
-                val resultExtras = LMFeedExtrasUtil.getParcelable(
-                    bundle,
-                    LM_FEED_TOPIC_SELECTION_RESULT_EXTRAS,
-                    LMFeedTopicSelectionResultExtras::class.java
-                ) ?: return@registerForActivityResult
-
-                handleTopicSelectionResult(resultExtras)
-            }
-        }
-
-    //handles result after selecting filters and show recyclers views
-    private fun handleTopicSelectionResult(resultExtras: LMFeedTopicSelectionResultExtras) {
-        binding.apply {
-            rvSocial.resetScrollListenerData()
-            rvSocial.clearPostsAndNotify()
-
-            if (resultExtras.isAllTopicSelected) {
-                //show layouts accordingly
-                topicSelectorBar.setAllTopicsTextVisibility(true)
-                topicSelectorBar.setSelectedTopicFilterVisibility(false)
-
-                //call api
-                LMFeedProgressBarHelper.showProgress(progressBar, true)
-                socialFeedViewModel.getFeed(1, null)
-            } else {
-                //show layouts accordingly
-                topicSelectorBar.setAllTopicsTextVisibility(false)
-                topicSelectorBar.setSelectedTopicFilterVisibility(true)
-
-                //set selected topics to filter
-                val selectedTopics = resultExtras.selectedTopics
-                topicSelectorBar.replaceSelectedTopics(selectedTopics)
-
-                //call api
-                LMFeedProgressBarHelper.showProgress(progressBar, true)
-                socialFeedViewModel.getFeed(
-                    1,
-                    socialFeedViewModel.getTopicIdsFromAdapterList(selectedTopics)
-                )
-            }
-        }
-    }
-
-    //processes the all topics view click
-    protected open fun onAllTopicsClicked() {
-        //show topics selecting screen with All topic filter
-        val intent = LMFeedTopicSelectionActivity.getIntent(
-            requireContext(),
-            LMFeedTopicSelectionExtras.Builder()
-                .showAllTopicFilter(true)
-                .showEnabledTopicOnly(false)
-                .build()
-        )
-
-        topicSelectionLauncher.launch(intent)
-    }
-
-    //processes the feed refreshed event
-    protected open fun onFeedRefreshed() {
-        binding.apply {
-            mSwipeRefreshLayout.isRefreshing = true
-            rvSocial.resetScrollListenerData()
-            socialFeedViewModel.getUnreadNotificationCount()
-            socialFeedViewModel.getFeed(
-                1,
-                socialFeedViewModel.getTopicIdsFromAdapterList(topicSelectorBar.getAllSelectedTopics())
-            )
-        }
-    }
-
-    //callback when post menu items are clicked
+    //callback when the user clicks on the post menu icon
     protected open fun onPostMenuItemClicked(
         position: Int,
         menuId: Int,
@@ -1699,7 +1264,7 @@ open class LMFeedSocialFeedFragment :
     private val reportPostLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val data = result.data?.getStringExtra(LM_FEED_REPORT_RESULT)
+                val data = result.data?.getStringExtra(LMFeedReportFragment.LM_FEED_REPORT_RESULT)
                 val entityType = if (data == "Post") {
                     LMFeedCommunityUtil.getPostVariable()
                         .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
@@ -1741,9 +1306,9 @@ open class LMFeedSocialFeedFragment :
         post: LMFeedPostViewData
     ) {
         //call api
-        socialFeedViewModel.pinPost(post)
+        searchViewModel.pinPost(post)
 
-        binding.rvSocial.apply {
+        binding.rvSearch.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return
 
             //update recycler
@@ -1758,9 +1323,9 @@ open class LMFeedSocialFeedFragment :
         post: LMFeedPostViewData
     ) {
         //call api
-        socialFeedViewModel.pinPost(post)
+        searchViewModel.pinPost(post)
 
-        binding.rvSocial.apply {
+        binding.rvSearch.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return
 
             //update recycler

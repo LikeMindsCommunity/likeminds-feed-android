@@ -96,6 +96,7 @@
     <string name="lm_feed_topics_selected">%d selected</string>
     <string name="lm_feed_no_topics_yet">Oops! No topic found</string>
     <string name="lm_feed_search_hint_text">Search…</string>
+    <string name="lm_feed_search_no_results">No Results Found!</string>
     <string name="lm_feed_general_channel_name">General notifications</string>
     <string name="lm_feed_general_channel_description">All general notifications</string>
     <string name="lm_feed_a_s_is_already_uploading">A %s is already uploading!</string>
