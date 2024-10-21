@@ -14,9 +14,6 @@
         android:theme="@style/Theme.Likemindsfeedandroid"
         tools:targetApi="31">
         <activity
-            android:name=".SocialFeedActivity"
-            android:exported="false" />
-        <activity
             android:name=".auth.view.LMSocialFeedAuthActivity"
             android:exported="true"
             android:theme="@style/LMFeedAppTheme.NoActionBar">
@@ -41,6 +38,12 @@
         </activity>
         <activity
             android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/LMFeedAppTheme.NoActionBar" />
+
+        <activity
+            android:name=".SocialFeedActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/LMFeedAppTheme.NoActionBar" />
