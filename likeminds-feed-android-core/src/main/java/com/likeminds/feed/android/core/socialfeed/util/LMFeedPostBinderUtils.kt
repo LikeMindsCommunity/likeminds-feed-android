@@ -448,19 +448,7 @@ object LMFeedPostBinderUtils {
             val upvoteCountText = if (upvoteCount == 0) {
                 ""
             } else {
-                val upvoteString = if (upvoteCount == 1) {
-                    LMFeedCommunityUtil.getLikeVariable()
-                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
-                } else {
-                    LMFeedCommunityUtil.getLikeVariable()
-                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
-                }
-                context.resources.getQuantityString(
-                    R.plurals.lm_feed_s_likes,
-                    upvoteCount,
-                    upvoteCount,
-                    upvoteString
-                )
+                upvoteCount.toString()
             }
             setUpvoteText(
                 context.getString(

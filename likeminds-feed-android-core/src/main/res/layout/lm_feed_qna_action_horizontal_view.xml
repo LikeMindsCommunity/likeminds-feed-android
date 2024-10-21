@@ -8,25 +8,18 @@
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/lm_qna_action_view_vertical_padding">
 
-        <View
-            android:id="@+id/post_action_separator"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/lm_feed_small_separator_size"
-            android:background="@color/lm_feed_cloudy_blue_40"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_upvote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/lm_qna_action_view_vertical_margin"
             android:layout_marginStart="@dimen/lm_feed_large_padding"
+            android:layout_marginTop="@dimen/lm_qna_action_view_vertical_margin"
             android:background="@drawable/lm_feed_background_qna_upvote_button"
             android:paddingHorizontal="@dimen/lm_feed_regular_padding"
             android:paddingVertical="@dimen/lm_feed_small_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/post_action_separator">
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
                 android:id="@+id/iv_upvote"
@@ -121,11 +114,11 @@
             android:id="@+id/iv_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/lm_feed_large_padding"
             android:foreground="?selectableItemBackground"
             android:padding="@dimen/lm_feed_small_padding"
             android:scaleType="fitCenter"
             android:visibility="visible"
-            android:layout_marginEnd="@dimen/lm_feed_large_padding"
             app:layout_constraintBottom_toBottomOf="@id/cl_upvote"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/cl_upvote"

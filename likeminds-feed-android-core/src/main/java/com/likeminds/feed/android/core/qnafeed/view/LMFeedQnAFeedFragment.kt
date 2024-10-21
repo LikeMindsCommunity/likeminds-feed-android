@@ -1675,6 +1675,20 @@ open class LMFeedQnAFeedFragment :
         )
     }
 
+    // callback when the user clicks on the post answer prompt
+    override fun onPostAnswerPromptClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostAnswerPromptClicked(position, postViewData)
+
+        // sends comment list open event
+        LMFeedAnalytics.sendCommentListOpenEvent()
+
+        val postDetailExtras = LMFeedPostDetailExtras.Builder()
+            .postId(postViewData.id)
+            .isEditTextFocused(true)
+            .build()
+        LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
+    }
+
     //callback when post menu items are clicked
     protected open fun onPostMenuItemClicked(
         position: Int,

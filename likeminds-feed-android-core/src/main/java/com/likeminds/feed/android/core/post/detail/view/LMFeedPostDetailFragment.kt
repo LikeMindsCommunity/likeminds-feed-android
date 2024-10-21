@@ -1575,6 +1575,13 @@ open class LMFeedPostDetailFragment :
         }
     }
 
+    // callback when the user clicks on the post answer prompt
+    override fun onPostAnswerPromptClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostAnswerPromptClicked(position, postViewData)
+
+        binding.commentComposer.etComment.focusAndShowKeyboard()
+    }
+
     //callback when post menu items are clicked
     protected open fun onPostMenuItemClicked(
         position: Int,
