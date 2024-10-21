@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.databinding.LmFeedSearchActivityBinding
 import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailActivity
 
-class LMFeedSearchActivity : AppCompatActivity() {
+open class LMFeedSearchActivity : AppCompatActivity() {
 
     lateinit var binding: LmFeedSearchActivityBinding
 
@@ -35,7 +35,7 @@ class LMFeedSearchActivity : AppCompatActivity() {
 
     }
 
-    private fun inflateSearchFeedFragment() {
+    protected open fun inflateSearchFeedFragment() {
         //gets feed search fragment instance
         val feedSearchFragment =
             LMFeedSearchFragment.getInstance()
