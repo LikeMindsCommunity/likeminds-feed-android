@@ -115,7 +115,7 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
 
     override fun onRefreshTokenExpired(): Pair<String?, String?> {
         val apiKey = mClient.getAPIKey().data
-        return if (apiKey != null) {
+        return if (!apiKey.isNullOrEmpty()) {
             runBlocking {
                 val user = mClient.getLoggedInUserWithRights().data?.user
                 if (user != null) {
@@ -131,10 +131,10 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
                         val refreshToken = response.data?.refreshToken ?: ""
                         Pair(accessToken, refreshToken)
                     } else {
-                        Pair("", "")
+                        Pair(null, null)
                     }
                 } else {
-                    Pair("", "")
+                    Pair(null, null)
                 }
             }
         } else {
