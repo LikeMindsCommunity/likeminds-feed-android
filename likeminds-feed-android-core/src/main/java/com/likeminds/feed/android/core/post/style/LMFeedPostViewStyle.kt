@@ -9,6 +9,7 @@ import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollOptionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
+import com.likeminds.feed.android.core.ui.widgets.post.postcontent.style.LMFeedPostContentViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.*
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
@@ -19,7 +20,7 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * [LMFeedPostViewStyle] helps you to customize the header view
  *
  * @property postHeaderViewStyle : [LMFeedPostHeaderViewStyle] this will help you to customize the post header view [LMFeedPostHeaderView]
- * @property postContentTextStyle : [LMFeedTextStyle] this will help you to customize the text content of the post
+ * @property postContentTextStyle : [LMFeedPostContentViewStyle] this will help you to customize the text content of the post and the keyword searched in post
  * @property postMediaViewStyle: [LMFeedPostMediaViewStyle] this will help you to customize the media attached in the post
  * @property postActionViewStyle: [LMFeedPostActionViewStyle] this will help you to customize the action view of the post [LMFeedPostActionView]
  * @property postTopicsGroupStyle: [LMFeedChipGroupStyle] this will help you to customize the chip group in the post [LMFeedChipGroup]
@@ -30,7 +31,7 @@ class LMFeedPostViewStyle private constructor(
     //post header style
     val postHeaderViewStyle: LMFeedPostHeaderViewStyle,
     // post text content style
-    val postContentTextStyle: LMFeedTextStyle,
+    val postContentTextStyle: LMFeedPostContentViewStyle,
     //post media style
     val postMediaViewStyle: LMFeedPostMediaViewStyle,
     //post action style
@@ -88,14 +89,24 @@ class LMFeedPostViewStyle private constructor(
                 )
                 .build()
 
-        private var postContentTextStyle: LMFeedTextStyle =
-            LMFeedTextStyle.Builder()
-                .textColor(R.color.lm_feed_grey)
-                .textSize(R.dimen.lm_feed_text_large)
-                .maxLines(3)
-                .fontResource(R.font.lm_feed_roboto)
-                .expandableCTAText("... See more")
-                .expandableCTAColor(R.color.lm_feed_brown_grey)
+        private var postContentTextStyle: LMFeedPostContentViewStyle =
+            LMFeedPostContentViewStyle.Builder()
+                .postTextViewStyle(
+                    LMFeedTextStyle.Builder()
+                        .textColor(R.color.lm_feed_grey)
+                        .textSize(R.dimen.lm_feed_text_large)
+                        .maxLines(3)
+                        .fontResource(R.font.lm_feed_roboto)
+                        .expandableCTAText("... See more")
+                        .expandableCTAColor(R.color.lm_feed_brown_grey)
+                        .build()
+                )
+                .searchHighlightedViewStyle(
+                    LMFeedTextStyle.Builder()
+                        .textColor(R.color.lm_feed_black)
+                        .textSize(R.dimen.lm_feed_text_large)
+                        .build()
+                )
                 .build()
 
         private var postActionViewStyle: LMFeedPostActionViewStyle =
@@ -340,7 +351,7 @@ class LMFeedPostViewStyle private constructor(
             this.postHeaderViewStyle = postHeaderViewStyle
         }
 
-        fun postContentTextStyle(postContentTextStyle: LMFeedTextStyle) = apply {
+        fun postContentTextStyle(postContentTextStyle: LMFeedPostContentViewStyle) = apply {
             this.postContentTextStyle = postContentTextStyle
         }
 

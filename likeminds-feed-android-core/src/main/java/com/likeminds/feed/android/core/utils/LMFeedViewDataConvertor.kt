@@ -6,15 +6,16 @@ import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityEntityVi
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.delete.model.LMFeedReasonChooseViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
-import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.post.create.model.LMFeedFileUploadViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountViewData
 import com.likeminds.feed.android.core.post.model.*
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.report.model.LMFeedReportTagViewData
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
+import com.likeminds.feed.android.core.search.util.LMFeedSearchUtil
 import com.likeminds.feed.android.core.socialfeed.model.*
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
@@ -204,7 +205,8 @@ object LMFeedViewDataConvertor {
         post: Post,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
-        widgetsMap: Map<String, Widget>
+        widgetsMap: Map<String, Widget>,
+        searchString: String? = null
     ): LMFeedPostViewData {
         val postCreatorUUID = post.uuid
         val postCreator = usersMap[postCreatorUUID]
@@ -240,6 +242,7 @@ object LMFeedViewDataConvertor {
         //post content view data
         val postContentViewData = LMFeedPostContentViewData.Builder()
             .text(post.text)
+            .keywordMatchedInPostText(LMFeedSearchUtil.findMatchedKeyword(searchString, post.text))
             .build()
 
         //post media view data
@@ -877,6 +880,27 @@ object LMFeedViewDataConvertor {
             .parentEntityType(widget.parentEntityType)
             .updatedAt(widget.updatedAt)
             .build()
+    }
+
+    /**
+     * convert list of [Post] to [LMFeedPostViewData]
+     * @param searchString: [String]
+     * @param posts: List of [Post]
+     * @param usersMap: [Map] of String to [User]
+     * @param topicsMap: [Map] of String to [Topic]
+     * @param widgetsMap: [Map] of String to [Widget]
+     * @return [LMFeedPostViewData]
+     * */
+    fun convertSearchedPosts(
+        searchString: String,
+        posts: List<Post>,
+        usersMap: Map<String, User>,
+        topicsMap: Map<String, Topic>,
+        widgetsMap: Map<String, Widget>
+    ): List<LMFeedPostViewData> {
+        return posts.map { post ->
+            convertPost(post, usersMap, topicsMap, widgetsMap, searchString)
+        }
     }
 
     /**--------------------------------

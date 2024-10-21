@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
 
         lmVideoFeedAuthPreferences = LMVideoFeedAuthPreferences(this)
 
-
         //without API Key Security
         LMFeedCore.showFeed(
             this,
