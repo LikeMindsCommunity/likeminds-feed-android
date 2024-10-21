@@ -66,9 +66,11 @@ object LMFeedSearchUtil {
             if (str.startsWith(keyword, ignoreCase = true)) {
                 highlightMatchedText(str, color, highlightColor, 0, keyword.length)
             }
+
             //check for if the keyword appears elsewhere in the text
             if (str.contains(" $keyword", ignoreCase = true) ||
-                str.contains(" @$keyword", ignoreCase = true)
+                str.contains(" @$keyword", ignoreCase = true) ||
+                str.startsWith("@$keyword", ignoreCase = true)
             ) {
                 var lastIndex = 0
                 //loop to find all occurrences of keyword in text
@@ -140,9 +142,10 @@ object LMFeedSearchUtil {
         if (!listOfKeywords.isNullOrEmpty() && !string.isNullOrEmpty()) {
             // loop to find matches in the text
             listOfKeywords.forEach { keyword ->
-                if (stringDecoded.lowercase().contains(" ${keyword.lowercase()}") ||
-                    stringDecoded.lowercase().contains(" @${keyword.lowercase()}") ||
-                    stringDecoded.lowercase().startsWith(keyword.lowercase())
+                if (stringDecoded.contains(" $keyword", ignoreCase = true) ||
+                    stringDecoded.contains(" @${keyword}", ignoreCase = true) ||
+                    stringDecoded.startsWith(keyword, ignoreCase = true) ||
+                    stringDecoded.startsWith("@$keyword", ignoreCase = true)
                 ) {
                     matchedKeywords.add(keyword)
                 }
