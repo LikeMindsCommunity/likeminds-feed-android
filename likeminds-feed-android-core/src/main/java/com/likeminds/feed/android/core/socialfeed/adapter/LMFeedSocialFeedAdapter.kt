@@ -1,6 +1,5 @@
 package com.likeminds.feed.android.core.socialfeed.adapter
 
-import android.util.Log
 import com.likeminds.feed.android.core.socialfeed.adapter.databinders.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getItemInList
 import com.likeminds.feed.android.core.utils.base.*
