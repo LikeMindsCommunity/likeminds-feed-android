@@ -53,6 +53,8 @@ class LMFeedItemPostSingleVideoViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
 
+            LMFeedPostBinderUtils.customizePostQnAAnswerPromptView(containerQnaBeFirstLabel)
+
             setClickListeners(this)
 
             //set video media style to post video view
@@ -115,6 +117,7 @@ class LMFeedItemPostSingleVideoViewDataBinder(
                 tvPostHeading,
                 tvPostContent,
                 postTopResponse,
+                containerQnaBeFirstLabel,
                 data,
                 position,
                 postTopicsGroup,
@@ -207,6 +210,11 @@ class LMFeedItemPostSingleVideoViewDataBinder(
             qnaPostAction.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            containerQnaBeFirstLabel.setContainerClickListener {
+                val post = this.postViewData ?: return@setContainerClickListener
+                postAdapterListener.onPostAnswerPromptClicked(position, post)
             }
         }
     }

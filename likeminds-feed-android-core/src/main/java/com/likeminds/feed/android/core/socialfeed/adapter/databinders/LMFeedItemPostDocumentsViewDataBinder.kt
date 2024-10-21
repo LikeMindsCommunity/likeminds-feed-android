@@ -53,6 +53,8 @@ class LMFeedItemPostDocumentsViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
 
+            LMFeedPostBinderUtils.customizePostQnAAnswerPromptView(containerQnaBeFirstLabel)
+
             setClickListeners(this)
 
             //sets documents media style to documents view
@@ -115,6 +117,7 @@ class LMFeedItemPostDocumentsViewDataBinder(
                 tvPostHeading,
                 tvPostContent,
                 postTopResponse,
+                containerQnaBeFirstLabel,
                 data,
                 position,
                 postTopicsGroup,
@@ -219,6 +222,11 @@ class LMFeedItemPostDocumentsViewDataBinder(
             qnaPostAction.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            containerQnaBeFirstLabel.setContainerClickListener {
+                val post = this.postViewData ?: return@setContainerClickListener
+                postAdapterListener.onPostAnswerPromptClicked(position, post)
             }
         }
     }

@@ -162,4 +162,8 @@ interface LMFeedPostAdapterListener {
     fun onPostTopResponseTaggedMemberClicked(position: Int, uuid: String) {
         //triggered when the user clicks on tagged member in the top response of the post
     }
+
+    fun onPostAnswerPromptClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the answer prompt of the post
+    }
 }

@@ -19,6 +19,7 @@ import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.view.LMFeedLabelImageContainerView
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.*
@@ -33,6 +34,8 @@ import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.link.LMFeedLinkMovementMethod
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
+import com.likeminds.feed.android.core.utils.user.LMFeedUserImageUtil
+import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.usertagging.util.UserTaggingDecoder
 
 object LMFeedPostBinderUtils {
@@ -74,6 +77,35 @@ object LMFeedPostBinderUtils {
         postAQnAActionHorizontalView.setStyle(postActionViewStyle)
     }
 
+    // customizes the post answer prompt view
+    fun customizePostQnAAnswerPromptView(labelImageContainerView: LMFeedLabelImageContainerView) {
+        labelImageContainerView.apply {
+            var postAnswerPromptViewStyle =
+                LMFeedStyleTransformer.postViewStyle.postAnswerPromptViewStyle
+            if (postAnswerPromptViewStyle != null) {
+                // set user first letter as placeholder
+                val containerImageViewStyle = postAnswerPromptViewStyle.containerImageStyle
+                val loggedInUserPrefs = LMFeedUserPreferences(context)
+
+                postAnswerPromptViewStyle =
+                    postAnswerPromptViewStyle.toBuilder().containerImageStyle(
+                        containerImageViewStyle.toBuilder().placeholderSrc(
+                            LMFeedUserImageUtil.getNameDrawable(
+                                loggedInUserPrefs.getUUID(),
+                                loggedInUserPrefs.getUserName(),
+                                containerImageViewStyle.isCircle,
+                            ).first
+                        ).build()
+                    ).build()
+
+                show()
+                setStyle(postAnswerPromptViewStyle)
+            } else {
+                hide()
+            }
+        }
+    }
+
     // customizes the vertical post action view
     fun customizePostActionVerticalView(postActionVerticalView: LMFeedPostActionVerticalView) {
         val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
@@ -110,7 +142,8 @@ object LMFeedPostBinderUtils {
         headerView: LMFeedPostHeaderView,
         headingView: LMFeedTextView,
         contentView: LMFeedTextView,
-        postTopResponseView: LMFeedPostTopResponseView,
+        postTopResponseView: LMFeedPostTopResponseView?,
+        postAnswerPromptView: LMFeedLabelImageContainerView?,
         data: LMFeedPostViewData,
         position: Int,
         topicsView: LMFeedChipGroup,
@@ -159,6 +192,12 @@ object LMFeedPostBinderUtils {
                 postAdapterListener,
                 postTopResponseView,
                 data
+            )
+
+            // sets the answer prompt view of the post
+            setPostAnswerPrompt(
+                data,
+                postAnswerPromptView
             )
 
             executeBinder()
@@ -493,10 +532,10 @@ object LMFeedPostBinderUtils {
     private fun setPostTopResponse(
         position: Int,
         postAdapterListener: LMFeedPostAdapterListener,
-        postTopResponseView: LMFeedPostTopResponseView,
+        postTopResponseView: LMFeedPostTopResponseView?,
         postViewData: LMFeedPostViewData
     ) {
-        postTopResponseView.apply {
+        postTopResponseView?.apply {
             val topResponses = postViewData.topResponses
             if (topResponses.isEmpty()) {
                 hide()
@@ -523,6 +562,29 @@ object LMFeedPostBinderUtils {
                         postAdapterListener.onPostTopResponseTaggedMemberClicked(position, uuid)
                     }
                 )
+            }
+        }
+    }
+
+    // sets the data in answer prompt view of the post
+    private fun setPostAnswerPrompt(
+        data: LMFeedPostViewData,
+        postAnswerPromptView: LMFeedLabelImageContainerView?
+    ) {
+        postAnswerPromptView?.apply {
+            if (data.actionViewData.commentsCount == 0) {
+                show()
+                val loggedInUserImage = LMFeedUserPreferences(context).getUserImage()
+                setContainerImage(loggedInUserImage)
+                setContainerLabel(
+                    context.getString(
+                        R.string.lm_feed_be_the_first_one_to_s,
+                        LMFeedCommunityUtil.getCommentVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                    )
+                )
+            } else {
+                hide()
             }
         }
     }

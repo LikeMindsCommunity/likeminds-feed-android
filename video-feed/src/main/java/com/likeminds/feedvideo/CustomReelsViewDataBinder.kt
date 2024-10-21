@@ -121,6 +121,8 @@ class CustomReelsViewDataBinder(
                 postHeader,
                 tvPostHeading,
                 tvPostContent,
+                null,
+                null,
                 data,
                 position,
                 postTopicsGroup,

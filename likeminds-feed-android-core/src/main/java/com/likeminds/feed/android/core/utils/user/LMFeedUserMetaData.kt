@@ -45,8 +45,18 @@ class LMFeedUserMetaData {
     }
 
     //perform actions post user session is initiated
-    fun onPostSessionInit(context: Context, userName: String?, uuid: String?) {
-        saveUserPreferences(context, userName, uuid)
+    fun onPostSessionInit(
+        context: Context,
+        userName: String?,
+        uuid: String?,
+        userImage: String?
+    ) {
+        saveUserPreferences(
+            context,
+            userName,
+            uuid,
+            userImage
+        )
         getMemberState()
         pushToken()
         getCommunityConfiguration()
@@ -57,12 +67,14 @@ class LMFeedUserMetaData {
         context: Context,
         userName: String?,
         uuid: String?,
+        userImage: String?
     ) {
         //save details to pref
         val userPreferences = LMFeedUserPreferences(context)
         userPreferences.apply {
             saveUserName(userName ?: "")
             saveUUID(uuid ?: "")
+            setUserImage(userImage ?: "")
         }
     }
 

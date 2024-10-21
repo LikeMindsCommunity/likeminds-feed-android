@@ -56,6 +56,8 @@ class LMFeedItemPostPollViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
 
+            LMFeedPostBinderUtils.customizePostQnAAnswerPromptView(containerQnaBeFirstLabel)
+
             setClickListeners(this)
 
             //sets poll media style to the poll view
@@ -118,6 +120,7 @@ class LMFeedItemPostPollViewDataBinder(
                 tvPostHeading,
                 tvPostContent,
                 postTopResponse,
+                containerQnaBeFirstLabel,
                 data,
                 position,
                 postTopicsGroup,
@@ -248,6 +251,11 @@ class LMFeedItemPostPollViewDataBinder(
             qnaPostAction.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            containerQnaBeFirstLabel.setContainerClickListener {
+                val post = this.postViewData ?: return@setContainerClickListener
+                postAdapterListener.onPostAnswerPromptClicked(position, post)
             }
         }
     }

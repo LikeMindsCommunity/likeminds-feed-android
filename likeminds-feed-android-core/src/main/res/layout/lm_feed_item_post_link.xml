@@ -17,13 +17,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/lm_feed_white"
-        android:paddingHorizontal="@dimen/lm_feed_large_padding">
+        android:background="@color/lm_feed_white">
 
         <com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
             android:id="@+id/post_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,6 +32,7 @@
             android:id="@+id/post_topics_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             android:layout_marginTop="@dimen/lm_feed_regular_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,6 +42,7 @@
             android:id="@+id/tv_post_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             android:layout_marginTop="@dimen/lm_feed_large_margin"
             android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
             app:layout_constraintEnd_toEndOf="parent"
@@ -54,6 +56,7 @@
             android:id="@+id/tv_post_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             android:layout_marginTop="@dimen/lm_feed_large_margin"
             android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
             app:layout_constraintEnd_toEndOf="parent"
@@ -68,6 +71,7 @@
             android:id="@+id/post_link_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             android:layout_marginTop="@dimen/lm_feed_media_view_top_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,6 +81,7 @@
             android:id="@+id/post_top_response"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             android:layout_marginTop="@dimen/lm_feed_large_margin"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/post_link_view" />
@@ -85,6 +90,7 @@
             android:id="@+id/post_action"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_top_response" />
@@ -98,6 +104,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_top_response" />
+
+        <com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.view.LMFeedLabelImageContainerView
+            android:id="@+id/container_qna_be_first_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/qna_post_action" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

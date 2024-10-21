@@ -53,6 +53,8 @@ class LMFeedItemPostSingleImageViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
 
+            LMFeedPostBinderUtils.customizePostQnAAnswerPromptView(containerQnaBeFirstLabel)
+
             setClickListeners(this)
 
             //set styles to the image media in the post
@@ -114,6 +116,7 @@ class LMFeedItemPostSingleImageViewDataBinder(
                 tvPostHeading,
                 tvPostContent,
                 postTopResponse,
+                containerQnaBeFirstLabel,
                 data,
                 position,
                 postTopicsGroup,
@@ -212,6 +215,11 @@ class LMFeedItemPostSingleImageViewDataBinder(
             qnaPostAction.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            containerQnaBeFirstLabel.setContainerClickListener {
+                val post = this.postViewData ?: return@setContainerClickListener
+                postAdapterListener.onPostAnswerPromptClicked(position, post)
             }
         }
     }

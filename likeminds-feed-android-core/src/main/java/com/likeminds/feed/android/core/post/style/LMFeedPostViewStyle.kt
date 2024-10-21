@@ -6,6 +6,7 @@ import android.widget.ImageView
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.style.LMFeedLabelImageContainerViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollOptionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postactionview.style.LMFeedPostActionViewStyle
@@ -27,6 +28,7 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * @property postTopicsGroupStyle: [LMFeedChipGroupStyle] this will help you to customize the chip group in the post [LMFeedChipGroup]
  * @property postTopicChipsStyle: [LMFeedChipStyle] this will help you to customize the chips of the chip group in the post [LMFeedChip]
  * @property postTopResponseViewStyle: [LMFeedPostTopResponseViewStyle] this will help you to customize the top response in the post [LMFeedPostTopResponseView]
+ * @property postTopResponseViewStyle: [LMFeedPostTopResponseViewStyle] this will help you to customize the prompt to answer view [LMFeedLabelImageContainerView]
  *
  * */
 class LMFeedPostViewStyle private constructor(
@@ -45,7 +47,9 @@ class LMFeedPostViewStyle private constructor(
     // post topics chip style
     val postTopicChipsStyle: LMFeedChipStyle,
     // post top response view style
-    val postTopResponseViewStyle: LMFeedPostTopResponseViewStyle?
+    val postTopResponseViewStyle: LMFeedPostTopResponseViewStyle?,
+    // post be the first one to answer label view style
+    val postAnswerPromptViewStyle: LMFeedLabelImageContainerViewStyle?
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -347,6 +351,8 @@ class LMFeedPostViewStyle private constructor(
 
         private var postTopResponseViewStyle: LMFeedPostTopResponseViewStyle? = null
 
+        private var postAnswerPromptViewStyle: LMFeedLabelImageContainerViewStyle? = null
+
         fun postHeaderViewStyle(postHeaderViewStyle: LMFeedPostHeaderViewStyle) = apply {
             this.postHeaderViewStyle = postHeaderViewStyle
         }
@@ -380,6 +386,11 @@ class LMFeedPostViewStyle private constructor(
                 this.postTopResponseViewStyle = postTopResponseViewStyle
             }
 
+        fun postAnswerPromptViewStyle(postAnswerPromptViewStyle: LMFeedLabelImageContainerViewStyle?) =
+            apply {
+                this.postAnswerPromptViewStyle = postAnswerPromptViewStyle
+            }
+
         fun build() = LMFeedPostViewStyle(
             postHeaderViewStyle,
             postContentTextStyle,
@@ -388,7 +399,8 @@ class LMFeedPostViewStyle private constructor(
             postActionViewStyle,
             postTopicsGroupStyle,
             postTopicChipStyle,
-            postTopResponseViewStyle
+            postTopResponseViewStyle,
+            postAnswerPromptViewStyle
         )
     }
 
@@ -401,5 +413,6 @@ class LMFeedPostViewStyle private constructor(
             .postTopicsGroupStyle(postTopicsGroupStyle)
             .postTopicChipStyle(postTopicChipsStyle)
             .postTopResponseViewStyle(postTopResponseViewStyle)
+            .postAnswerPromptViewStyle(postAnswerPromptViewStyle)
     }
 }

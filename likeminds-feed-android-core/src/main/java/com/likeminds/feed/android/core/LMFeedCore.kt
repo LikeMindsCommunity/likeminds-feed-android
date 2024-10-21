@@ -78,10 +78,15 @@ object LMFeedCore {
                         response.data?.let { data ->
                             val userResponse = UserResponseConvertor.getUserResponse(data)
                             success(userResponse)
-                        }
 
-                        //perform post session actions
-                        userMeta.onPostSessionInit(context, userName, uuid)
+                            //perform post session actions
+                            userMeta.onPostSessionInit(
+                                context,
+                                userName,
+                                uuid,
+                                userResponse.user?.imageUrl
+                            )
+                        }
                     }
                 } else {
                     error?.let { it(response.errorMessage) }
@@ -129,7 +134,13 @@ object LMFeedCore {
                     val user = response.data?.user
                     val userName = user?.name
                     val uuid = user?.sdkClientInfo?.uuid
-                    userMeta.onPostSessionInit(context, userName, uuid)
+                    val userImage = user?.imageUrl
+                    userMeta.onPostSessionInit(
+                        context,
+                        userName,
+                        uuid,
+                        userImage
+                    )
                 }
             } else {
                 error?.let { it(response.errorMessage) }

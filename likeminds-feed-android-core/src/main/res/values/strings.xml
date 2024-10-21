@@ -206,6 +206,7 @@
     <string name="lm_feed_ask_question_s">Ask %s</string>
     <string name="lm_feed_top_response">Top Response</string>
     <string name="lm_feed_upvote">Upvote</string>
+    <string name="lm_feed_be_the_first_one_to_s">Be the first one to %s</string>
 
     <!-- Add sample strings here-->
     <string name="lm_feed_sample_name">Sahil Garg</string>

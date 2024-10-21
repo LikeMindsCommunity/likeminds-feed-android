@@ -54,6 +54,8 @@ class LMFeedItemPostLinkViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
 
+            LMFeedPostBinderUtils.customizePostQnAAnswerPromptView(containerQnaBeFirstLabel)
+
             setClickListeners(this)
 
             //sets link media style to post link view
@@ -121,6 +123,7 @@ class LMFeedItemPostLinkViewDataBinder(
                 tvPostHeading,
                 tvPostContent,
                 postTopResponse,
+                containerQnaBeFirstLabel,
                 data,
                 position,
                 postTopicsGroup,
@@ -219,6 +222,11 @@ class LMFeedItemPostLinkViewDataBinder(
             qnaPostAction.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            containerQnaBeFirstLabel.setContainerClickListener {
+                val post = this.postViewData ?: return@setContainerClickListener
+                postAdapterListener.onPostAnswerPromptClicked(position, post)
             }
         }
     }

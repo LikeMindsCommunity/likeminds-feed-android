@@ -60,6 +60,7 @@ import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
+import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.style.LMFeedLabelImageContainerViewStyle
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
 import com.likeminds.feed.android.core.ui.widgets.poll.view.*
@@ -117,6 +118,7 @@ open class LMFeedQnAFeedFragment :
             customizePostHeadingView()
             customizePostTopResponseView()
             customizePostActionView()
+            customizePostAnswerPrompt()
         }
         return binding.root
     }
@@ -237,6 +239,16 @@ open class LMFeedQnAFeedFragment :
                             .inActiveSrc(R.drawable.lm_feed_ic_upvote_unfilled)
                             .build()
                     )
+                    .build()
+            )
+            .build()
+    }
+
+    // customizes the post answer prompt view
+    protected open fun customizePostAnswerPrompt() {
+        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
+            .postAnswerPromptViewStyle(
+                LMFeedLabelImageContainerViewStyle.Builder()
                     .build()
             )
             .build()
