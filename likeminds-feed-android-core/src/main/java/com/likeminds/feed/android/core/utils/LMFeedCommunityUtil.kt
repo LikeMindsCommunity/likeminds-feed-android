@@ -1,24 +1,23 @@
 package com.likeminds.feed.android.core.utils
 
-import com.likeminds.feed.android.core.LMFeedCore
-import com.likeminds.feed.android.core.LMFeedTheme
+import com.likeminds.feed.android.core.*
 
 object LMFeedCommunityUtil {
 
-    private var postVariable: String = when (LMFeedCore.theme) {
+    private var postVariable: String = when (LMFeedCoreApplication.selectedTheme) {
         LMFeedTheme.SOCIAL_FEED -> "post"
         LMFeedTheme.VIDEO_FEED -> "reel"
         LMFeedTheme.QNA_FEED -> "question"
     }
 
-    private var likeVariable: String = when (LMFeedCore.theme) {
+    private var likeVariable: String = when (LMFeedCoreApplication.selectedTheme) {
         LMFeedTheme.SOCIAL_FEED, LMFeedTheme.VIDEO_FEED -> "like"
         LMFeedTheme.QNA_FEED -> "upvote"
     }
 
     private var likePastTenseVariable: String = "liked"
 
-    private var commentVariable: String = when (LMFeedCore.theme) {
+    private var commentVariable: String = when (LMFeedCoreApplication.selectedTheme) {
         LMFeedTheme.SOCIAL_FEED, LMFeedTheme.VIDEO_FEED -> "comment"
         LMFeedTheme.QNA_FEED -> "answer"
     }

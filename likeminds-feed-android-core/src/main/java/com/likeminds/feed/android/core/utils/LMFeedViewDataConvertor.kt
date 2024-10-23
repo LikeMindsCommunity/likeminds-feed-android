@@ -13,6 +13,7 @@ import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountView
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.report.model.LMFeedReportTagViewData
+import com.likeminds.feed.android.core.search.util.LMFeedSearchUtil
 import com.likeminds.feed.android.core.socialfeed.model.*
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
@@ -213,7 +214,8 @@ object LMFeedViewDataConvertor {
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
         widgetsMap: Map<String, Widget>,
-        filteredCommentsMap: Map<String, Comment>? = null
+        filteredCommentsMap: Map<String, Comment>? = null,
+        searchString: String? = null
     ): LMFeedPostViewData {
         val postCreatorUUID = post.uuid
         val postCreator = usersMap[postCreatorUUID]
@@ -250,6 +252,7 @@ object LMFeedViewDataConvertor {
         //post content view data
         val postContentViewData = LMFeedPostContentViewData.Builder()
             .text(post.text)
+            .keywordMatchedInPostText(LMFeedSearchUtil.findMatchedKeyword(searchString, post.text))
             .build()
 
         //post heading view data
@@ -909,6 +912,27 @@ object LMFeedViewDataConvertor {
             .parentEntityType(widget.parentEntityType)
             .updatedAt(widget.updatedAt)
             .build()
+    }
+
+    /**
+     * convert list of [Post] to [LMFeedPostViewData]
+     * @param searchString: [String]
+     * @param posts: List of [Post]
+     * @param usersMap: [Map] of String to [User]
+     * @param topicsMap: [Map] of String to [Topic]
+     * @param widgetsMap: [Map] of String to [Widget]
+     * @return [LMFeedPostViewData]
+     * */
+    fun convertSearchedPosts(
+        searchString: String,
+        posts: List<Post>,
+        usersMap: Map<String, User>,
+        topicsMap: Map<String, Topic>,
+        widgetsMap: Map<String, Widget>
+    ): List<LMFeedPostViewData> {
+        return posts.map { post ->
+            convertPost(post, usersMap, topicsMap, widgetsMap, null, searchString)
+        }
     }
 
     /**--------------------------------

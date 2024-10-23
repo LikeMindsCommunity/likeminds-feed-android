@@ -2,7 +2,7 @@ package com.likeminds.feed.android.core.socialfeed.adapter.databinders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.likeminds.feed.android.core.LMFeedCore
+import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.LMFeedTheme
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostDocumentsBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
@@ -35,7 +35,7 @@ class LMFeedItemPostDocumentsViewDataBinder(
 
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
-            when (LMFeedCore.theme) {
+            when (LMFeedCoreApplication.selectedTheme) {
                 LMFeedTheme.SOCIAL_FEED -> {
                     LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
                 }
@@ -79,7 +79,7 @@ class LMFeedItemPostDocumentsViewDataBinder(
             postViewData = data
 
             // updates the data in the post action view
-            when (LMFeedCore.theme) {
+            when (LMFeedCoreApplication.selectedTheme) {
                 LMFeedTheme.SOCIAL_FEED -> {
                     qnaPostAction.hide()
                     postAction.show()

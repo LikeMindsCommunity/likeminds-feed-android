@@ -3,10 +3,7 @@ package com.likeminds.feed.android.core.search.view
 import android.content.Context
 import android.util.AttributeSet
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SimpleItemAnimator
+import androidx.recyclerview.widget.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapter
@@ -82,18 +79,18 @@ class LMFeedSearchListView @JvmOverloads constructor(
         }
     }
 
-    //create the adapter with the provided [listener] to the universal feed recycler view
-    fun initAdapterAndSetListener(listener: LMFeedPostAdapterListener){
+    //create the adapter with the provided [listener] to the search recycler view
+    fun initAdapterAndSetListener(listener: LMFeedPostAdapterListener) {
         socialFeedAdapter = LMFeedSocialFeedAdapter(listener)
     }
 
-    //sets the adapter with the provided [listener] to the universal feed recycler view
+    //sets the adapter with the provided [listener] to the search recycler view
     fun setAdapter() {
         //setting adapter
         adapter = socialFeedAdapter
     }
 
-    //sets the pagination scroll listener to the social feed recycler view
+    //sets the pagination scroll listener to the search feed recycler view
     fun setPaginationScrollListener(scrollListener: LMFeedEndlessRecyclerViewScrollListener) {
         paginationScrollListener = scrollListener
         addOnScrollListener(scrollListener)
@@ -151,7 +148,7 @@ class LMFeedSearchListView @JvmOverloads constructor(
     }
 
     //get post from the adapter using index
-    private fun getPostFromAdapter(position: Int): LMFeedPostViewData? {
+    fun getPostFromAdapter(position: Int): LMFeedPostViewData? {
         return socialFeedAdapter.items()[position] as? LMFeedPostViewData
     }
 

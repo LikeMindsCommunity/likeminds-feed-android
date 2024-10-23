@@ -40,6 +40,7 @@ import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListe
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.*
@@ -126,11 +127,14 @@ open class LMFeedVideoFeedFragment :
             )
             .postContentTextStyle(
                 postViewStyle.postContentTextStyle.toBuilder()
-                    .textColor(R.color.lm_feed_white)
-                    .maxLines(1)
-                    .expandableCTAText("...")
-                    .expandableCTAColor(R.color.lm_feed_white)
-                    .build()
+                    .postTextViewStyle(
+                        LMFeedTextStyle.Builder()
+                            .textColor(R.color.lm_feed_white)
+                            .maxLines(1)
+                            .expandableCTAText("...")
+                            .expandableCTAColor(R.color.lm_feed_white)
+                            .build()
+                    ).build()
             )
             .postActionViewStyle(
                 postActionViewStyle.toBuilder()
