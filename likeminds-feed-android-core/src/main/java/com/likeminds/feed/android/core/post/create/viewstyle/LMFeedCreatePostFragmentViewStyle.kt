@@ -2,7 +2,7 @@ package com.likeminds.feed.android.core.post.create.viewstyle
 
 import android.text.TextUtils
 import androidx.annotation.ColorRes
-import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.*
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
@@ -17,6 +17,8 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * @property selectTopicsChipStyle: [LMFeedChipStyle] helps to customize the topic selection view to create a post
  * @property editChipStyle: [LMFeedChipStyle] helps to customize the icon of selected topics
  * @property postComposerStyle: [LMFeedEditTextStyle] helps to customize the post composer
+ * @property postHeadingComposerStyle: [LMFeedEditTextStyle] helps to customize the post heading composer
+ * @property postHeadingLimitTextStyle: [LMFeedTextStyle] helps to customize the post heading limit text view
  * @property addMoreButtonStyle: [LMFeedButtonStyle] helps to customize the add more button style
  * @property backgroundColor: [Int] background color for the view, to provided in [ColorRes] format
  */
@@ -31,6 +33,10 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
     val editChipStyle: LMFeedChipStyle,
     //post composer view style
     val postComposerStyle: LMFeedEditTextStyle,
+    //post heading composer view style
+    val postHeadingComposerStyle: LMFeedEditTextStyle?,
+    //post heading limit text style
+    val postHeadingLimitTextStyle: LMFeedTextStyle?,
     //add more media button style
     val addMoreButtonStyle: LMFeedButtonStyle,
     //background color of the screen
@@ -119,6 +125,36 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
             .hintTextColor(R.color.lm_feed_maastricht_blue_40)
             .build()
 
+        private var postHeadingComposerStyle: LMFeedEditTextStyle? =
+            if (LMFeedCoreApplication.selectedTheme == LMFeedTheme.QNA_FEED) {
+                LMFeedEditTextStyle.Builder()
+                    .inputTextStyle(
+                        LMFeedTextStyle.Builder()
+                            .ellipsize(TextUtils.TruncateAt.END)
+                            .maxHeight(R.dimen.lm_feed_post_heading_composer_max_height)
+                            .minHeight(R.dimen.lm_feed_post_heading_composer_min_height)
+                            .textColor(R.color.lm_feed_dark_grey)
+                            .fontResource(R.font.lm_feed_roboto_medium)
+                            .textSize(R.dimen.lm_feed_text_large)
+                            .build()
+                    )
+                    .hintTextColor(R.color.lm_feed_maastricht_blue_40)
+                    .build()
+            } else {
+                null
+            }
+
+        private var postHeadingLimitTextStyle: LMFeedTextStyle? =
+            if (LMFeedCoreApplication.selectedTheme == LMFeedTheme.QNA_FEED) {
+                LMFeedTextStyle.Builder()
+                    .textColor(R.color.lm_feed_dark_grey_70)
+                    .textSize(R.dimen.lm_feed_text_small)
+                    .fontResource(R.font.lm_feed_roboto)
+                    .build()
+            } else {
+                null
+            }
+
         private var addMoreButtonStyle: LMFeedButtonStyle = LMFeedButtonStyle.Builder()
             .textStyle(
                 LMFeedTextStyle.Builder()
@@ -152,6 +188,14 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
             this.postComposerStyle = postComposerStyle
         }
 
+        fun postHeadingComposerStyle(postHeadingComposerStyle: LMFeedEditTextStyle?) = apply {
+            this.postHeadingComposerStyle = postHeadingComposerStyle
+        }
+
+        fun postHeadingLimitTextStyle(postHeadingLimitTextStyle: LMFeedTextStyle?) = apply {
+            this.postHeadingLimitTextStyle = postHeadingLimitTextStyle
+        }
+
         fun addMoreButtonStyle(addMoreButtonStyle: LMFeedButtonStyle) = apply {
             this.addMoreButtonStyle = addMoreButtonStyle
         }
@@ -166,6 +210,8 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
             selectTopicsChipStyle,
             editChipStyle,
             postComposerStyle,
+            postHeadingComposerStyle,
+            postHeadingLimitTextStyle,
             addMoreButtonStyle,
             backgroundColor
         )
@@ -177,6 +223,8 @@ class LMFeedCreatePostFragmentViewStyle private constructor(
             .selectTopicsChipStyle(selectTopicsChipStyle)
             .editChipStyle(editChipStyle)
             .postComposerStyle(postComposerStyle)
+            .postHeadingComposerStyle(postHeadingComposerStyle)
+            .postHeadingLimitTextStyle(postHeadingLimitTextStyle)
             .addMoreButtonStyle(addMoreButtonStyle)
             .backgroundColor(backgroundColor)
     }

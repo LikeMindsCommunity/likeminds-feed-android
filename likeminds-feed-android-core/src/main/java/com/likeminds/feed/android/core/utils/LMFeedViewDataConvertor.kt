@@ -919,6 +919,7 @@ object LMFeedViewDataConvertor {
         temporaryId: String,
         workerUUID: String,
         text: String?,
+        heading: String?,
         fileUris: List<LMFeedFileUploadViewData>,
         metadata: JSONObject?,
     ): Post {
@@ -927,6 +928,7 @@ object LMFeedViewDataConvertor {
             .id(temporaryId)
             .workerUUID(workerUUID)
             .text(text ?: "")
+            .heading(heading)
             .attachments(convertAttachments(fileUris, Pair(null, metadata)))
             .build()
     }

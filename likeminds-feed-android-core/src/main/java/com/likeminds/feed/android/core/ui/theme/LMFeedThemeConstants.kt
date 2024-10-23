@@ -6,6 +6,7 @@ import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeConstantsReq
 
 object LMFeedThemeConstants {
     private const val DEFAULT_POST_CHARACTER_LIMIT = 500
+    private const val DEFAULT_POST_HEADING_LIMIT = 200
     const val DEFAULT_POST_MAX_LINES = 3
     const val DEFAULT_VISIBLE_DOCUMENTS_LIMIT = 3
 
@@ -24,6 +25,9 @@ object LMFeedThemeConstants {
 
     //post character limits
     private var postCharacterLimit: Int = DEFAULT_POST_CHARACTER_LIMIT
+
+    //post heading limit
+    private var postHeadingLimit: Int = DEFAULT_POST_HEADING_LIMIT
 
     //notification related
     @DrawableRes
@@ -56,6 +60,10 @@ object LMFeedThemeConstants {
             postCharacterLimit = it
         }
 
+        lmFeedSetThemeConstantsRequest.postHeadingLimit?.let {
+            postHeadingLimit = it
+        }
+
         notificationIcon = lmFeedSetThemeConstantsRequest.notificationIcon
     }
 
@@ -67,6 +75,11 @@ object LMFeedThemeConstants {
     //returns the limit of characters in the post text view to see more
     fun getPostCharacterLimit(): Int {
         return postCharacterLimit
+    }
+
+    //returns the limit of characters in the post heading view
+    fun getPostHeadingLimit(): Int {
+        return postHeadingLimit
     }
 
     fun getNotificationIcon(): Int? {

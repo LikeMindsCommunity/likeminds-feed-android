@@ -353,8 +353,7 @@ open class LMFeedQnAFeedFragment :
             topicSelectorBar.clearSelectedTopicsAndNotify()
             rvQna.resetScrollListenerData()
             LMFeedProgressBarHelper.showProgress(progressBar, true)
-            //todo:
-//            qnaFeedViewModel.getFeed(1, null)
+            qnaFeedViewModel.postViewModel.getFeed(1, null)
 
             //show layout accordingly
             topicSelectorBar.setSelectedTopicFilterVisibility(false)

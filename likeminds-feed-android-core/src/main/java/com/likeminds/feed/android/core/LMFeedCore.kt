@@ -13,8 +13,6 @@ import kotlinx.coroutines.*
 
 object LMFeedCore {
 
-    var theme: LMFeedTheme = LMFeedTheme.SOCIAL_FEED
-
     /**
      * Initial setup function for customers and blocker function
      * @param application: Instance of the application class
@@ -33,12 +31,11 @@ object LMFeedCore {
         //set theme
         LMFeedThemeConstants.setTheme(lmFeedTheme)
 
-        this.theme = theme
-
         //initialize core application
         val coreApplication = LMFeedCoreApplication.getInstance()
         coreApplication.initCoreApplication(
             application,
+            theme,
             lmFeedCoreCallback,
             domain,
             enablePushNotifications,
@@ -57,8 +54,6 @@ object LMFeedCore {
         CoroutineScope(Dispatchers.IO).launch {
             val lmFeedClient = LMFeedClient.getInstance()
             val tokens = lmFeedClient.getTokens().data
-
-            Log.d("PUI", "showFeed: ${tokens?.first} ${tokens?.second}")
 
             val userMeta = LMFeedUserMetaData.getInstance()
             val deviceId = userMeta.deviceId

@@ -4,7 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.graphics.Color
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.view.*
 import android.view.animation.Animation
@@ -193,5 +197,22 @@ object LMFeedViewUtils {
             height = displayMetrics.heightPixels
         }
         return Pair(width, height)
+    }
+
+    // adds an asterisk for mandatory fields in the hint
+    fun getMandatoryAsterisk(
+        hint: String,
+        editText: EditText
+    ) {
+        val mandatoryAsteriskHint = SpannableString("$hint*")
+        mandatoryAsteriskHint.setSpan(
+            ForegroundColorSpan(
+                Color.RED
+            ),
+            hint.length,
+            hint.length + 1,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        editText.hint = mandatoryAsteriskHint
     }
 }

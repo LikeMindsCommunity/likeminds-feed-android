@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.text.*
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -147,6 +147,8 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
             customizePostMultipleMedia(multipleMediaView)
             customizeAddMoreButton(btnAddMoreMedia)
             customizePostPollAttachment(pollView)
+            customizePostHeadingComposer(etPostHeadingComposer)
+            customizePostHeadingLimit(tvHeadingLimit)
 
             //set background color
             val backgroundColor =
@@ -288,6 +290,53 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         pollView.setStyle(updatedPollStyles)
     }
 
+    //customize post heading composer edit text
+    protected open fun customizePostHeadingComposer(etPostHeadingComposer: LMFeedEditText) {
+        etPostHeadingComposer.apply {
+
+            val postHeadingComposerStyle =
+                LMFeedStyleTransformer.createPostFragmentViewStyle.postHeadingComposerStyle
+
+            if (postHeadingComposerStyle != null) {
+                imeOptions = EditorInfo.IME_ACTION_NEXT
+                setRawInputType(InputType.TYPE_CLASS_TEXT)
+
+                setStyle(postHeadingComposerStyle)
+                LMFeedViewUtils.getMandatoryAsterisk(
+                    getString(
+                        R.string.lm_feed_add_your_s_here,
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                    ),
+                    etPostHeadingComposer
+                )
+                show()
+                binding.headingSeparator.show()
+            } else {
+                hide()
+                binding.headingSeparator.hide()
+            }
+        }
+    }
+
+    //customize post heading limit text
+    protected open fun customizePostHeadingLimit(tvPostHeadingLimitTextView: LMFeedTextView) {
+        tvPostHeadingLimitTextView.apply {
+            val postHeadingLimitTextViewStyle =
+                LMFeedStyleTransformer.createPostFragmentViewStyle.postHeadingLimitTextStyle
+            if (postHeadingLimitTextViewStyle != null) {
+                binding.etPostHeadingComposer.filters =
+                    arrayOf(InputFilter.LengthFilter(LMFeedThemeConstants.getPostHeadingLimit()))
+
+                setStyle(postHeadingLimitTextViewStyle)
+                setPostHeadingLimitText(this, 0)
+                show()
+            } else {
+                hide()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -295,6 +344,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         fetchInitialData()
         initAddAttachmentsView()
         initPostComposerTextListener()
+        initPostHeadingComposerTextListener()
         observeData()
         initListeners()
     }
@@ -475,14 +525,54 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                 val text = it?.toString()?.trim()
                 if (text.isNullOrEmpty()) {
                     clearPreviewLink()
-                    binding.headerViewCreatePost.setSubmitButtonEnabled(
-                        isEnabled = (selectedMediaUris.isNotEmpty())
-                    )
-                } else {
-                    binding.headerViewCreatePost.setSubmitButtonEnabled(isEnabled = true)
+                }
+
+                handleSubmitButtonVisibility()
+            }
+        }
+    }
+
+    // adds text watcher on post content edit text
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initPostHeadingComposerTextListener() {
+        binding.etPostHeadingComposer.apply {
+            /**
+             * As the scrollable edit text is inside a scroll view,
+             * this touch listener handles the scrolling of the edit text.
+             * When the edit text is touched and has focus then it disables scroll of scroll-view.
+             */
+            setOnTouchListener(View.OnTouchListener { v, event ->
+                if (hasFocus()) {
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                    when (event.action and MotionEvent.ACTION_MASK) {
+                        MotionEvent.ACTION_SCROLL -> {
+                            v.parent.requestDisallowInterceptTouchEvent(false)
+                            return@OnTouchListener true
+                        }
+                    }
+                }
+                false
+            })
+
+            addTextChangedListener {
+                val text = it?.toString()
+                if (text != null) {
+                    setPostHeadingLimitText(binding.tvHeadingLimit, text.length)
                 }
             }
         }
+    }
+
+    //sets the heading limit text to the heading limit text view
+    protected open fun setPostHeadingLimitText(
+        headingTextView: LMFeedTextView,
+        headingTextLength: Int
+    ) {
+        headingTextView.text = getString(
+            R.string.lm_feed_heading_limit_text_d,
+            headingTextLength,
+            LMFeedThemeConstants.getPostHeadingLimit()
+        )
     }
 
     private fun observeData() {
@@ -570,52 +660,24 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
             headerViewCreatePost.setSubmitButtonClickListener {
                 val text = etPostComposer.text
                 val updatedText = memberTagging.replaceSelectedMembers(text).trim()
+
+                val updatedHeading = etPostHeadingComposer.text?.trim().toString()
                 LMFeedViewUtils.hideKeyboard(binding.root)
 
-                when {
-                    selectedMediaUris.isNotEmpty() -> {
-                        headerViewCreatePost.setSubmitButtonEnabled(
-                            isEnabled = true,
-                            showProgress = true
-                        )
-                        createPostViewModel.addPost(
-                            context = requireContext(),
-                            postTextContent = updatedText,
-                            fileUris = selectedMediaUris,
-                            ogTags = ogTags,
-                            selectedTopics = selectedTopic,
-                            poll = poll
-                        )
-                    }
+                headerViewCreatePost.setSubmitButtonEnabled(
+                    isEnabled = true,
+                    showProgress = true
+                )
 
-                    updatedText.isNotEmpty() -> {
-                        headerViewCreatePost.setSubmitButtonEnabled(
-                            isEnabled = true,
-                            showProgress = true
-                        )
-                        createPostViewModel.addPost(
-                            context = requireContext(),
-                            postTextContent = updatedText,
-                            ogTags = ogTags,
-                            selectedTopics = selectedTopic,
-                            poll = poll
-                        )
-                    }
-
-                    poll != null -> {
-                        headerViewCreatePost.setSubmitButtonEnabled(
-                            isEnabled = true,
-                            showProgress = true
-                        )
-                        createPostViewModel.addPost(
-                            context = requireContext(),
-                            postTextContent = updatedText,
-                            ogTags = ogTags,
-                            selectedTopics = selectedTopic,
-                            poll = poll
-                        )
-                    }
-                }
+                createPostViewModel.addPost(
+                    context = requireContext(),
+                    postTextContent = updatedText,
+                    postHeading = updatedHeading,
+                    fileUris = selectedMediaUris,
+                    ogTags = ogTags,
+                    selectedTopics = selectedTopic,
+                    poll = poll
+                )
             }
         }
     }
@@ -629,7 +691,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private fun initLinkView(data: LMFeedLinkOGTagsViewData) {
         val link = data.url ?: ""
         // sends link attached event with the link
-        LMFeedAnalytics.sendLinkAttachedEvent(link,LMFeedScreenNames.CREATE_POST)
+        LMFeedAnalytics.sendLinkAttachedEvent(link, LMFeedScreenNames.CREATE_POST)
         binding.postLinkView.apply {
             show()
             setLinkImage(data.image)
@@ -687,7 +749,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                 } else {
                     clearPreviewLink()
                 }
-                binding.headerViewCreatePost.setSubmitButtonEnabled(isEnabled = !text.isNullOrEmpty())
+                handleSubmitButtonVisibility()
                 handleAddAttachmentLayouts(true)
             }
         }
@@ -697,7 +759,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private fun showAttachedImage() {
         binding.apply {
             handleAddAttachmentLayouts(false)
-            headerViewCreatePost.setSubmitButtonEnabled(isEnabled = true)
+            handleSubmitButtonVisibility()
             postSingleImage.show()
             postSingleVideo.hide()
             postLinkView.hide()
@@ -714,8 +776,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                 selectedMediaUris.clear()
                 postSingleImage.hide()
                 handleAddAttachmentLayouts(true)
-                val text = etPostComposer.text?.trim()
-                headerViewCreatePost.setSubmitButtonEnabled(isEnabled = !text.isNullOrEmpty())
+                handleSubmitButtonVisibility()
             }
 
             val imageStyle = getUpdatedImageMediaStyle() ?: return
@@ -727,7 +788,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private fun showAttachedVideo() {
         binding.apply {
             handleAddAttachmentLayouts(false)
-            headerViewCreatePost.setSubmitButtonEnabled(isEnabled = true)
+            handleSubmitButtonVisibility()
             postSingleVideo.show()
             postSingleImage.hide()
             postLinkView.hide()
@@ -749,8 +810,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
                 selectedMediaUris.clear()
                 postSingleVideo.hide()
                 handleAddAttachmentLayouts(true)
-                val text = etPostComposer.text?.trim()
-                headerViewCreatePost.setSubmitButtonEnabled(isEnabled = !text.isNullOrEmpty())
+                handleSubmitButtonVisibility()
                 postVideoPreviewAutoPlayHelper.removePlayer()
             }
         }
@@ -760,7 +820,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private fun showMultiMediaAttachments() {
         binding.apply {
             handleAddAttachmentLayouts(false)
-            headerViewCreatePost.setSubmitButtonEnabled(isEnabled = true)
+            handleSubmitButtonVisibility()
             postSingleImage.hide()
             postSingleVideo.hide()
             postLinkView.hide()
@@ -796,7 +856,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         binding.apply {
             if (poll != null) {
                 handleAddAttachmentLayouts(false)
-                headerViewCreatePost.setSubmitButtonEnabled(true)
+                handleSubmitButtonVisibility()
                 pollView.show()
                 postSingleImage.hide()
                 btnAddMoreMedia.hide()
@@ -1021,7 +1081,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private fun showAttachedDocuments() {
         binding.apply {
             handleAddAttachmentLayouts(false)
-            headerViewCreatePost.setSubmitButtonEnabled(isEnabled = true)
+            handleSubmitButtonVisibility()
             postSingleImage.hide()
             postSingleVideo.hide()
             postLinkView.hide()
@@ -1071,6 +1131,21 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     private fun handleAddAttachmentLayouts(show: Boolean) {
         binding.groupAddAttachments.isVisible = show
         binding.btnAddMoreMedia.isVisible = !show
+    }
+
+    // handles the visible of submit post button
+    private fun handleSubmitButtonVisibility() {
+        binding.apply {
+            if (LMFeedStyleTransformer.createPostFragmentViewStyle.postHeadingComposerStyle != null) {
+                headerViewCreatePost.setSubmitButtonEnabled(
+                    !etPostHeadingComposer.text?.trim().isNullOrEmpty()
+                )
+            } else {
+                headerViewCreatePost.setSubmitButtonEnabled(
+                    !etPostComposer.text?.trim().isNullOrEmpty() || selectedMediaUris.isNotEmpty()
+                )
+            }
+        }
     }
 
     // launcher to handle gallery (IMAGE/VIDEO) intent
