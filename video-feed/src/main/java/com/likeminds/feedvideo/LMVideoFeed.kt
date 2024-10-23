@@ -4,8 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.provider.Settings
 import android.util.Log
-import com.likeminds.feed.android.core.LMFeedCore
-import com.likeminds.feed.android.core.LMFeedCoreCallback
+import com.likeminds.feed.android.core.*
 import kotlinx.coroutines.runBlocking
 
 class LMVideoFeed : Application(), LMFeedCoreCallback {
@@ -21,6 +20,7 @@ class LMVideoFeed : Application(), LMFeedCoreCallback {
         val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) ?: ""
         LMFeedCore.setup(
             application = this,
+            LMFeedTheme.VIDEO_FEED,
             enablePushNotifications = true,
             deviceId = deviceId,
             domain = "https://www.samplefeed.com",

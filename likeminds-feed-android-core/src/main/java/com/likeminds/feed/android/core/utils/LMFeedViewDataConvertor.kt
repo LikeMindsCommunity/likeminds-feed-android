@@ -119,6 +119,11 @@ object LMFeedViewDataConvertor {
             .text(post.text)
             .build()
 
+        //post heading view data
+        val postHeadingViewData = LMFeedPostHeadingViewData.Builder()
+            .heading(post.heading)
+            .build()
+
         //post media view data
         val postMediaViewData = LMFeedMediaViewData.Builder()
             .attachments(
@@ -133,6 +138,7 @@ object LMFeedViewDataConvertor {
 
         return LMFeedPostViewData.Builder()
             .contentViewData(postContentViewData)
+            .headingViewData(postHeadingViewData)
             .mediaViewData(postMediaViewData)
             .topicsViewData(convertTopics(topics))
             .isPosted(post.isPosted)
@@ -183,14 +189,16 @@ object LMFeedViewDataConvertor {
         posts: List<Post>,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
-        widgetsMap: Map<String, Widget>
+        widgetsMap: Map<String, Widget>,
+        filteredCommentsMap: Map<String, Comment>,
     ): List<LMFeedPostViewData> {
         return posts.map { post ->
             convertPost(
                 post,
                 usersMap,
                 topicsMap,
-                widgetsMap
+                widgetsMap,
+                filteredCommentsMap
             )
         }
     }
@@ -206,6 +214,7 @@ object LMFeedViewDataConvertor {
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
         widgetsMap: Map<String, Widget>,
+        filteredCommentsMap: Map<String, Comment>? = null,
         searchString: String? = null
     ): LMFeedPostViewData {
         val postCreatorUUID = post.uuid
@@ -213,6 +222,7 @@ object LMFeedViewDataConvertor {
         val postId = post.id
         val replies = post.replies?.toMutableList()
         val topicsIds = post.topicIds ?: emptyList()
+        val commentIds = post.commentIds ?: emptyList()
 
         //get user view data
         val userViewData = if (postCreator == null) {
@@ -221,7 +231,7 @@ object LMFeedViewDataConvertor {
             convertUser(postCreator)
         }
 
-        //get topics view data
+        // get topics view data
         val topicsViewData = topicsIds.mapNotNull { topicId ->
             topicsMap[topicId]
         }.map { topic ->
@@ -243,6 +253,11 @@ object LMFeedViewDataConvertor {
         val postContentViewData = LMFeedPostContentViewData.Builder()
             .text(post.text)
             .keywordMatchedInPostText(LMFeedSearchUtil.findMatchedKeyword(searchString, post.text))
+            .build()
+
+        //post heading view data
+        val postHeadingViewData = LMFeedPostHeadingViewData.Builder()
+            .heading(post.heading)
             .build()
 
         //post media view data
@@ -272,14 +287,31 @@ object LMFeedViewDataConvertor {
             )
             .build()
 
+        // get top responses
+        val topResponses = if (filteredCommentsMap == null) {
+            emptyList()
+        } else {
+            commentIds.mapNotNull { commentId ->
+                filteredCommentsMap[commentId]
+            }.map { comment ->
+                convertComment(
+                    comment,
+                    usersMap,
+                    postId
+                )
+            }
+        }
+
         //creating a final instance
         return LMFeedPostViewData.Builder()
             .id(postId)
             .headerViewData(postHeaderViewData)
             .contentViewData(postContentViewData)
+            .headingViewData(postHeadingViewData)
             .mediaViewData(postMediaViewData)
             .actionViewData(postActionViewData)
             .topicsViewData(topicsViewData)
+            .topResponses(topResponses)
             .build()
     }
 
@@ -899,7 +931,14 @@ object LMFeedViewDataConvertor {
         widgetsMap: Map<String, Widget>
     ): List<LMFeedPostViewData> {
         return posts.map { post ->
-            convertPost(post, usersMap, topicsMap, widgetsMap, searchString)
+            convertPost(
+                post,
+                usersMap,
+                topicsMap,
+                widgetsMap,
+                null,
+                searchString
+            )
         }
     }
 
@@ -911,6 +950,7 @@ object LMFeedViewDataConvertor {
         temporaryId: String,
         workerUUID: String,
         text: String?,
+        heading: String?,
         fileUris: List<LMFeedFileUploadViewData>,
         metadata: JSONObject?,
     ): Post {
@@ -919,6 +959,7 @@ object LMFeedViewDataConvertor {
             .id(temporaryId)
             .workerUUID(workerUUID)
             .text(text ?: "")
+            .heading(heading)
             .attachments(convertAttachments(fileUris, Pair(null, metadata)))
             .build()
     }

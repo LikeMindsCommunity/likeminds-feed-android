@@ -2,10 +2,11 @@ package com.likeminds.feed.android.core.ui.theme
 
 import androidx.annotation.*
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeRequest
+import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeConstantsRequest
 
-object LMFeedTheme {
+object LMFeedThemeConstants {
     private const val DEFAULT_POST_CHARACTER_LIMIT = 500
+    private const val DEFAULT_POST_HEADING_LIMIT = 200
     const val DEFAULT_POST_MAX_LINES = 3
     const val DEFAULT_VISIBLE_DOCUMENTS_LIMIT = 3
 
@@ -25,38 +26,45 @@ object LMFeedTheme {
     //post character limits
     private var postCharacterLimit: Int = DEFAULT_POST_CHARACTER_LIMIT
 
+    //post heading limit
+    private var postHeadingLimit: Int = DEFAULT_POST_HEADING_LIMIT
+
     //notification related
     @DrawableRes
     private var notificationIcon: Int? = null
 
     /**
-     * @param lmFeedSetThemeRequest - Request to set base theme
+     * @param lmFeedSetThemeConstantsRequest - Request to set base theme
      * sets fonts, used throughout the app as base theme
      * */
-    fun setTheme(lmFeedSetThemeRequest: LMFeedSetThemeRequest?) {
-        if (lmFeedSetThemeRequest == null) {
+    fun setTheme(lmFeedSetThemeConstantsRequest: LMFeedSetThemeConstantsRequest?) {
+        if (lmFeedSetThemeConstantsRequest == null) {
             return
         }
 
-        fontResource = lmFeedSetThemeRequest.fontResource
+        fontResource = lmFeedSetThemeConstantsRequest.fontResource
 
-        lmFeedSetThemeRequest.fontAssetsPath?.let {
+        lmFeedSetThemeConstantsRequest.fontAssetsPath?.let {
             fontAssetsPath = it
         }
 
-        lmFeedSetThemeRequest.textLinkColor?.let {
+        lmFeedSetThemeConstantsRequest.textLinkColor?.let {
             textLinkColor = it
         }
 
-        lmFeedSetThemeRequest.buttonColor?.let {
+        lmFeedSetThemeConstantsRequest.buttonColor?.let {
             buttonColor = it
         }
 
-        lmFeedSetThemeRequest.postCharacterLimit?.let {
+        lmFeedSetThemeConstantsRequest.postCharacterLimit?.let {
             postCharacterLimit = it
         }
 
-        notificationIcon = lmFeedSetThemeRequest.notificationIcon
+        lmFeedSetThemeConstantsRequest.postHeadingLimit?.let {
+            postHeadingLimit = it
+        }
+
+        notificationIcon = lmFeedSetThemeConstantsRequest.notificationIcon
     }
 
     //returns the pair of theme font resource and assets path
@@ -67,6 +75,11 @@ object LMFeedTheme {
     //returns the limit of characters in the post text view to see more
     fun getPostCharacterLimit(): Int {
         return postCharacterLimit
+    }
+
+    //returns the limit of characters in the post heading view
+    fun getPostHeadingLimit(): Int {
+        return postHeadingLimit
     }
 
     fun getNotificationIcon(): Int? {

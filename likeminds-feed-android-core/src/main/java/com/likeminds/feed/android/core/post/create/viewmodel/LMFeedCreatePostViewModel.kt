@@ -185,6 +185,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
     fun addPost(
         context: Context,
         postTextContent: String?,
+        postHeading: String? = null,
         fileUris: List<SingleUriData>? = null,
         ogTags: LMFeedLinkOGTagsViewData? = null,
         selectedTopics: ArrayList<LMFeedTopicViewData>? = null,
@@ -197,11 +198,16 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 updatedText = null
             }
 
+            var updatedHeading = postHeading?.trim()
+            if (updatedHeading.isNullOrEmpty()) {
+                updatedHeading = null
+            }
+
             val topicIds = selectedTopics?.map {
                 it.id
             }
 
-            if (fileUris != null) {
+            if (!fileUris.isNullOrEmpty()) {
                 // if the post has upload-able attachments
                 temporaryPostId = System.currentTimeMillis()
                 val postId = temporaryPostId ?: 0
@@ -216,6 +222,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 storePost(
                     uploadData,
                     updatedText,
+                    updatedHeading,
                     updatedFileUris,
                     selectedTopics,
                     metadata
@@ -224,6 +231,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 // if the post does not have any upload-able attachments
                 val requestBuilder = AddPostRequest.Builder()
                     .text(updatedText)
+                    .heading(updatedHeading)
 
                 if (!topicIds.isNullOrEmpty()) {
                     //if user has selected any topics
@@ -358,6 +366,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
     private fun storePost(
         uploadData: Pair<WorkContinuation, String>,
         text: String?,
+        heading: String?,
         fileUris: List<LMFeedFileUploadViewData>,
         selectedTopics: ArrayList<LMFeedTopicViewData>?,
         metadata: JSONObject? = null
@@ -370,6 +379,7 @@ class LMFeedCreatePostViewModel : ViewModel() {
                 temporaryPostId,
                 workerUUID,
                 text,
+                heading,
                 fileUris,
                 metadata
             )

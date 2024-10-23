@@ -83,6 +83,7 @@ object LMFeedAnalytics {
         const val DEEP_LINK = "deep_link"
         const val NOTIFICATION = "notification"
         const val SOCIAL_FEED = "social_feed"
+        const val QNA_FEED = "qna_feed"
         const val POST_DETAIL = "post_detail"
     }
 

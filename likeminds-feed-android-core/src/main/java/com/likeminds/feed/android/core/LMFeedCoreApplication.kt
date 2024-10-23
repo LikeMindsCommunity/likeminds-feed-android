@@ -28,6 +28,7 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
         private lateinit var transferUtility: TransferUtility
         private var credentialsProvider: CognitoCachingCredentialsProvider? = null
         private var s3Client: AmazonS3Client? = null
+        var selectedTheme: LMFeedTheme = LMFeedTheme.SOCIAL_FEED
 
         /**
          * @return Singleton Instance of Core Application class
@@ -92,6 +93,7 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
 
     fun initCoreApplication(
         application: Application,
+        theme: LMFeedTheme,
         lmFeedCoreCallback: LMFeedCoreCallback?,
         domain: String? = null,
         enablePushNotifications: Boolean = false,
@@ -99,6 +101,8 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
     ) {
         //instantiates the cache data source factory for caching videos
         LMFeedVideoCache.getCacheDataSourceFactory(application.applicationContext)
+
+        selectedTheme = theme
 
         mClient = LMFeedClient.Builder(application)
             .lmCallback(this)

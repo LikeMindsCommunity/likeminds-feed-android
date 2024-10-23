@@ -89,7 +89,7 @@
             app:layout_constraintTop_toTopOf="@id/iv_like"
             tools:fontFamily="@font/lm_feed_roboto"
             tools:ignore="UnusedAttribute"
-            tools:text="@string/lm_feed_likes"
+            tools:text="@string/lm_feed_s_likes"
             tools:textColor="@color/lm_feed_maastricht_blue_40"
             tools:textSize="@dimen/lm_feed_text_small"
             tools:visibility="visible" />

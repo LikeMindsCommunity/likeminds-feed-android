@@ -5,17 +5,18 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedCommentComposerViewBinding
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedEditTextStyle
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
-import com.likeminds.feed.android.core.ui.base.styles.setStyle
+import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.base.views.LMFeedEditText
 import com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.style.LMFeedCommentComposerViewStyle
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 class LMFeedCommentComposerView : ConstraintLayout {
 
@@ -49,7 +50,12 @@ class LMFeedCommentComposerView : ConstraintLayout {
 
             //sets background color of the comment composer view
             backgroundColor?.let {
-                this@LMFeedCommentComposerView.setBackgroundColor(ContextCompat.getColor(context, it))
+                this@LMFeedCommentComposerView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        it
+                    )
+                )
             }
 
             //configures each view inside comment composer view
@@ -194,6 +200,12 @@ class LMFeedCommentComposerView : ConstraintLayout {
                 etComment.hide()
                 ivCommentSend.hide()
                 tvRestricted.show()
+                tvRestricted.text =
+                    context.getString(
+                        R.string.lm_feed_you_do_not_have_permission_to_s_comment,
+                        LMFeedCommunityUtil.getCommentVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                    )
             }
         }
     }

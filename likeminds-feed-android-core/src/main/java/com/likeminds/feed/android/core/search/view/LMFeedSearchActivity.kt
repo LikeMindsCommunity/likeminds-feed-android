@@ -5,13 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.databinding.LmFeedSearchActivityBinding
-import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailActivity
 
 open class LMFeedSearchActivity : AppCompatActivity() {
 
     lateinit var binding: LmFeedSearchActivityBinding
 
     companion object {
+        private const val TAG = "LMFeedSearchActivity"
+
         @JvmStatic
         fun start(context: Context) {
             val intent = Intent(context, LMFeedSearchActivity::class.java)
@@ -45,7 +46,7 @@ open class LMFeedSearchActivity : AppCompatActivity() {
             .replace(
                 binding.containerSearch.id,
                 feedSearchFragment,
-                LMFeedPostDetailActivity.TAG
+                TAG
             )
             .commit()
     }

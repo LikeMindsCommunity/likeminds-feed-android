@@ -18,9 +18,13 @@ class LMFeedPostContentViewData private constructor(
         private var alreadySeenFullContent: Boolean? = null
         private var keywordMatchedInPostText: List<String>? = null
 
-        fun text(text: String?) = apply { this.text = text }
-        fun alreadySeenFullContent(alreadySeenFullContent: Boolean?) =
-            apply { this.alreadySeenFullContent = alreadySeenFullContent }
+        fun text(text: String?) = apply {
+            this.text = text
+        }
+
+        fun alreadySeenFullContent(alreadySeenFullContent: Boolean?) = apply {
+            this.alreadySeenFullContent = alreadySeenFullContent
+        }
 
         fun keywordMatchedInPostText(keywordMatchedInPostText: List<String>?) = apply {
             this.keywordMatchedInPostText = keywordMatchedInPostText

@@ -5,6 +5,7 @@ import com.likeminds.feed.android.core.ui.widgets.labeliconcontainer.style.LMFee
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 class LMFeedPostMenuViewStyle private constructor(
+    //post menu item style
     val postMenuItemStyle: LMFeedLabelIconContainerViewStyle,
     //post menu background color
     @ColorRes val backgroundColor: Int?

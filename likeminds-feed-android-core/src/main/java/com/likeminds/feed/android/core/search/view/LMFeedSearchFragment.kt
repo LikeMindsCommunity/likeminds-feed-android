@@ -27,6 +27,8 @@ import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
 import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
@@ -35,7 +37,6 @@ import com.likeminds.feed.android.core.search.viewmodel.LMFeedSearchViewModel
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
-import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedListView
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
@@ -238,7 +239,7 @@ open class LMFeedSearchFragment : Fragment(),
                     override fun onLoadMore(currentPage: Int) {
                         if (currentPage > 0) {
                             // calls api for paginated data
-                            searchKeyword?.let { searchString->
+                            searchKeyword?.let { searchString ->
                                 searchViewModel.searchPosts(
                                     currentPage,
                                     searchString
@@ -287,7 +288,7 @@ open class LMFeedSearchFragment : Fragment(),
         searchKeyword = keyword?.trim()
 
         //call apis
-        searchKeyword?.let { searchString->
+        searchKeyword?.let { searchString ->
             searchViewModel.searchPosts(
                 1,
                 searchString
@@ -298,7 +299,7 @@ open class LMFeedSearchFragment : Fragment(),
     private fun observeResponses() {
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
         //observers post response
-        searchViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
+        searchViewModel.postViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
             binding.rvSearch.apply {
                 val index = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return@observe
                 updatePostItem(index, postViewData)
@@ -324,7 +325,7 @@ open class LMFeedSearchFragment : Fragment(),
         }
 
         // observes deletePostResponse LiveData
-        searchViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
+        searchViewModel.helperViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
             postEvent.notify(Pair(postId, null))
 
             binding.rvSearch.apply {
@@ -343,7 +344,7 @@ open class LMFeedSearchFragment : Fragment(),
             }
         }
 
-        searchViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
+        searchViewModel.helperViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
             //create toast message
             val toastMessage = if (postViewData.actionViewData.isSaved) {
                 getString(
@@ -361,7 +362,7 @@ open class LMFeedSearchFragment : Fragment(),
             LMFeedViewUtils.showShortToast(requireContext(), toastMessage)
         }
 
-        searchViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
+        searchViewModel.helperViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
             //show toast message
             val toastMessage = if (postViewData.headerViewData.isPinned) {
                 getString(
@@ -380,27 +381,48 @@ open class LMFeedSearchFragment : Fragment(),
         }
 
         //observers get post response
-        searchViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
+        searchViewModel.postViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
             binding.rvSearch.apply {
                 val index = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return@observe
                 updatePostItem(index, postViewData)
             }
         }
 
-        searchViewModel.errorMessageEventFlow.onEach { response ->
+        searchViewModel.postViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedSearchViewModel.ErrorMessageEvent.SearchPost -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.SubmitVote -> {
+                    LMFeedViewUtils.showErrorMessageToast(
+                        requireContext(),
+                        response.errorMessage
+                    )
+                }
+
+                is LMFeedPostViewModel.ErrorMessageEvent.AddPollOption -> {
+                    LMFeedViewUtils.showErrorMessageToast(
+                        requireContext(),
+                        response.errorMessage
+                    )
+                }
+
+                is LMFeedPostViewModel.ErrorMessageEvent.GetPost -> {
+                    LMFeedViewUtils.showErrorMessageToast(
+                        requireContext(),
+                        response.errorMessage
+                    )
+                }
+
+                else -> {}
+            }
+        }
+
+        searchViewModel.helperViewModel.errorMessageEventFlow.onEach { response ->
+            when (response) {
+                is LMFeedHelperViewModel.ErrorMessageEvent.DeletePost -> {
                     val errorMessage = response.errorMessage
-                    LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
 
-                is LMFeedSearchViewModel.ErrorMessageEvent.DeletePost -> {
-                    val errorMessage = response.errorMessage
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
-                }
-
-                is LMFeedSearchViewModel.ErrorMessageEvent.LikePost -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.LikePost -> {
                     val postId = response.postId
 
                     //get post and index
@@ -438,7 +460,7 @@ open class LMFeedSearchFragment : Fragment(),
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedSearchViewModel.ErrorMessageEvent.PinPost -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.PinPost -> {
                     binding.rvSearch.apply {
                         val postId = response.postId
 
@@ -465,7 +487,7 @@ open class LMFeedSearchFragment : Fragment(),
                     }
                 }
 
-                is LMFeedSearchViewModel.ErrorMessageEvent.SavePost -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.SavePost -> {
                     binding.rvSearch.apply {
                         val postId = response.postId
 
@@ -493,16 +515,16 @@ open class LMFeedSearchFragment : Fragment(),
                     }
                 }
 
-                is LMFeedSearchViewModel.ErrorMessageEvent.SubmitVote -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
+                else -> {}
+            }
+        }
 
-                is LMFeedSearchViewModel.ErrorMessageEvent.AddPollOption -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSearchViewModel.ErrorMessageEvent.GetPost -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+        searchViewModel.errorMessageEventFlow.onEach { response ->
+            when (response) {
+                is LMFeedSearchViewModel.ErrorMessageEvent.SearchPost -> {
+                    val errorMessage = response.errorMessage
+                    LMFeedProgressBarHelper.hideProgress(binding.progressBar)
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
             }
         }.observeInLifecycle(viewLifecycleOwner)
@@ -529,7 +551,7 @@ open class LMFeedSearchFragment : Fragment(),
         postEvent.notify(Pair(postViewData.id, postViewData))
 
         //call api
-        searchViewModel.likePost(
+        searchViewModel.helperViewModel.likePost(
             postViewData.id,
             postViewData.actionViewData.isLiked,
             loggedInUUID
@@ -572,7 +594,7 @@ open class LMFeedSearchFragment : Fragment(),
         postEvent.notify(Pair(postViewData.id, postViewData))
 
         //call api
-        searchViewModel.savePost(postViewData)
+        searchViewModel.helperViewModel.savePost(postViewData)
 
         binding.rvSearch.apply {
             val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
@@ -729,7 +751,10 @@ open class LMFeedSearchFragment : Fragment(),
     }
 
     //called when show more is clicked in the documents type post
-    override fun onPostMultipleDocumentsExpanded(position: Int, postViewData: LMFeedPostViewData) {
+    override fun onPostMultipleDocumentsExpanded(
+        position: Int,
+        postViewData: LMFeedPostViewData
+    ) {
         binding.rvSearch.apply {
             if (position == itemCount - 1) {
                 scrollToPositionWithOffset(position)
@@ -767,13 +792,13 @@ open class LMFeedSearchFragment : Fragment(),
     override fun onEntityDeletedByAdmin(deleteExtras: LMFeedDeleteExtras, reason: String) {
         val post =
             binding.rvSearch.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        searchViewModel.deletePost(post, reason)
+        searchViewModel.helperViewModel.deletePost(post, reason)
     }
 
     override fun onEntityDeletedByAuthor(deleteExtras: LMFeedDeleteExtras) {
         val post =
             binding.rvSearch.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        searchViewModel.deletePost(post)
+        searchViewModel.helperViewModel.deletePost(post)
     }
 
     override fun update(postData: Pair<String, LMFeedPostViewData?>) {
@@ -856,7 +881,10 @@ open class LMFeedSearchFragment : Fragment(),
     }
 
     //callback when the poll member voted count is clicked
-    override fun onPostMemberVotedCountClicked(position: Int, postViewData: LMFeedPostViewData) {
+    override fun onPostMemberVotedCountClicked(
+        position: Int,
+        postViewData: LMFeedPostViewData
+    ) {
         super.onPostMemberVotedCountClicked(position, postViewData)
 
         val pollAttachment = postViewData.mediaViewData.attachments.firstOrNull() ?: return
@@ -893,7 +921,7 @@ open class LMFeedSearchFragment : Fragment(),
         val selectedOptionIds = selectedOptions.map { it.id }
 
         validateSelectedPollOptions(pollViewData, selectedOptions.size) {
-            searchViewModel.submitPollVote(
+            searchViewModel.postViewModel.submitPollVote(
                 requireContext(),
                 postViewData.id,
                 pollViewData.id,
@@ -1032,7 +1060,7 @@ open class LMFeedSearchFragment : Fragment(),
                 }
 
                 //call api to submit vote
-                searchViewModel.submitPollVote(
+                searchViewModel.postViewModel.submitPollVote(
                     requireContext(),
                     postViewData.id,
                     pollViewData.id,
@@ -1044,7 +1072,7 @@ open class LMFeedSearchFragment : Fragment(),
                 if (pollViewData.isPollSubmitted) {
                     return
                 }
-                
+
                 //update the clicked poll option view data
                 val updatedPollOptionViewData = if (pollOptionViewData.isSelected) {
                     pollOptionViewData.toBuilder()
@@ -1151,7 +1179,7 @@ open class LMFeedSearchFragment : Fragment(),
         // notifies the subscribers about the change
         postEvent.notify(Pair(postId, post))
 
-        searchViewModel.addPollOption(
+        searchViewModel.postViewModel.addPollOption(
             post,
             option
         )
@@ -1264,7 +1292,8 @@ open class LMFeedSearchFragment : Fragment(),
     private val reportPostLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val data = result.data?.getStringExtra(LMFeedReportFragment.LM_FEED_REPORT_RESULT)
+                val data =
+                    result.data?.getStringExtra(LMFeedReportFragment.LM_FEED_REPORT_RESULT)
                 val entityType = if (data == "Post") {
                     LMFeedCommunityUtil.getPostVariable()
                         .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
@@ -1306,7 +1335,7 @@ open class LMFeedSearchFragment : Fragment(),
         post: LMFeedPostViewData
     ) {
         //call api
-        searchViewModel.pinPost(post)
+        searchViewModel.helperViewModel.pinPost(post)
 
         binding.rvSearch.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return
@@ -1323,7 +1352,7 @@ open class LMFeedSearchFragment : Fragment(),
         post: LMFeedPostViewData
     ) {
         //call api
-        searchViewModel.pinPost(post)
+        searchViewModel.helperViewModel.pinPost(post)
 
         binding.rvSearch.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return

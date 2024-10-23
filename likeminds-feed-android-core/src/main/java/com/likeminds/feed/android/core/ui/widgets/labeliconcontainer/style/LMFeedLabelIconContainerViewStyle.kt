@@ -45,11 +45,12 @@ class LMFeedLabelIconContainerViewStyle private constructor(
             this.backgroundColor = backgroundColor
         }
 
-        fun build() = LMFeedLabelIconContainerViewStyle(
-            containerIconStyle,
-            containerLabelStyle,
-            backgroundColor
-        )
+        fun build() =
+            LMFeedLabelIconContainerViewStyle(
+                containerIconStyle,
+                containerLabelStyle,
+                backgroundColor
+            )
     }
 
     fun toBuilder(): Builder {

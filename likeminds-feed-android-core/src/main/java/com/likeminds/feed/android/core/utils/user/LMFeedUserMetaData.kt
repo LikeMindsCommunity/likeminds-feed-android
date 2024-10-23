@@ -7,10 +7,13 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
 import com.likeminds.likemindsfeed.LMFeedClient
+import com.likeminds.likemindsfeed.configuration.ConfigurationClient.Companion.COMMENT_KEY
+import com.likeminds.likemindsfeed.configuration.ConfigurationClient.Companion.LIKE_ENTITY_VARIABLE_KEY
 import com.likeminds.likemindsfeed.configuration.ConfigurationClient.Companion.POST_KEY
 import com.likeminds.likemindsfeed.configuration.model.ConfigurationType
 import com.likeminds.likemindsfeed.helper.model.RegisterDeviceRequest
 import kotlinx.coroutines.*
+import org.json.JSONObject
 
 @Keep
 class LMFeedUserMetaData {
@@ -42,8 +45,18 @@ class LMFeedUserMetaData {
     }
 
     //perform actions post user session is initiated
-    fun onPostSessionInit(context: Context, userName: String?, uuid: String?) {
-        saveUserPreferences(context, userName, uuid)
+    fun onPostSessionInit(
+        context: Context,
+        userName: String?,
+        uuid: String?,
+        userImage: String?
+    ) {
+        saveUserPreferences(
+            context,
+            userName,
+            uuid,
+            userImage
+        )
         getMemberState()
         pushToken()
         getCommunityConfiguration()
@@ -54,12 +67,14 @@ class LMFeedUserMetaData {
         context: Context,
         userName: String?,
         uuid: String?,
+        userImage: String?
     ) {
         //save details to pref
         val userPreferences = LMFeedUserPreferences(context)
         userPreferences.apply {
             saveUserName(userName ?: "")
             saveUUID(uuid ?: "")
+            setUserImage(userImage ?: "")
         }
     }
 
@@ -80,11 +95,34 @@ class LMFeedUserMetaData {
                     val value = it.value
 
                     //check value has post key
-                    if (value.has("post")) {
+                    if (value.has(POST_KEY)) {
                         val variable = value.getString(POST_KEY)
                         LMFeedCommunityUtil.setPostVariable(variable)
                     } else {
                         LMFeedCommunityUtil.setPostVariable(POST_KEY)
+                    }
+
+                    //check value has like key
+                    if (value.has(LIKE_ENTITY_VARIABLE_KEY)) {
+                        val likeEntity =
+                            (value.get(LIKE_ENTITY_VARIABLE_KEY) as JSONObject)
+
+
+                        if (likeEntity.has("entity_name")) {
+                            LMFeedCommunityUtil.setLikeVariable(likeEntity.getString("entity_name"))
+                        }
+
+                        if (likeEntity.has("past_tense_verb")) {
+                            LMFeedCommunityUtil.setLikePastTenseVariable(likeEntity.getString("past_tense_verb"))
+                        }
+                    }
+
+                    //check value has comment key
+                    if (value.has(COMMENT_KEY)) {
+                        val variable = value.getString(COMMENT_KEY)
+                        LMFeedCommunityUtil.setCommentVariable(variable)
+                    } else {
+                        LMFeedCommunityUtil.setCommentVariable(COMMENT_KEY)
                     }
                 }
             } else {

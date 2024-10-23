@@ -13,6 +13,7 @@ class LMFeedUserPreferences(
         const val LM_FEED_USER_PREFS = "LM_FEED_USER_PREFS"
         const val LM_FEED_USER_NAME = "LM_FEED_USER_NAME"
         const val LM_FEED_UUID = "LM_FEED_UUID"
+        const val LM_FEED_USER_IMAGE = "LM_FEED_IMAGE"
     }
 
     fun getUserName(): String {
@@ -29,6 +30,14 @@ class LMFeedUserPreferences(
 
     fun saveUUID(uuid: String) {
         putPreference(LM_FEED_UUID, uuid)
+    }
+
+    fun getUserImage(): String {
+        return getPreference(LM_FEED_USER_IMAGE, "") ?: ""
+    }
+
+    fun setUserImage(userImage: String) {
+        putPreference(LM_FEED_USER_IMAGE, userImage)
     }
 
     fun clearPrefs() {
