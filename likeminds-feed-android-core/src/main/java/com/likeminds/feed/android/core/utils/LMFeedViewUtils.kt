@@ -217,7 +217,7 @@ object LMFeedViewUtils {
                 Color.RED
             ),
             hint.length,
-            hint.length + 1,
+            hint.length + 2,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         editText.hint = mandatoryAsteriskHint

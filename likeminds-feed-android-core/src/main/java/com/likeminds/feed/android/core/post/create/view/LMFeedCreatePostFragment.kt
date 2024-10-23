@@ -299,7 +299,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
 
             if (postHeadingComposerStyle != null) {
                 imeOptions = EditorInfo.IME_ACTION_NEXT
-                setRawInputType(InputType.TYPE_CLASS_TEXT)
+                setRawInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
 
                 setStyle(postHeadingComposerStyle)
                 LMFeedViewUtils.getMandatoryAsterisk(
@@ -555,10 +555,12 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
             })
 
             addTextChangedListener {
-                val text = it?.toString()
+                val text = it?.toString()?.trim()
                 if (text != null) {
                     setPostHeadingLimitText(binding.tvHeadingLimit, text.length)
                 }
+
+                handleSubmitButtonVisibility()
             }
         }
     }

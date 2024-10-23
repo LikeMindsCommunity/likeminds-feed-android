@@ -931,7 +931,14 @@ object LMFeedViewDataConvertor {
         widgetsMap: Map<String, Widget>
     ): List<LMFeedPostViewData> {
         return posts.map { post ->
-            convertPost(post, usersMap, topicsMap, widgetsMap, null, searchString)
+            convertPost(
+                post,
+                usersMap,
+                topicsMap,
+                widgetsMap,
+                null,
+                searchString
+            )
         }
     }
 
