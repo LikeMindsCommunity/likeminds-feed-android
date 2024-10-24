@@ -50,10 +50,10 @@ object LMFeedPostBinderUtils {
 
     // customizes the heading view of the post
     fun customizePostHeadingView(postHeading: LMFeedTextView) {
-        val postHeadingViewStyle = LMFeedStyleTransformer.postViewStyle.postHeadingTextStyle
+        val postHeadingViewStyle = LMFeedStyleTransformer.postViewStyle.postHeadingContentStyle
         if (postHeadingViewStyle != null) {
             postHeading.show()
-            postHeading.setStyle(postHeadingViewStyle)
+            postHeading.setStyle(postHeadingViewStyle.textContentViewStyle)
         } else {
             postHeading.hide()
         }
@@ -64,7 +64,7 @@ object LMFeedPostBinderUtils {
         postContent: LMFeedTextView,
     ) {
         val postContentTextStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-        postContent.setStyle(postContentTextStyle.postTextViewStyle)
+        postContent.setStyle(postContentTextStyle.textContentViewStyle)
     }
 
     // customizes the horizontal post action view
@@ -238,8 +238,8 @@ object LMFeedPostBinderUtils {
             val matchedKeyword = contentViewData.keywordMatchedInPostText
 
             val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-            val postTextStyle = postContentStyle.postTextViewStyle
-            val searchHighlightedStyle = postContentStyle.searchHighlightedViewStyle
+            val postTextStyle = postContentStyle.textContentViewStyle
+            val searchHighlightedStyle = postContentStyle.searchHighlightedTextViewStyle
 
             val maxLines = (postTextStyle.maxLines ?: LMFeedThemeConstants.DEFAULT_POST_MAX_LINES)
 
@@ -348,7 +348,7 @@ object LMFeedPostBinderUtils {
 
                     //creating see more spannable text for expanding post content.
                     val seeMoreSpannableStringBuilder = SpannableStringBuilder()
-                    val expandableText = postContentStyle.postTextViewStyle.expandableCTAText
+                    val expandableText = postTextStyle.expandableCTAText
 
                     if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
 
@@ -371,7 +371,7 @@ object LMFeedPostBinderUtils {
                                     return@setOnClickListener
                                 }
                                 alreadySeenFullContent = true
-                                val updatedPost = updatePostForSeeFullContent(postViewData)
+                                val updatedPost = updatePostContentForSeeFullContent(postViewData)
                                 postAdapterListener.onPostContentSeeMoreClicked(
                                     position,
                                     updatedPost
@@ -422,15 +422,142 @@ object LMFeedPostBinderUtils {
         position: Int
     ) {
         headingView.apply {
-            val postHeadingTextStyle = LMFeedStyleTransformer.postViewStyle.postHeadingTextStyle
+            val postHeadingTextStyle = LMFeedStyleTransformer.postViewStyle.postHeadingContentStyle
 
-            if (postHeadingTextStyle == null || postViewData.headingViewData.heading.isNullOrEmpty()) {
+            if (postHeadingTextStyle == null || postViewData.headingViewData.text.isNullOrEmpty()) {
                 headingView.hide()
             } else {
                 headingView.show()
-                headingView.text = postViewData.headingViewData.heading
 
-                postAdapterListener.onPostHeadingClicked(position, postViewData)
+                val headingViewData = postViewData.headingViewData
+                val postHeading = headingViewData.text ?: return
+                val matchedKeyword = headingViewData.keywordMatchedInPostText
+
+                val postHeadingStyle = postHeadingTextStyle.textContentViewStyle
+                val searchHeadingHighlightedStyle =
+                    postHeadingTextStyle.searchHighlightedTextViewStyle
+
+                val maxLines =
+                    (postHeadingStyle.maxLines ?: LMFeedThemeConstants.DEFAULT_POST_MAX_LINES)
+
+                //if used while searching a post, when matchedKeyword is not null
+                if (!matchedKeyword.isNullOrEmpty()) {
+                    post {
+                        setOnClickListener {
+                            postAdapterListener.onPostHeadingClicked(position, postViewData)
+                        }
+
+                        val tvPostText = SpannableStringBuilder()
+
+                        // get the color of text and background
+                        val textColor =
+                            searchHeadingHighlightedStyle?.textColor ?: R.color.lm_feed_black
+                        val backgroundColor =
+                            searchHeadingHighlightedStyle?.backgroundColor
+                                ?: R.color.lm_feed_transparent
+
+                        // update the post's text
+                        tvPostText.append(
+                            LMFeedSearchUtil.getTrimmedText(
+                                postHeading,
+                                matchedKeyword,
+                                ContextCompat.getColor(context, textColor),
+                                ContextCompat.getColor(context, backgroundColor)
+                            )
+                        )
+
+                        headingView.setText(tvPostText, TextView.BufferType.SPANNABLE)
+                    }
+                } else {
+                    //in normal cases
+                    var alreadySeenFullContent = headingViewData.alreadySeenFullContent == true
+
+                    post {
+                        setOnClickListener {
+                            postAdapterListener.onPostHeadingClicked(position, postViewData)
+                        }
+
+                        setText(postHeading, TextView.BufferType.EDITABLE)
+
+                        //shortens the text of the post to that of maxLines
+                        val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
+                            this,
+                            maxLines,
+                            LMFeedThemeConstants.getPostHeadingLimit()
+                        )
+
+                        val trimmedText =
+                            if (!alreadySeenFullContent && !shortText.isNullOrEmpty()) {
+                                editableText.subSequence(0, shortText.length)
+                            } else {
+                                editableText
+                            }
+
+                        //creating see more spannable text for expanding post heading.
+                        val seeMoreSpannableStringBuilder = SpannableStringBuilder()
+                        val expandableText = postHeadingStyle.expandableCTAText
+
+                        if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
+
+                            val expandableTextColor = ContextCompat.getColor(
+                                context,
+                                postHeadingStyle.expandableCTAColor ?: R.color.lm_feed_brown_grey
+                            )
+                            val expandSpannable = SpannableStringBuilder(expandableText)
+                            expandSpannable.setSpan(
+                                ForegroundColorSpan(expandableTextColor),
+                                0,
+                                expandSpannable.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+
+                            //handling click of spannable text
+                            val seeMoreClickableSpan = object : ClickableSpan() {
+                                override fun onClick(view: View) {
+                                    setOnClickListener {
+                                        return@setOnClickListener
+                                    }
+                                    alreadySeenFullContent = true
+                                    val updatedPost =
+                                        updatePostHeadingForSeeFullContent(postViewData)
+                                    postAdapterListener.onPostHeadingSeeMoreClicked(
+                                        position,
+                                        updatedPost
+                                    )
+                                }
+
+                                override fun updateDrawState(textPaint: TextPaint) {
+                                    textPaint.isUnderlineText = false
+                                }
+                            }
+
+                            seeMoreSpannableStringBuilder.append(expandSpannable)
+                            seeMoreSpannableStringBuilder.setSpan(
+                                seeMoreClickableSpan,
+                                0,
+                                expandSpannable.length,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+
+                        text = TextUtils.concat(
+                            trimmedText,
+                            seeMoreSpannableStringBuilder
+                        )
+
+                        //handling click of web links or email addresses or phone numbers in post content
+                        val linkifyLinks =
+                            (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
+                        LinkifyCompat.addLinks(this, linkifyLinks)
+                        movementMethod = LMFeedLinkMovementMethod {
+                            setOnClickListener {
+                                return@setOnClickListener
+                            }
+
+                            true
+                        }
+                    }
+                }
             }
         }
     }
@@ -769,7 +896,7 @@ object LMFeedPostBinderUtils {
     }
 
     //updates post object for a see full content action and returns updated post
-    private fun updatePostForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
+    private fun updatePostContentForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
         val contentViewData = oldPostViewData.contentViewData.toBuilder()
             .alreadySeenFullContent(true)
             .build()
@@ -777,6 +904,18 @@ object LMFeedPostBinderUtils {
         //return updated comment view data
         return oldPostViewData.toBuilder()
             .contentViewData(contentViewData)
+            .build()
+    }
+
+    //updates post object for a see full content action on post heading and returns updated post
+    private fun updatePostHeadingForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
+        val headingViewData = oldPostViewData.headingViewData.toBuilder()
+            .alreadySeenFullContent(true)
+            .build()
+
+        //return updated comment view data
+        return oldPostViewData.toBuilder()
+            .headingViewData(headingViewData)
             .build()
     }
 

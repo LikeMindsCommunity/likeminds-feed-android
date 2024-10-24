@@ -33,6 +33,8 @@ import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
 import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.*
+import com.likeminds.feed.android.core.search.model.LMFeedSearchExtras
+import com.likeminds.feed.android.core.search.view.LMFeedSearchActivity.Companion.LM_FEED_SEARCH_EXTRAS
 import com.likeminds.feed.android.core.search.viewmodel.LMFeedSearchViewModel
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
@@ -64,6 +66,7 @@ open class LMFeedSearchFragment : Fragment(),
     LMFeedPostObserver {
 
     private lateinit var binding: LmFeedSearchFragmentBinding
+    private lateinit var lmFeedSearchFragmentExtras: LMFeedSearchExtras
 
     private val searchViewModel: LMFeedSearchViewModel by viewModels()
 
@@ -73,13 +76,37 @@ open class LMFeedSearchFragment : Fragment(),
     companion object {
         const val TAG = "LMFeedSearchFragment"
 
-        fun getInstance(): LMFeedSearchFragment {
-            return LMFeedSearchFragment()
+        fun getInstance(searchFragmentExtras: LMFeedSearchExtras): LMFeedSearchFragment {
+            val searchFragment = LMFeedSearchFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(LM_FEED_SEARCH_EXTRAS, searchFragmentExtras)
+            searchFragment.arguments = bundle
+            return searchFragment
         }
     }
 
     private val postEvent by lazy {
         LMFeedPostEvent.getPublisher()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        //receive extras
+        receiveExtras()
+    }
+
+    private fun receiveExtras() {
+        if (arguments == null || arguments?.containsKey(LM_FEED_SEARCH_EXTRAS) == false) {
+            requireActivity().supportFragmentManager.popBackStack()
+            return
+        }
+
+        lmFeedSearchFragmentExtras = LMFeedExtrasUtil.getParcelable(
+            arguments,
+            LM_FEED_SEARCH_EXTRAS,
+            LMFeedSearchExtras::class.java
+        ) ?: throw emptyExtrasException(TAG)
     }
 
     override fun onCreateView(
@@ -242,7 +269,8 @@ open class LMFeedSearchFragment : Fragment(),
                             searchKeyword?.let { searchString ->
                                 searchViewModel.searchPosts(
                                     currentPage,
-                                    searchString
+                                    searchString,
+                                    lmFeedSearchFragmentExtras.searchType
                                 )
                             }
                         }
@@ -291,7 +319,8 @@ open class LMFeedSearchFragment : Fragment(),
         searchKeyword?.let { searchString ->
             searchViewModel.searchPosts(
                 1,
-                searchString
+                searchString,
+                lmFeedSearchFragmentExtras.searchType
             )
         }
     }
@@ -805,14 +834,14 @@ open class LMFeedSearchFragment : Fragment(),
         val postId = postData.first
         // fetches post from adapter
         binding.rvSearch.apply {
-            val postIndex = getIndexAndPostFromAdapter(postId)?.first ?: return
-
+            val postIndexPair = getIndexAndPostFromAdapter(postId) ?: return
+            val postIndex = postIndexPair.first
 
             //updated post:{} from event
             var updatedPost = postData.second
 
             //existing post in adapter
-            val existingPost = getPostFromAdapter(postIndex) ?: return
+            val existingPost = postIndexPair.second
 
             // updates the item in adapter
             if (updatedPost == null) {
@@ -1185,6 +1214,20 @@ open class LMFeedSearchFragment : Fragment(),
         )
     }
 
+    // callback when the user clicks on the post answer prompt
+    override fun onPostAnswerPromptClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostAnswerPromptClicked(position, postViewData)
+
+        // sends comment list open event
+        LMFeedAnalytics.sendCommentListOpenEvent()
+
+        val postDetailExtras = LMFeedPostDetailExtras.Builder()
+            .postId(postViewData.id)
+            .isEditTextFocused(true)
+            .build()
+        LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
+    }
+
     //callback when the user clicks on the post menu icon
     protected open fun onPostMenuItemClicked(
         position: Int,
@@ -1359,6 +1402,32 @@ open class LMFeedSearchFragment : Fragment(),
 
             //update recycler
             updatePostItem(adapterPosition, post)
+        }
+    }
+
+    // callback when the user clicks on the post heading
+    override fun onPostHeadingClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostHeadingClicked(position, postViewData)
+
+        // sends comment list open event
+        LMFeedAnalytics.sendCommentListOpenEvent()
+
+        val postDetailExtras = LMFeedPostDetailExtras.Builder()
+            .postId(postViewData.id)
+            .isEditTextFocused(false)
+            .build()
+        LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
+    }
+
+    // callback when the see more button is clicked on the post heading
+    override fun onPostHeadingSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostHeadingSeeMoreClicked(position, postViewData)
+
+        binding.rvSearch.apply {
+            val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
+
+            //update recycler
+            updatePostItem(adapterPosition, postViewData)
         }
     }
 }

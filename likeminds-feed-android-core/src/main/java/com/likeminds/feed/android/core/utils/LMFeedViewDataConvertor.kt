@@ -36,6 +36,7 @@ import com.likeminds.likemindsfeed.post.util.AttachmentUtil.getAttachmentType
 import com.likeminds.likemindsfeed.post.util.AttachmentUtil.getAttachmentValue
 import com.likeminds.likemindsfeed.sdk.model.SDKClientInfo
 import com.likeminds.likemindsfeed.sdk.model.User
+import com.likeminds.likemindsfeed.search.model.SearchType
 import com.likeminds.likemindsfeed.topic.model.Topic
 import com.likeminds.likemindsfeed.widgets.model.Widget
 import org.json.JSONObject
@@ -120,8 +121,8 @@ object LMFeedViewDataConvertor {
             .build()
 
         //post heading view data
-        val postHeadingViewData = LMFeedPostHeadingViewData.Builder()
-            .heading(post.heading)
+        val postHeadingViewData = LMFeedPostContentViewData.Builder()
+            .text(post.heading)
             .build()
 
         //post media view data
@@ -215,7 +216,8 @@ object LMFeedViewDataConvertor {
         topicsMap: Map<String, Topic>,
         widgetsMap: Map<String, Widget>,
         filteredCommentsMap: Map<String, Comment>? = null,
-        searchString: String? = null
+        searchString: String? = null,
+        searchType: SearchType? = null
     ): LMFeedPostViewData {
         val postCreatorUUID = post.uuid
         val postCreator = usersMap[postCreatorUUID]
@@ -250,15 +252,40 @@ object LMFeedViewDataConvertor {
             .build()
 
         //post content view data
-        val postContentViewData = LMFeedPostContentViewData.Builder()
+        val postContentViewDataBuilder = LMFeedPostContentViewData.Builder()
             .text(post.text)
-            .keywordMatchedInPostText(LMFeedSearchUtil.findMatchedKeyword(searchString, post.text))
-            .build()
+
+        // add searched keywords in post content if [searchType] is [SearchType.TEXT]
+        val postContentViewData = if (searchType == SearchType.TEXT) {
+            postContentViewDataBuilder
+                .keywordMatchedInPostText(
+                    LMFeedSearchUtil.findMatchedKeyword(
+                        searchString,
+                        post.text
+                    )
+                )
+                .build()
+        } else {
+            postContentViewDataBuilder.build()
+        }
 
         //post heading view data
-        val postHeadingViewData = LMFeedPostHeadingViewData.Builder()
-            .heading(post.heading)
-            .build()
+        val postHeadingViewDataBuilder = LMFeedPostContentViewData.Builder()
+            .text(post.heading)
+
+        // add searched keywords in post heading content if [searchType] is [SearchType.TEXT]
+        val postHeadingViewData = if (searchType == SearchType.HEADING) {
+            postHeadingViewDataBuilder
+                .keywordMatchedInPostText(
+                    LMFeedSearchUtil.findMatchedKeyword(
+                        searchString,
+                        post.heading
+                    )
+                )
+                .build()
+        } else {
+            postHeadingViewDataBuilder.build()
+        }
 
         //post media view data
         val postMediaViewData = LMFeedMediaViewData.Builder()
@@ -917,6 +944,7 @@ object LMFeedViewDataConvertor {
     /**
      * convert list of [Post] to [LMFeedPostViewData]
      * @param searchString: [String]
+     * @param searchType: [SearchType]
      * @param posts: List of [Post]
      * @param usersMap: [Map] of String to [User]
      * @param topicsMap: [Map] of String to [Topic]
@@ -925,6 +953,7 @@ object LMFeedViewDataConvertor {
      * */
     fun convertSearchedPosts(
         searchString: String,
+        searchType: SearchType,
         posts: List<Post>,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
@@ -937,7 +966,8 @@ object LMFeedViewDataConvertor {
                 topicsMap,
                 widgetsMap,
                 null,
-                searchString
+                searchString,
+                searchType
             )
         }
     }

@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -46,6 +45,7 @@ import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
+import com.likeminds.feed.android.core.search.model.LMFeedSearchExtras
 import com.likeminds.feed.android.core.search.view.LMFeedSearchActivity
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
@@ -64,6 +64,7 @@ import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.style.LMFe
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
 import com.likeminds.feed.android.core.ui.widgets.poll.view.*
+import com.likeminds.feed.android.core.ui.widgets.post.postcontent.style.LMFeedPostContentViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
@@ -78,6 +79,7 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.*
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
+import com.likeminds.likemindsfeed.search.model.SearchType
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 
@@ -115,6 +117,7 @@ open class LMFeedQnAFeedFragment :
             customizeQnAFeedHeaderView(headerViewQna)
             customizeCreateNewPostButton(fabNewPost)
             customizePostHeaderView()
+            customizePostContentView()
             customizePostHeadingView()
             customizePostTopResponseView()
             customizePostActionView()
@@ -127,8 +130,6 @@ open class LMFeedQnAFeedFragment :
     protected open fun customizeCreateNewPostButton(fabNewPost: LMFeedFAB) {
         fabNewPost.apply {
             setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.createNewPostButtonViewStyle)
-
-            Log.d("PUI", "customizeCreateNewPostButton: ${LMFeedCommunityUtil.getPostVariable()}")
 
             text = getString(
                 R.string.lm_feed_ask_question_s,
@@ -170,16 +171,45 @@ open class LMFeedQnAFeedFragment :
             .build()
     }
 
+    // customizes the text content view in the post
+    protected open fun customizePostContentView() {
+        val postViewStyle = LMFeedStyleTransformer.postViewStyle
+        val postContentTextStyle = postViewStyle.postContentTextStyle
+        LMFeedStyleTransformer.postViewStyle = postViewStyle.toBuilder()
+            .postContentTextStyle(
+                postContentTextStyle.toBuilder()
+                    .postTextViewStyle(
+                        postContentTextStyle.textContentViewStyle.toBuilder()
+                            .expandableCTAText("... Read More")
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+    }
+
     // customizes the heading view in the post
     protected open fun customizePostHeadingView() {
         LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
-            .postHeadingTextStyle(
-                //todo: see more?
-                LMFeedTextStyle.Builder()
-                    .textColor(R.color.lm_feed_dark_grey)
-                    .textSize(R.dimen.lm_feed_text_large)
-                    .maxLines(3)
-                    .fontResource(R.font.lm_feed_roboto_medium)
+            .postHeadingContentStyle(
+                LMFeedPostContentViewStyle.Builder()
+                    .postTextViewStyle(
+                        LMFeedTextStyle.Builder()
+                            .textColor(R.color.lm_feed_dark_grey)
+                            .textSize(R.dimen.lm_feed_text_large)
+                            .maxLines(3)
+                            .fontResource(R.font.lm_feed_roboto_medium)
+                            .expandableCTAText("... Read More")
+                            .expandableCTAColor(R.color.lm_feed_dark_grey_70)
+                            .build()
+                    )
+                    .searchHighlightedTextViewStyle(
+                        LMFeedTextStyle.Builder()
+                            .textColor(R.color.lm_feed_dark_grey)
+                            .backgroundColor(R.color.lm_feed_majorelle_blue_10)
+                            .textSize(R.dimen.lm_feed_text_large)
+                            .build()
+                    )
                     .build()
             )
             .build()
@@ -951,7 +981,11 @@ open class LMFeedQnAFeedFragment :
 
     //processes the search icon clicked
     protected open fun onSearchIconClicked() {
-        LMFeedSearchActivity.start(requireContext())
+        val searchExtras = LMFeedSearchExtras.Builder()
+            .searchType(SearchType.HEADING)
+            .build()
+
+        LMFeedSearchActivity.start(requireContext(), searchExtras)
     }
 
     private val topicSelectionLauncher =
@@ -1026,15 +1060,24 @@ open class LMFeedQnAFeedFragment :
         val postId = postData.first
         // fetches post from adapter
         binding.rvQna.apply {
-            val postIndex = getIndexAndPostFromAdapter(postId)?.first ?: return
+            val postIndexPair = getIndexAndPostFromAdapter(postId) ?: return
+            val postIndex = postIndexPair.first
 
-            val updatedPost = postData.second
+            //existing post in adapter
+            val existingPost = postIndexPair.second
+
+            var updatedPost = postData.second
 
             // updates the item in adapter
             if (updatedPost == null) {
                 // Post was deleted!
                 removePostAtIndex(postIndex)
             } else {
+                // retain the top response view
+                updatedPost = updatedPost.toBuilder()
+                    .topResponses(existingPost.topResponses)
+                    .build()
+
                 // Post was updated
                 updatePostItem(postIndex, updatedPost)
             }
@@ -1420,6 +1463,54 @@ open class LMFeedQnAFeedFragment :
                 selectedOptionIds
             )
         }
+    }
+
+    // callback when the user clicks on the post heading
+    override fun onPostHeadingClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostHeadingClicked(position, postViewData)
+
+        // sends comment list open event
+        LMFeedAnalytics.sendCommentListOpenEvent()
+
+        val postDetailExtras = LMFeedPostDetailExtras.Builder()
+            .postId(postViewData.id)
+            .isEditTextFocused(false)
+            .build()
+        LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
+    }
+
+    // callback when the see more button is clicked on the post heading
+    override fun onPostHeadingSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostHeadingSeeMoreClicked(position, postViewData)
+
+        binding.rvQna.apply {
+            val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
+
+            //update recycler
+            updatePostItem(adapterPosition, postViewData)
+        }
+    }
+
+    // callback when the user clicks on the see more button on the top response
+    override fun onPostTopResponseSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostTopResponseSeeMoreClicked(position, postViewData)
+
+        // sends comment list open event
+        LMFeedAnalytics.sendCommentListOpenEvent()
+
+        val postDetailExtras = LMFeedPostDetailExtras.Builder()
+            .postId(postViewData.id)
+            .isEditTextFocused(false)
+            .build()
+        LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
+    }
+
+    // callback when the tagged member in the top response is clicked
+    override fun onPostTopResponseTaggedMemberClicked(position: Int, uuid: String) {
+        super.onPostTopResponseTaggedMemberClicked(position, uuid)
+
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.openProfileWithUUID(uuid)
     }
 
     //validates user submitted poll votes for multiple choice poll

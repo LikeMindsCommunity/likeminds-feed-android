@@ -97,7 +97,6 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         const val TAG = "CreatePostFragment"
         const val LM_FEED_CREATE_POST_FRAGMENT_EXTRAS = "LM_FEED_CREATE_POST_FRAGMENT_EXTRAS"
         const val TYPE_OF_ATTACHMENT_CLICKED = "image, video"
-
         fun getInstance(createPostExtras: LMFeedCreatePostExtras): LMFeedCreatePostFragment {
             val createPostFragment = LMFeedCreatePostFragment()
             val bundle = Bundle()

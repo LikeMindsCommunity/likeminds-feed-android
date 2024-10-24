@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -44,6 +43,7 @@ import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
+import com.likeminds.feed.android.core.search.model.LMFeedSearchExtras
 import com.likeminds.feed.android.core.search.view.LMFeedSearchActivity
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
@@ -75,6 +75,7 @@ import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWork
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.*
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
+import com.likeminds.likemindsfeed.search.model.SearchType
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 
@@ -1468,7 +1469,11 @@ open class LMFeedSocialFeedFragment :
 
     //processes the search icon clicked
     protected open fun onSearchIconClicked() {
-        LMFeedSearchActivity.start(requireContext())
+        val searchExtras = LMFeedSearchExtras.Builder()
+            .searchType(SearchType.TEXT)
+            .build()
+
+        LMFeedSearchActivity.start(requireContext(), searchExtras)
     }
 
     //customizes the no post layout

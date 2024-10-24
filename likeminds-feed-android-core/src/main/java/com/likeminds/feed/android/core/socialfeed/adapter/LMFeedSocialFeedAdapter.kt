@@ -13,7 +13,7 @@ class LMFeedSocialFeedAdapter(
     }
 
     override fun getSupportedViewDataBinder(): MutableList<LMFeedViewDataBinder<*, *>> {
-        val viewDataBinders = ArrayList<LMFeedViewDataBinder<*, *>>(7)
+        val viewDataBinders = ArrayList<LMFeedViewDataBinder<*, *>>(8)
 
         val itemPostTextOnlyBinder =
             LMFeedItemPostTextOnlyViewDataBinder(postAdapterListener)

@@ -54,16 +54,17 @@ class LMFeedSearchViewModel : ViewModel() {
     // calls searchPosts API and posts the response in LiveData
     fun searchPosts(
         page: Int,
-        searchString: String
+        searchString: String,
+        searchType: SearchType = SearchType.TEXT
     ) {
         viewModelScope.launchIO {
             val requestBuilder = SearchPostsRequest.Builder()
                 .page(page)
                 .pageSize(PAGE_SIZE)
+                .searchType(searchType)
 
             if (searchString.isNotEmpty()) {
                 requestBuilder.search(searchString)
-                    .searchType(SearchType.TEXT)
             }
 
             val request = requestBuilder.build()
@@ -81,6 +82,7 @@ class LMFeedSearchViewModel : ViewModel() {
                 val listOfPostViewData =
                     LMFeedViewDataConvertor.convertSearchedPosts(
                         searchString,
+                        searchType,
                         posts,
                         usersMap,
                         topicsMap,

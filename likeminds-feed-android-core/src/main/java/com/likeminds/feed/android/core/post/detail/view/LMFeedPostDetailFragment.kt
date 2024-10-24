@@ -2327,6 +2327,14 @@ open class LMFeedPostDetailFragment :
         postDetailViewModel.addPollOption(post, option)
     }
 
+    // callback when the see more button is clicked on the post heading
+    override fun onPostHeadingSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostHeadingSeeMoreClicked(position, postViewData)
+
+        //update recycler
+        binding.rvPostDetails.updateItem(postDataPosition, postViewData)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         binding.rvPostDetails.destroyVideoAutoPlayer()

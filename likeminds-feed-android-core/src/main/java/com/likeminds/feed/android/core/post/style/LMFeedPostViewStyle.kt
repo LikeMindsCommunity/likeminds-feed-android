@@ -22,8 +22,8 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * [LMFeedPostViewStyle] helps you to customize the header view
  *
  * @property postHeaderViewStyle : [LMFeedPostHeaderViewStyle] this will help you to customize the post header view [LMFeedPostHeaderView]
- * @property postContentTextStyle : [LMFeedPostContentViewStyle] this will help you to customize the text content of the post and the keyword searched in post
- * @property postHeadingTextStyle : [LMFeedTextStyle] this will help you to customize the heading of the post
+ * @property postContentTextStyle : [LMFeedPostContentViewStyle] this will help you to customize the text content of the post and the keyword searched in post text
+ * @property postHeadingContentStyle : [LMFeedPostContentViewStyle] this will help you to customize the heading of the post and the keyword searched in post heading
  * @property postMediaViewStyle: [LMFeedPostMediaViewStyle] this will help you to customize the media attached in the post
  * @property postActionViewStyle: [LMFeedPostActionViewStyle] this will help you to customize the action view of the post [LMFeedPostActionView]
  * @property postTopicsGroupStyle: [LMFeedChipGroupStyle] this will help you to customize the chip group in the post [LMFeedChipGroup]
@@ -38,7 +38,7 @@ class LMFeedPostViewStyle private constructor(
     // post text content style
     val postContentTextStyle: LMFeedPostContentViewStyle,
     // post heading style
-    val postHeadingTextStyle: LMFeedTextStyle?,
+    val postHeadingContentStyle: LMFeedPostContentViewStyle?,
     // post media style
     val postMediaViewStyle: LMFeedPostMediaViewStyle,
     // post action style
@@ -100,7 +100,7 @@ class LMFeedPostViewStyle private constructor(
                 )
                 .build()
 
-        private var postHeadingTextStyle: LMFeedTextStyle? = null
+        private var postHeadingContentStyle: LMFeedPostContentViewStyle? = null
 
         private var postContentTextStyle: LMFeedPostContentViewStyle =
             LMFeedPostContentViewStyle.Builder()
@@ -114,7 +114,7 @@ class LMFeedPostViewStyle private constructor(
                         .expandableCTAColor(R.color.lm_feed_brown_grey)
                         .build()
                 )
-                .searchHighlightedViewStyle(
+                .searchHighlightedTextViewStyle(
                     LMFeedTextStyle.Builder()
                         .textColor(R.color.lm_feed_black)
                         .textSize(R.dimen.lm_feed_text_large)
@@ -372,8 +372,8 @@ class LMFeedPostViewStyle private constructor(
             this.postContentTextStyle = postContentTextStyle
         }
 
-        fun postHeadingTextStyle(postHeadingTextStyle: LMFeedTextStyle?) = apply {
-            this.postHeadingTextStyle = postHeadingTextStyle
+        fun postHeadingContentStyle(postHeadingContentStyle: LMFeedPostContentViewStyle?) = apply {
+            this.postHeadingContentStyle = postHeadingContentStyle
         }
 
         fun postMediaViewStyle(postMediaViewStyle: LMFeedPostMediaViewStyle) = apply {
@@ -405,7 +405,7 @@ class LMFeedPostViewStyle private constructor(
         fun build() = LMFeedPostViewStyle(
             postHeaderViewStyle,
             postContentTextStyle,
-            postHeadingTextStyle,
+            postHeadingContentStyle,
             postMediaViewStyle,
             postActionViewStyle,
             postTopicsGroupStyle,
@@ -418,7 +418,7 @@ class LMFeedPostViewStyle private constructor(
     fun toBuilder(): Builder {
         return Builder().postHeaderViewStyle(postHeaderViewStyle)
             .postContentTextStyle(postContentTextStyle)
-            .postHeadingTextStyle(postHeadingTextStyle)
+            .postHeadingContentStyle(postHeadingContentStyle)
             .postMediaViewStyle(postMediaViewStyle)
             .postActionViewStyle(postActionViewStyle)
             .postTopicsGroupStyle(postTopicsGroupStyle)

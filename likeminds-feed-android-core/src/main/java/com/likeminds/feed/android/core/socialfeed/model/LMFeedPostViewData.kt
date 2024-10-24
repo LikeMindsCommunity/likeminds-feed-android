@@ -10,7 +10,7 @@ class LMFeedPostViewData private constructor(
     val id: String,
     val headerViewData: LMFeedPostHeaderViewData,
     val contentViewData: LMFeedPostContentViewData,
-    val headingViewData: LMFeedPostHeadingViewData,
+    val headingViewData: LMFeedPostContentViewData,
     val mediaViewData: LMFeedMediaViewData,
     val actionViewData: LMFeedPostActionViewData,
     val topicsViewData: List<LMFeedTopicViewData>,
@@ -71,21 +71,32 @@ class LMFeedPostViewData private constructor(
 
     class Builder {
         private var id: String = ""
+
         private var headerViewData: LMFeedPostHeaderViewData =
             LMFeedPostHeaderViewData.Builder().build()
+
         private var contentViewData: LMFeedPostContentViewData =
             LMFeedPostContentViewData.Builder().build()
-        private var headingViewData: LMFeedPostHeadingViewData =
-            LMFeedPostHeadingViewData.Builder().build()
+
+        private var headingViewData: LMFeedPostContentViewData =
+            LMFeedPostContentViewData.Builder().build()
+
         private var mediaViewData: LMFeedMediaViewData =
             LMFeedMediaViewData.Builder().build()
+
         private var actionViewData: LMFeedPostActionViewData =
             LMFeedPostActionViewData.Builder().build()
+
         private var topicsViewData: List<LMFeedTopicViewData> = emptyList()
+
         private var fromPostLiked: Boolean = false
+
         private var fromPostSaved: Boolean = false
+
         private var fromVideoAction: Boolean = false
+
         private var isPosted: Boolean = true
+
         private var topResponses: List<LMFeedCommentViewData> = emptyList()
 
         fun id(id: String) = apply {
@@ -100,7 +111,7 @@ class LMFeedPostViewData private constructor(
             this.contentViewData = contentViewData
         }
 
-        fun headingViewData(headingViewData: LMFeedPostHeadingViewData) = apply {
+        fun headingViewData(headingViewData: LMFeedPostContentViewData) = apply {
             this.headingViewData = headingViewData
         }
 

@@ -155,6 +155,10 @@ interface LMFeedPostAdapterListener {
         //triggered when the user clicks on the heading of the post
     }
 
+    fun onPostHeadingSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on "See More" on post content
+    }
+
     fun onPostTopResponseSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
         //triggered when the user clicks on the top response of the post
     }
