@@ -63,10 +63,57 @@
                     app:layout_constraintTop_toBottomOf="@id/post_topics_group" />
 
                 <com.likeminds.feed.android.core.ui.base.views.LMFeedEditText
+                    android:id="@+id/et_post_heading_composer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
+                    android:layout_marginTop="@dimen/lm_feed_extra_large_margin"
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto_medium"
+                    android:hint="@string/lm_feed_write_something_here"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxHeight="@dimen/lm_feed_post_heading_composer_max_height"
+                    android:minHeight="@dimen/lm_feed_post_heading_composer_min_height"
+                    android:overScrollMode="always"
+                    android:scrollbars="vertical"
+                    android:scrollHorizontally="false"
+                    android:textColor="@color/lm_feed_dark_grey"
+                    android:textColorHint="@color/lm_feed_maastricht_blue_40"
+                    android:textSize="@dimen/lm_feed_text_large"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/topic_separator"
+                    tools:visibility="visible" />
+
+                <View
+                    android:id="@+id/heading_separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/lm_feed_small_separator_size"
+                    android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
+                    android:background="@color/lm_feed_cloudy_blue_40"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@id/et_post_heading_composer"
+                    tools:visibility="visible" />
+
+                <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+                    android:id="@+id/tv_heading_limit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/lm_feed_small_margin"
+                    android:layout_marginEnd="@dimen/lm_feed_large_margin"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/heading_separator"
+                    tools:text="0/200"
+                    tools:visibility="visible" />
+
+                <com.likeminds.feed.android.core.ui.base.views.LMFeedEditText
                     android:id="@+id/et_post_composer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/lm_feed_large_margin"
+                    android:layout_marginTop="@dimen/lm_feed_extra_large_margin"
                     android:background="@null"
                     android:ellipsize="end"
                     android:hint="@string/lm_feed_write_something_here"
@@ -79,8 +126,8 @@
                     android:textColor="@color/lm_feed_dark_grey"
                     android:textColorHint="@color/lm_feed_maastricht_blue_40"
                     android:textSize="@dimen/lm_feed_text_large"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/topic_separator" />
+                    app:layout_constraintTop_toBottomOf="@id/tv_heading_limit"
+                    app:layout_goneMarginTop="@dimen/lm_feed_zero_dp" />
 
                 <com.likeminds.usertagging.view.UserTaggingSuggestionListView
                     android:id="@+id/user_tagging_view"

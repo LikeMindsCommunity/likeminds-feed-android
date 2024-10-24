@@ -4,8 +4,8 @@ import androidx.lifecycle.*
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.model.LMFeedLinkOGTagsViewData
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
@@ -147,6 +147,7 @@ class LMFeedEditPostViewModel : ViewModel() {
     fun editPost(
         postId: String,
         postTextContent: String?,
+        postHeading: String?,
         attachments: List<LMFeedAttachmentViewData>? = null,
         ogTags: LMFeedLinkOGTagsViewData? = null,
         selectedTopics: List<LMFeedTopicViewData>? = null,
@@ -157,6 +158,11 @@ class LMFeedEditPostViewModel : ViewModel() {
             var updatedText = postTextContent?.trim()
             if (updatedText.isNullOrEmpty()) {
                 updatedText = null
+            }
+
+            var updatedHeading = postHeading?.trim()
+            if (updatedHeading.isNullOrEmpty()) {
+                updatedHeading = null
             }
 
             val topicIds = selectedTopics?.map {
@@ -176,6 +182,7 @@ class LMFeedEditPostViewModel : ViewModel() {
                     EditPostRequest.Builder()
                         .postId(postId)
                         .text(updatedText)
+                        .heading(postHeading)
                         .attachments(mediaAttachments)
                         .topicIds(topicIds)
                         .build()
@@ -184,6 +191,7 @@ class LMFeedEditPostViewModel : ViewModel() {
                     val requestBuilder = EditPostRequest.Builder()
                         .postId(postId)
                         .text(updatedText)
+                        .heading(postHeading)
                         .topicIds(topicIds)
 
                     when {
@@ -209,7 +217,12 @@ class LMFeedEditPostViewModel : ViewModel() {
 
                         widgetData != null -> {
                             val customAttachment =
-                                listOf(LMFeedViewDataConvertor.convertCustomWidget(widgetData.first,widgetData.second))
+                                listOf(
+                                    LMFeedViewDataConvertor.convertCustomWidget(
+                                        widgetData.first,
+                                        widgetData.second
+                                    )
+                                )
                             requestBuilder.attachments(customAttachment)
                         }
                     }

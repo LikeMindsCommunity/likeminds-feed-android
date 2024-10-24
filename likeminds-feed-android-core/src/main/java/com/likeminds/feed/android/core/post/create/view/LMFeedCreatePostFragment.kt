@@ -22,7 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.likeminds.customgallery.CustomGallery
 import com.likeminds.customgallery.media.model.*
-import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.*
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentCreatePostBinding
 import com.likeminds.feed.android.core.databinding.LmFeedItemMultipleMediaVideoBinding
 import com.likeminds.feed.android.core.poll.create.view.LMFeedCreatePollActivity
@@ -73,7 +73,10 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 
-open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
+open class LMFeedCreatePostFragment :
+    Fragment(),
+    LMFeedPostAdapterListener {
+
     private lateinit var binding: LmFeedFragmentCreatePostBinding
     private lateinit var lmFeedCreatePostExtras: LMFeedCreatePostExtras
 
@@ -97,6 +100,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         const val TAG = "CreatePostFragment"
         const val LM_FEED_CREATE_POST_FRAGMENT_EXTRAS = "LM_FEED_CREATE_POST_FRAGMENT_EXTRAS"
         const val TYPE_OF_ATTACHMENT_CLICKED = "image, video"
+
         fun getInstance(createPostExtras: LMFeedCreatePostExtras): LMFeedCreatePostFragment {
             val createPostFragment = LMFeedCreatePostFragment()
             val bundle = Bundle()
@@ -199,6 +203,18 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
 
     //customize post composer edit text
     protected open fun customizePostComposer(etPostComposer: LMFeedEditText) {
+        // sets the hint to the post composer edit text
+        val hint = when (LMFeedCoreApplication.selectedTheme) {
+            LMFeedTheme.QNA_FEED -> {
+                getString(R.string.lm_feed_add_description)
+            }
+
+            else -> {
+                getString(R.string.lm_feed_write_something_here)
+            }
+        }
+        etPostComposer.hint = hint
+
         etPostComposer.setStyle(LMFeedStyleTransformer.createPostFragmentViewStyle.postComposerStyle)
     }
 
@@ -292,7 +308,6 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
     //customize post heading composer edit text
     protected open fun customizePostHeadingComposer(etPostHeadingComposer: LMFeedEditText) {
         etPostHeadingComposer.apply {
-
             val postHeadingComposerStyle =
                 LMFeedStyleTransformer.createPostFragmentViewStyle.postHeadingComposerStyle
 
@@ -323,6 +338,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         tvPostHeadingLimitTextView.apply {
             val postHeadingLimitTextViewStyle =
                 LMFeedStyleTransformer.createPostFragmentViewStyle.postHeadingLimitTextStyle
+
             if (postHeadingLimitTextViewStyle != null) {
                 binding.etPostHeadingComposer.filters =
                     arrayOf(InputFilter.LengthFilter(LMFeedThemeConstants.getPostHeadingLimit()))
@@ -531,7 +547,7 @@ open class LMFeedCreatePostFragment : Fragment(), LMFeedPostAdapterListener {
         }
     }
 
-    // adds text watcher on post content edit text
+    // adds text change listener on post heading edit text
     @SuppressLint("ClickableViewAccessibility")
     private fun initPostHeadingComposerTextListener() {
         binding.etPostHeadingComposer.apply {
