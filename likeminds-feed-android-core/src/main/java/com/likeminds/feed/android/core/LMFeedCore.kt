@@ -2,7 +2,6 @@ package com.likeminds.feed.android.core
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
 import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeConstantsRequest
 import com.likeminds.feed.android.core.utils.user.*
