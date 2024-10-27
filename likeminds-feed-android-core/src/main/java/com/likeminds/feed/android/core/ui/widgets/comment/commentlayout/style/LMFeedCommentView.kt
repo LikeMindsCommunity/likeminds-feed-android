@@ -15,7 +15,7 @@ import androidx.core.view.isVisible
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedCommentViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view.LMFeedCommentViewStyle
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
@@ -249,7 +249,7 @@ class LMFeedCommentView : ConstraintLayout {
                     enableClick = true,
                     highlightColor = ContextCompat.getColor(
                         context,
-                        LMFeedThemeConstants.getTextLinkColor()
+                        LMFeedAppearance.getTextLinkColor()
                     ),
                 ) { route ->
                     val uuid = route.getQueryParameter("member_id")

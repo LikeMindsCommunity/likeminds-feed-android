@@ -10,13 +10,19 @@ import com.likeminds.feed.android.core.utils.LMFeedViewStyle
  *
  * @property textContentViewStyle : [LMFeedTextStyle] this will help you to customize the content of the post
  * @property searchHighlightedTextViewStyle : [LMFeedTextStyle] this will help you to customize the text of highlighted keyword in the post | Default value = [null]
+ * @property headingContentViewStyle : [LMFeedTextStyle] this will help you to customize the heading content of the post
+ * @property searchHighlightedHeadingViewStyle : [LMFeedTextStyle] this will help you to customize the text of highlighted keyword in the post heading | Default value = [null]
  *
  * */
 class LMFeedPostContentViewStyle private constructor(
     // content text view style
     val textContentViewStyle: LMFeedTextStyle,
     // highlighted search text style
-    val searchHighlightedTextViewStyle: LMFeedTextStyle?
+    val searchHighlightedTextViewStyle: LMFeedTextStyle?,
+    // heading content view style
+    val headingContentViewStyle: LMFeedTextStyle?,
+    // highlighted search heading style
+    val searchHighlightedHeadingViewStyle: LMFeedTextStyle?,
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -29,6 +35,10 @@ class LMFeedPostContentViewStyle private constructor(
 
         private var searchHighlightedTextViewStyle: LMFeedTextStyle? = null
 
+        private var headingContentViewStyle: LMFeedTextStyle? = null
+
+        private var searchHighlightedHeadingViewStyle: LMFeedTextStyle? = null
+
         fun postTextViewStyle(postTextViewStyle: LMFeedTextStyle) = apply {
             this.postTextViewStyle = postTextViewStyle
         }
@@ -37,14 +47,26 @@ class LMFeedPostContentViewStyle private constructor(
             this.searchHighlightedTextViewStyle = searchHighlightedViewStyle
         }
 
+        fun headingContentViewStyle(headingContentViewStyle: LMFeedTextStyle?) = apply {
+            this.headingContentViewStyle = headingContentViewStyle
+        }
+
+        fun searchHighlightedHeadingViewStyle(searchHighlightedHeadingViewStyle: LMFeedTextStyle?) = apply {
+            this.searchHighlightedHeadingViewStyle = searchHighlightedHeadingViewStyle
+        }
+
         fun build() = LMFeedPostContentViewStyle(
             postTextViewStyle,
-            searchHighlightedTextViewStyle
+            searchHighlightedTextViewStyle,
+            headingContentViewStyle,
+            searchHighlightedHeadingViewStyle
         )
     }
 
     fun toBuilder(): Builder {
         return Builder().postTextViewStyle(textContentViewStyle)
             .searchHighlightedTextViewStyle(searchHighlightedTextViewStyle)
+            .headingContentViewStyle(headingContentViewStyle)
+            .searchHighlightedHeadingViewStyle(searchHighlightedHeadingViewStyle)
     }
 }

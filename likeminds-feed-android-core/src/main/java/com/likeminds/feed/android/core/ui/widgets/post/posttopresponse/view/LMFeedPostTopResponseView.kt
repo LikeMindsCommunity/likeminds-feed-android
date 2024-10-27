@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedPostTopResponseViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
@@ -204,7 +204,7 @@ class LMFeedPostTopResponseView : ConstraintLayout {
                     enableClick = true,
                     highlightColor = ContextCompat.getColor(
                         context,
-                        LMFeedThemeConstants.getTextLinkColor()
+                        LMFeedAppearance.getTextLinkColor()
                     ),
                 ) { route ->
                     val uuid = route.getQueryParameter("member_id")

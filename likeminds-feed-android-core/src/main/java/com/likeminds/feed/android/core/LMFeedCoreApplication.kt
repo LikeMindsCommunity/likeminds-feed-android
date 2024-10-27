@@ -28,6 +28,8 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
         private lateinit var transferUtility: TransferUtility
         private var credentialsProvider: CognitoCachingCredentialsProvider? = null
         private var s3Client: AmazonS3Client? = null
+
+        // the active theme being used
         var selectedTheme: LMFeedTheme = LMFeedTheme.SOCIAL_FEED
 
         /**

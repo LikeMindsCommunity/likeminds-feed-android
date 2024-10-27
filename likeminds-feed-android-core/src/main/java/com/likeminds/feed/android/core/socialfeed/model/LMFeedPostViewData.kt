@@ -10,7 +10,6 @@ class LMFeedPostViewData private constructor(
     val id: String,
     val headerViewData: LMFeedPostHeaderViewData,
     val contentViewData: LMFeedPostContentViewData,
-    val headingViewData: LMFeedPostContentViewData,
     val mediaViewData: LMFeedMediaViewData,
     val actionViewData: LMFeedPostActionViewData,
     val topicsViewData: List<LMFeedTopicViewData>,
@@ -78,9 +77,6 @@ class LMFeedPostViewData private constructor(
         private var contentViewData: LMFeedPostContentViewData =
             LMFeedPostContentViewData.Builder().build()
 
-        private var headingViewData: LMFeedPostContentViewData =
-            LMFeedPostContentViewData.Builder().build()
-
         private var mediaViewData: LMFeedMediaViewData =
             LMFeedMediaViewData.Builder().build()
 
@@ -109,10 +105,6 @@ class LMFeedPostViewData private constructor(
 
         fun contentViewData(contentViewData: LMFeedPostContentViewData) = apply {
             this.contentViewData = contentViewData
-        }
-
-        fun headingViewData(headingViewData: LMFeedPostContentViewData) = apply {
-            this.headingViewData = headingViewData
         }
 
         fun mediaViewData(mediaViewData: LMFeedMediaViewData) = apply {
@@ -151,7 +143,6 @@ class LMFeedPostViewData private constructor(
             id,
             headerViewData,
             contentViewData,
-            headingViewData,
             mediaViewData,
             actionViewData,
             topicsViewData,
@@ -168,7 +159,6 @@ class LMFeedPostViewData private constructor(
             .id(id)
             .headerViewData(headerViewData)
             .contentViewData(contentViewData)
-            .headingViewData(headingViewData)
             .mediaViewData(mediaViewData)
             .actionViewData(actionViewData)
             .topicsViewData(topicsViewData)
@@ -187,8 +177,6 @@ class LMFeedPostViewData private constructor(
             append(headerViewData)
             append(", contentViewData=")
             append(contentViewData)
-            append(", headingViewData=")
-            append(headingViewData)
             append(", mediaViewData=")
             append(mediaViewData)
             append(", actionViewData=")

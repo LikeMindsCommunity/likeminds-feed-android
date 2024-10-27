@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.style.LMFeedLabelImageContainerViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollOptionViewStyle
 import com.likeminds.feed.android.core.ui.widgets.poll.style.LMFeedPostPollViewStyle
@@ -23,7 +23,6 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  *
  * @property postHeaderViewStyle : [LMFeedPostHeaderViewStyle] this will help you to customize the post header view [LMFeedPostHeaderView]
  * @property postContentTextStyle : [LMFeedPostContentViewStyle] this will help you to customize the text content of the post and the keyword searched in post text
- * @property postHeadingContentStyle : [LMFeedPostContentViewStyle] this will help you to customize the heading of the post and the keyword searched in post heading
  * @property postMediaViewStyle: [LMFeedPostMediaViewStyle] this will help you to customize the media attached in the post
  * @property postActionViewStyle: [LMFeedPostActionViewStyle] this will help you to customize the action view of the post [LMFeedPostActionView]
  * @property postTopicsGroupStyle: [LMFeedChipGroupStyle] this will help you to customize the chip group in the post [LMFeedChipGroup]
@@ -37,8 +36,6 @@ class LMFeedPostViewStyle private constructor(
     val postHeaderViewStyle: LMFeedPostHeaderViewStyle,
     // post text content style
     val postContentTextStyle: LMFeedPostContentViewStyle,
-    // post heading style
-    val postHeadingContentStyle: LMFeedPostContentViewStyle?,
     // post media style
     val postMediaViewStyle: LMFeedPostMediaViewStyle,
     // post action style
@@ -77,7 +74,7 @@ class LMFeedPostViewStyle private constructor(
                         .textSize(R.dimen.lm_feed_text_small)
                         .maxLines(1)
                         .fontResource(R.font.lm_feed_roboto_medium)
-                        .backgroundColor(LMFeedThemeConstants.getButtonColor())
+                        .backgroundColor(LMFeedAppearance.getButtonColor())
                         .build()
                 )
                 .pinIconStyle(
@@ -99,8 +96,6 @@ class LMFeedPostViewStyle private constructor(
                         .build()
                 )
                 .build()
-
-        private var postHeadingContentStyle: LMFeedPostContentViewStyle? = null
 
         private var postContentTextStyle: LMFeedPostContentViewStyle =
             LMFeedPostContentViewStyle.Builder()
@@ -180,7 +175,7 @@ class LMFeedPostViewStyle private constructor(
                     LMFeedPostVideoMediaViewStyle.Builder()
                         .videoProgressStyle(
                             LMFeedProgressBarStyle.Builder()
-                                .progressColor(LMFeedThemeConstants.getButtonColor())
+                                .progressColor(LMFeedAppearance.getButtonColor())
                                 .build()
                         )
                         .backgroundColor(R.color.lm_feed_black)
@@ -240,7 +235,7 @@ class LMFeedPostViewStyle private constructor(
                         .documentShowMoreStyle(
                             LMFeedTextStyle.Builder()
                                 .fontResource(R.font.lm_feed_roboto)
-                                .textColor(LMFeedThemeConstants.getButtonColor())
+                                .textColor(LMFeedAppearance.getButtonColor())
                                 .textSize(R.dimen.lm_feed_text_large)
                                 .build()
                         )
@@ -269,7 +264,7 @@ class LMFeedPostViewStyle private constructor(
                                         .fontResource(R.font.lm_feed_roboto)
                                         .build()
                                 )
-                                .backgroundColor(LMFeedThemeConstants.getButtonColor())
+                                .backgroundColor(LMFeedAppearance.getButtonColor())
                                 .cornerRadius(R.dimen.lm_feed_corner_radius_medium)
                                 .build()
                         )
@@ -292,7 +287,7 @@ class LMFeedPostViewStyle private constructor(
                             LMFeedTextStyle.Builder()
                                 .fontResource(R.font.lm_feed_roboto)
                                 .textSize(R.dimen.lm_feed_text_medium)
-                                .textColor(LMFeedThemeConstants.getButtonColor())
+                                .textColor(LMFeedAppearance.getButtonColor())
                                 .build()
                         )
                         .pollExpiryTextStyle(
@@ -320,7 +315,7 @@ class LMFeedPostViewStyle private constructor(
                                 )
                                 .pollOptionCheckIconStyle(
                                     LMFeedIconStyle.Builder()
-                                        .iconTint(LMFeedThemeConstants.getButtonColor())
+                                        .iconTint(LMFeedAppearance.getButtonColor())
                                         .inActiveSrc(R.drawable.lm_feed_ic_check_circle)
                                         .build()
                                 )
@@ -328,7 +323,7 @@ class LMFeedPostViewStyle private constructor(
                         )
                         .editPollVoteTextStyle(
                             LMFeedTextStyle.Builder()
-                                .textColor(LMFeedThemeConstants.getButtonColor())
+                                .textColor(LMFeedAppearance.getButtonColor())
                                 .fontResource(R.font.lm_feed_roboto)
                                 .textSize(R.dimen.lm_feed_text_medium)
                                 .ellipsize(TextUtils.TruncateAt.END)
@@ -340,7 +335,7 @@ class LMFeedPostViewStyle private constructor(
                     LMFeedPostVideoMediaViewStyle.Builder()
                         .videoProgressStyle(
                             LMFeedProgressBarStyle.Builder()
-                                .progressColor(LMFeedThemeConstants.getButtonColor())
+                                .progressColor(LMFeedAppearance.getButtonColor())
                                 .build()
                         )
                         .backgroundColor(R.color.lm_feed_black)
@@ -356,7 +351,7 @@ class LMFeedPostViewStyle private constructor(
             LMFeedChipStyle.Builder()
                 .chipBackgroundColor(R.color.lm_feed_majorelle_blue_10)
                 .chipCornerRadius(R.dimen.lm_feed_corner_radius_regular)
-                .chipTextColor(LMFeedThemeConstants.getButtonColor())
+                .chipTextColor(LMFeedAppearance.getButtonColor())
                 .chipTextSize(R.dimen.lm_feed_text_medium)
                 .build()
 
@@ -370,10 +365,6 @@ class LMFeedPostViewStyle private constructor(
 
         fun postContentTextStyle(postContentTextStyle: LMFeedPostContentViewStyle) = apply {
             this.postContentTextStyle = postContentTextStyle
-        }
-
-        fun postHeadingContentStyle(postHeadingContentStyle: LMFeedPostContentViewStyle?) = apply {
-            this.postHeadingContentStyle = postHeadingContentStyle
         }
 
         fun postMediaViewStyle(postMediaViewStyle: LMFeedPostMediaViewStyle) = apply {
@@ -405,7 +396,6 @@ class LMFeedPostViewStyle private constructor(
         fun build() = LMFeedPostViewStyle(
             postHeaderViewStyle,
             postContentTextStyle,
-            postHeadingContentStyle,
             postMediaViewStyle,
             postActionViewStyle,
             postTopicsGroupStyle,
@@ -418,7 +408,6 @@ class LMFeedPostViewStyle private constructor(
     fun toBuilder(): Builder {
         return Builder().postHeaderViewStyle(postHeaderViewStyle)
             .postContentTextStyle(postContentTextStyle)
-            .postHeadingContentStyle(postHeadingContentStyle)
             .postMediaViewStyle(postMediaViewStyle)
             .postActionViewStyle(postActionViewStyle)
             .postTopicsGroupStyle(postTopicsGroupStyle)

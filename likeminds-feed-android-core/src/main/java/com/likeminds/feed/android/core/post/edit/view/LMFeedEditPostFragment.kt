@@ -42,7 +42,7 @@ import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionA
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
@@ -281,6 +281,9 @@ open class LMFeedEditPostFragment :
                 LMFeedStyleTransformer.editPostFragmentViewStyle.postHeadingComposerStyle
 
             if (postHeadingComposerStyle != null) {
+                /** sets the ime options to [IME_ACTION_NEXT] and raw input type to [TYPE_TEXT_FLAG_CAP_SENTENCES]
+                 * to provide the Next button on keypad and start the sentence with capital letter
+                 */
                 imeOptions = EditorInfo.IME_ACTION_NEXT
                 setRawInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
 
@@ -310,7 +313,7 @@ open class LMFeedEditPostFragment :
 
             if (postHeadingLimitTextViewStyle != null) {
                 binding.etPostHeadingComposer.filters =
-                    arrayOf(InputFilter.LengthFilter(LMFeedThemeConstants.getPostHeadingLimit()))
+                    arrayOf(InputFilter.LengthFilter(LMFeedAppearance.getPostHeadingLimit()))
 
                 setStyle(postHeadingLimitTextViewStyle)
                 setPostHeadingLimitText(this, 0)
@@ -352,7 +355,7 @@ open class LMFeedEditPostFragment :
         val config = UserTaggingConfig.Builder()
             .editText(binding.etPostComposer)
             .maxHeightInPercentage(0.4f)
-            .color(LMFeedThemeConstants.getTextLinkColor())
+            .color(LMFeedAppearance.getTextLinkColor())
             .hasAtRateSymbol(true)
             .build()
 
@@ -578,12 +581,13 @@ open class LMFeedEditPostFragment :
             UserTaggingDecoder.decode(
                 etPostComposer,
                 post.contentViewData.text,
-                ContextCompat.getColor(requireContext(), LMFeedThemeConstants.getTextLinkColor())
+                ContextCompat.getColor(requireContext(), LMFeedAppearance.getTextLinkColor())
             )
 
             // sets the heading to the heading edit text
-            if (!post.headingViewData.text.isNullOrEmpty()) {
-                etPostHeadingComposer.setText(post.headingViewData.text)
+            val heading = post.contentViewData.heading
+            if (!heading.isNullOrEmpty()) {
+                etPostHeadingComposer.setText(heading)
             }
 
             // sets the cursor to the end and opens keyboard
@@ -763,7 +767,7 @@ open class LMFeedEditPostFragment :
         headingTextView.text = getString(
             R.string.lm_feed_heading_limit_text_d,
             headingTextLength,
-            LMFeedThemeConstants.getPostHeadingLimit()
+            LMFeedAppearance.getPostHeadingLimit()
         )
     }
 

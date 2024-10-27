@@ -2,8 +2,8 @@ package com.likeminds.feed.android.core
 
 import android.app.Application
 import android.content.Context
-import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
-import com.likeminds.feed.android.core.ui.theme.model.LMFeedSetThemeConstantsRequest
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
+import com.likeminds.feed.android.core.ui.theme.model.LMFeedAppearanceRequest
 import com.likeminds.feed.android.core.utils.user.*
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.user.model.InitiateUserRequest
@@ -15,7 +15,11 @@ object LMFeedCore {
     /**
      * Initial setup function for customers and blocker function
      * @param application: Instance of the application class
-     * @param lmFeedTheme: Object of [LMFeedThemeConstants] to add your customizable theme in whole feed
+     * @param theme: Theme selected for feed
+     * @param domain: Domain of the client used in share post
+     * @param enablePushNotifications: Whether to enable push notifications or not
+     * @param deviceId: Device Id of the user
+     * @param lmFeedAppearance: Object of [LMFeedAppearance] to add your customizable theme in whole feed
      * @param lmFeedCoreCallback: Instance of [LMFeedCoreCallback] so that we can share data/events to customers code
      */
     fun setup(
@@ -24,11 +28,11 @@ object LMFeedCore {
         domain: String? = null,
         enablePushNotifications: Boolean = false,
         deviceId: String? = null,
-        lmFeedTheme: LMFeedSetThemeConstantsRequest? = null,
+        lmFeedAppearance: LMFeedAppearanceRequest? = null,
         lmFeedCoreCallback: LMFeedCoreCallback? = null
     ) {
         //set theme
-        LMFeedThemeConstants.setTheme(lmFeedTheme)
+        LMFeedAppearance.setAppearance(lmFeedAppearance)
 
         //initialize core application
         val coreApplication = LMFeedCoreApplication.getInstance()
@@ -73,12 +77,14 @@ object LMFeedCore {
                             val userResponse = UserResponseConvertor.getUserResponse(data)
                             success(userResponse)
 
+                            val imageUrl = userResponse.user?.imageUrl
+
                             //perform post session actions
                             userMeta.onPostSessionInit(
                                 context,
                                 userName,
                                 uuid,
-                                userResponse.user?.imageUrl
+                                imageUrl
                             )
                         }
                     }

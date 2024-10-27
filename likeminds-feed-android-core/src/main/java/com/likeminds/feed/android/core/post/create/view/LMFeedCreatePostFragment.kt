@@ -44,7 +44,7 @@ import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionA
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
@@ -341,7 +341,7 @@ open class LMFeedCreatePostFragment :
 
             if (postHeadingLimitTextViewStyle != null) {
                 binding.etPostHeadingComposer.filters =
-                    arrayOf(InputFilter.LengthFilter(LMFeedThemeConstants.getPostHeadingLimit()))
+                    arrayOf(InputFilter.LengthFilter(LMFeedAppearance.getPostHeadingLimit()))
 
                 setStyle(postHeadingLimitTextViewStyle)
                 setPostHeadingLimitText(this, 0)
@@ -401,7 +401,7 @@ open class LMFeedCreatePostFragment :
         val config = UserTaggingConfig.Builder()
             .editText(binding.etPostComposer)
             .maxHeightInPercentage(0.4f)
-            .color(LMFeedThemeConstants.getTextLinkColor())
+            .color(LMFeedAppearance.getTextLinkColor())
             .hasAtRateSymbol(true)
             .build()
 
@@ -588,7 +588,7 @@ open class LMFeedCreatePostFragment :
         headingTextView.text = getString(
             R.string.lm_feed_heading_limit_text_d,
             headingTextLength,
-            LMFeedThemeConstants.getPostHeadingLimit()
+            LMFeedAppearance.getPostHeadingLimit()
         )
     }
 

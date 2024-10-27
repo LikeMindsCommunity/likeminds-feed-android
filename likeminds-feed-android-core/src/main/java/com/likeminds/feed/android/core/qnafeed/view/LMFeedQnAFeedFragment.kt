@@ -58,13 +58,12 @@ import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionA
 import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionActivity.Companion.LM_FEED_TOPIC_SELECTION_RESULT_EXTRAS
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
-import com.likeminds.feed.android.core.ui.theme.LMFeedThemeConstants
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.style.LMFeedLabelImageContainerViewStyle
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
 import com.likeminds.feed.android.core.ui.widgets.poll.view.*
-import com.likeminds.feed.android.core.ui.widgets.post.postcontent.style.LMFeedPostContentViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.style.LMFeedPostTopResponseViewStyle
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
@@ -190,10 +189,11 @@ open class LMFeedQnAFeedFragment :
 
     // customizes the heading view in the post
     protected open fun customizePostHeadingView() {
-        LMFeedStyleTransformer.postViewStyle = LMFeedStyleTransformer.postViewStyle.toBuilder()
-            .postHeadingContentStyle(
-                LMFeedPostContentViewStyle.Builder()
-                    .postTextViewStyle(
+        val postViewStyle = LMFeedStyleTransformer.postViewStyle
+        LMFeedStyleTransformer.postViewStyle = postViewStyle.toBuilder()
+            .postContentTextStyle(
+                postViewStyle.postContentTextStyle.toBuilder()
+                    .headingContentViewStyle(
                         LMFeedTextStyle.Builder()
                             .textColor(R.color.lm_feed_dark_grey)
                             .textSize(R.dimen.lm_feed_text_large)
@@ -203,7 +203,7 @@ open class LMFeedQnAFeedFragment :
                             .expandableCTAColor(R.color.lm_feed_dark_grey_70)
                             .build()
                     )
-                    .searchHighlightedTextViewStyle(
+                    .searchHighlightedHeadingViewStyle(
                         LMFeedTextStyle.Builder()
                             .textColor(R.color.lm_feed_dark_grey)
                             .backgroundColor(R.color.lm_feed_majorelle_blue_10)
@@ -354,7 +354,7 @@ open class LMFeedQnAFeedFragment :
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    LMFeedThemeConstants.getButtonColor()
+                    LMFeedAppearance.getButtonColor()
                 )
             )
 
