@@ -211,6 +211,16 @@ class LMFeedItemPostSingleVideoViewDataBinder(
                 postAdapterListener.onPostShareClicked(position, post)
             }
 
+            postTopResponse.setTopResponseClickListener {
+                val post = this.postViewData ?: return@setTopResponseClickListener
+                postAdapterListener.onPostTopResponseClicked(position, post)
+            }
+
+            postTopResponse.setAuthorFrameClickListener {
+                val post = this.postViewData ?: return@setAuthorFrameClickListener
+                postAdapterListener.onPostTopResponseAuthorFrameCLicked(position, post)
+            }
+
             containerQnaBeFirstLabel.setContainerClickListener {
                 val post = this.postViewData ?: return@setContainerClickListener
                 postAdapterListener.onPostAnswerPromptClicked(position, post)

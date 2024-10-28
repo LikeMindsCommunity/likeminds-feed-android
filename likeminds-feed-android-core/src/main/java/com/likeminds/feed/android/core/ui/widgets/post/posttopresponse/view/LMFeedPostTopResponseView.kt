@@ -4,11 +4,13 @@ import android.content.Context
 import android.text.*
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.text.util.LinkifyCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedPostTopResponseViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
@@ -18,6 +20,7 @@ import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
+import com.likeminds.feed.android.core.utils.link.LMFeedLinkMovementMethod
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnTaggedMemberClickListener
 import com.likeminds.feed.android.core.utils.user.LMFeedUserImageUtil
@@ -154,6 +157,7 @@ class LMFeedPostTopResponseView : ConstraintLayout {
     fun setTopResponseContent(
         topResponseText: String,
         alreadySeenFullContent: Boolean?,
+        onTopResponseContentClicked: LMFeedOnClickListener,
         onTopResponseSeeMoreClickListener: LMFeedOnClickListener,
         onMemberTagClickListener: LMFeedOnTaggedMemberClickListener
     ) {
@@ -174,38 +178,22 @@ class LMFeedPostTopResponseView : ConstraintLayout {
                 show()
             }
 
-            // todo: take see more read more from styles
-            // span for seeMore feature
-            val seeMoreColor = ContextCompat.getColor(context, R.color.lm_feed_brown_grey)
-            val seeMore = SpannableStringBuilder(context.getString(R.string.lm_feed_see_more))
-            seeMore.setSpan(
-                ForegroundColorSpan(seeMoreColor),
-                0,
-                seeMore.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            val seeMoreClickableSpan = object : ClickableSpan() {
-                override fun onClick(view: View) {
-                    alreadySeen = true
-                    onTopResponseSeeMoreClickListener.onClick()
-                }
-
-                override fun updateDrawState(textPaint: TextPaint) {
-                    textPaint.isUnderlineText = false
-                }
-            }
-
             // post is used here to get lines count in the text view
             post {
+                setOnClickListener {
+                    onTopResponseContentClicked.onClick()
+                }
+
                 // decodes tags in text and creates span around those tags
                 UserTaggingDecoder.decodeRegexIntoSpannableText(
                     this,
-                    textForLinkify,
+                    textForLinkify.trim(),
                     enableClick = true,
                     highlightColor = ContextCompat.getColor(
                         context,
                         LMFeedAppearance.getTextLinkColor()
                     ),
+                    hasAtRateSymbol = true
                 ) { route ->
                     val uuid = route.getQueryParameter("member_id")
                         ?: route.getQueryParameter("user_id")
@@ -230,14 +218,43 @@ class LMFeedPostTopResponseView : ConstraintLayout {
                         editableText
                     }
 
+                //creating see more spannable text for expanding top response content.
                 val seeMoreSpannableStringBuilder = SpannableStringBuilder()
+
                 if (!alreadySeen && !shortText.isNullOrEmpty()) {
-                    seeMoreSpannableStringBuilder.append("...")
-                    seeMoreSpannableStringBuilder.append(seeMore)
+                    val expandSpannable = SpannableStringBuilder("... See More")
+                    expandSpannable.setSpan(
+                        ForegroundColorSpan(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.lm_feed_brown_grey
+                            )
+                        ),
+                        0,
+                        expandSpannable.length,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+
+                    //handling click of spannable text
+                    val seeMoreClickableSpan = object : ClickableSpan() {
+                        override fun onClick(view: View) {
+                            setOnClickListener {
+                                return@setOnClickListener
+                            }
+                            alreadySeen = true
+                            onTopResponseSeeMoreClickListener.onClick()
+                        }
+
+                        override fun updateDrawState(textPaint: TextPaint) {
+                            textPaint.isUnderlineText = false
+                        }
+                    }
+
+                    seeMoreSpannableStringBuilder.append(expandSpannable)
                     seeMoreSpannableStringBuilder.setSpan(
                         seeMoreClickableSpan,
-                        3,
-                        seeMore.length + 3,
+                        0,
+                        expandSpannable.length,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
                 }
@@ -247,6 +264,18 @@ class LMFeedPostTopResponseView : ConstraintLayout {
                     trimmedText,
                     seeMoreSpannableStringBuilder
                 )
+
+                //handling click of web links or email addresses or phone numbers in post content
+                val linkifyLinks =
+                    (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
+                LinkifyCompat.addLinks(this, linkifyLinks)
+                movementMethod = LMFeedLinkMovementMethod {
+                    setOnClickListener {
+                        return@setOnClickListener
+                    }
+
+                    true
+                }
             }
         }
     }
@@ -286,7 +315,7 @@ class LMFeedPostTopResponseView : ConstraintLayout {
      * @param listener [LMFeedOnClickListener] interface to have click listener
      */
     fun setTopResponseClickListener(listener: LMFeedOnClickListener) {
-        binding.cvTopResponse.setOnClickListener {
+        binding.layoutTopResponse.setOnClickListener {
             listener.onClick()
         }
     }

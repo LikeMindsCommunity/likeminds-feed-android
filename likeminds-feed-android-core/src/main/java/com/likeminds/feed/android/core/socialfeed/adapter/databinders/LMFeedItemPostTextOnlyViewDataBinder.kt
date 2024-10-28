@@ -2,7 +2,8 @@ package com.likeminds.feed.android.core.socialfeed.adapter.databinders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.likeminds.feed.android.core.*
+import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.LMFeedTheme
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostTextOnlyBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
@@ -195,6 +196,16 @@ class LMFeedItemPostTextOnlyViewDataBinder(
             qnaPostAction.setShareIconListener {
                 val post = this.postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            postTopResponse.setTopResponseClickListener {
+                val post = this.postViewData ?: return@setTopResponseClickListener
+                postAdapterListener.onPostTopResponseClicked(position, post)
+            }
+
+            postTopResponse.setAuthorFrameClickListener {
+                val post = this.postViewData ?: return@setAuthorFrameClickListener
+                postAdapterListener.onPostTopResponseAuthorFrameCLicked(position, post)
             }
 
             containerQnaBeFirstLabel.setContainerClickListener {

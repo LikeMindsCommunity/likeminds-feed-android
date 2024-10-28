@@ -221,6 +221,16 @@ class LMFeedItemPostPollViewDataBinder(
                 postAdapterListener.onPostShareClicked(position, post)
             }
 
+            postTopResponse.setTopResponseClickListener {
+                val post = this.postViewData ?: return@setTopResponseClickListener
+                postAdapterListener.onPostTopResponseClicked(position, post)
+            }
+
+            postTopResponse.setAuthorFrameClickListener {
+                val post = this.postViewData ?: return@setAuthorFrameClickListener
+                postAdapterListener.onPostTopResponseAuthorFrameCLicked(position, post)
+            }
+
             qnaPostAction.setUpvoteIconClickListener {
                 val post = this.postViewData ?: return@setUpvoteIconClickListener
                 val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)

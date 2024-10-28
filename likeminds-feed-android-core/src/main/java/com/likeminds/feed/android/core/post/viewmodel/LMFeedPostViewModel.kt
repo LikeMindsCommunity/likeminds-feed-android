@@ -136,6 +136,7 @@ class LMFeedPostViewModel : ViewModel() {
                 .attachments(attachments)
                 .tempId(postingData.mediaViewData.temporaryId.toString())
                 .topicIds(topicIds)
+                .heading(postingData.contentViewData.heading)
                 .build()
 
             val response = lmFeedClient.addPost(request)

@@ -326,6 +326,11 @@ open class LMFeedQnAFeedFragment :
         initSelectedTopicRecyclerView()
     }
 
+    override fun onPause() {
+        super.onPause()
+        binding.rvQna.destroyVideoAutoPlayer()
+    }
+
     // initializes the recycler view of the qna feed
     private fun initQnAFeedRecyclerView() {
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
@@ -538,8 +543,18 @@ open class LMFeedQnAFeedFragment :
             //observers get post response
             postViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
                 binding.rvQna.apply {
-                    val index = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return@observe
-                    updatePostItem(index, postViewData)
+                    val postAndIndex = getIndexAndPostFromAdapter(postViewData.id) ?: return@observe
+                    val index = postAndIndex.first
+
+                    //existing post in adapter
+                    val existingPost = postAndIndex.second
+
+                    //add the top response from the existingPost to the updatedPostViewData
+                    val updatedPostViewData = postViewData.toBuilder()
+                        .topResponses(existingPost.topResponses)
+                        .build()
+
+                    updatePostItem(index, updatedPostViewData)
                 }
             }
 
@@ -1491,9 +1506,9 @@ open class LMFeedQnAFeedFragment :
         }
     }
 
-    // callback when the user clicks on the see more button on the top response
-    override fun onPostTopResponseSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
-        super.onPostTopResponseSeeMoreClicked(position, postViewData)
+    // callback when the top response view is clicked
+    override fun onPostTopResponseClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostTopResponseClicked(position, postViewData)
 
         // sends comment list open event
         LMFeedAnalytics.sendCommentListOpenEvent()
@@ -1505,12 +1520,49 @@ open class LMFeedQnAFeedFragment :
         LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
     }
 
+    // callback when the user clicks on the see more button on the top response
+    override fun onPostTopResponseSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostTopResponseSeeMoreClicked(position, postViewData)
+
+        binding.rvQna.apply {
+            val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
+
+            //update recycler
+            updatePostItem(adapterPosition, postViewData)
+        }
+    }
+
     // callback when the tagged member in the top response is clicked
     override fun onPostTopResponseTaggedMemberClicked(position: Int, uuid: String) {
         super.onPostTopResponseTaggedMemberClicked(position, uuid)
 
         val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
         coreCallback?.openProfileWithUUID(uuid)
+    }
+
+    // callback when the author frame in the top response is clicked
+    override fun onPostTopResponseAuthorFrameCLicked(
+        position: Int,
+        postViewData: LMFeedPostViewData
+    ) {
+        super.onPostTopResponseAuthorFrameCLicked(position, postViewData)
+
+        val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
+        coreCallback?.openProfile(postViewData.headerViewData.user)
+    }
+
+    // callback when the content of the top response is clicked
+    override fun onPostTopResponseContentClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostTopResponseContentClicked(position, postViewData)
+
+        // sends comment list open event
+        LMFeedAnalytics.sendCommentListOpenEvent()
+
+        val postDetailExtras = LMFeedPostDetailExtras.Builder()
+            .postId(postViewData.id)
+            .isEditTextFocused(false)
+            .build()
+        LMFeedPostDetailActivity.start(requireContext(), postDetailExtras)
     }
 
     //validates user submitted poll votes for multiple choice poll

@@ -731,9 +731,16 @@ object LMFeedPostBinderUtils {
                 setAuthorImage(topResponse.user)
                 setAuthorName(topResponse.user.name)
                 setTimestamp(topResponse.createdAt)
+
                 postTopResponseView.setTopResponseContent(
                     topResponse.text,
                     topResponse.alreadySeenFullContent,
+                    onTopResponseContentClicked = {
+                        postAdapterListener.onPostTopResponseContentClicked(
+                            position,
+                            postViewData
+                        )
+                    },
                     onTopResponseSeeMoreClickListener = {
                         val updatedPost = updatePostForSeeFullTopResponseContent(postViewData)
                         postAdapterListener.onPostTopResponseSeeMoreClicked(

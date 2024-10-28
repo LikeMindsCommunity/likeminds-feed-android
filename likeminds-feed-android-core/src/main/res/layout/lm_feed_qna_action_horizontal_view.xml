@@ -78,7 +78,7 @@
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_comments_count"
-            android:layout_width="@dimen/lm_feed_zero_dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/lm_feed_comments_count_margin"
             android:foreground="?selectableItemBackground"
