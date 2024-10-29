@@ -15,7 +15,7 @@ import androidx.core.view.isVisible
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedCommentViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view.LMFeedCommentViewStyle
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
@@ -190,7 +190,7 @@ class LMFeedCommentView : ConstraintLayout {
     }
 
     /**
-     * Sets the name of the commenter author
+     * Sets the content of the comment
      *
      * @param commentText - string to be set for comment text.
      * @param alreadySeenFullContent - whether the comment content was seen completely or not.
@@ -219,6 +219,7 @@ class LMFeedCommentView : ConstraintLayout {
                 show()
             }
 
+            // todo: take see more read more from styles
             // span for seeMore feature
             val seeMoreColor = ContextCompat.getColor(context, R.color.lm_feed_brown_grey)
             val seeMore = SpannableStringBuilder(context.getString(R.string.lm_feed_see_more))
@@ -248,7 +249,7 @@ class LMFeedCommentView : ConstraintLayout {
                     enableClick = true,
                     highlightColor = ContextCompat.getColor(
                         context,
-                        LMFeedTheme.getTextLinkColor()
+                        LMFeedAppearance.getTextLinkColor()
                     ),
                 ) { route ->
                     val uuid = route.getQueryParameter("member_id")

@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -36,12 +35,15 @@ import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
 import com.likeminds.feed.android.core.post.model.LMFeedAttachmentViewData
 import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
 import com.likeminds.feed.android.core.report.model.REPORT_TYPE_POST
 import com.likeminds.feed.android.core.report.view.LMFeedReportActivity
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment.Companion.LM_FEED_REPORT_RESULT
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
+import com.likeminds.feed.android.core.search.model.LMFeedSearchExtras
 import com.likeminds.feed.android.core.search.view.LMFeedSearchActivity
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
@@ -55,7 +57,7 @@ import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionA
 import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionActivity.Companion.LM_FEED_TOPIC_SELECTION_RESULT_EXTRAS
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
@@ -73,6 +75,7 @@ import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWork
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.*
 import com.likeminds.likemindsfeed.post.model.PollMultiSelectState
+import com.likeminds.likemindsfeed.search.model.SearchType
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 
@@ -113,7 +116,7 @@ open class LMFeedSocialFeedFragment :
             customizeNoPostLayout(layoutNoPost)
             customizePostingLayout(layoutPosting)
             customizeTopicSelectorBar(topicSelectorBar)
-            customizeUniversalFeedListView(rvSocial)
+            customizeSocialFeedListView(rvSocial)
         }
         return binding.root
     }
@@ -138,7 +141,7 @@ open class LMFeedSocialFeedFragment :
         // sends feed opened event
         LMFeedAnalytics.sendFeedOpenedEvent()
 
-        socialFeedViewModel.fetchPendingPostFromDB()
+        socialFeedViewModel.postViewModel.fetchPendingPostFromDB()
         binding.rvSocial.initiateVideoAutoPlayer()
     }
 
@@ -155,10 +158,12 @@ open class LMFeedSocialFeedFragment :
     }
 
     private fun fetchData() {
-        socialFeedViewModel.getLoggedInUser()
-        socialFeedViewModel.getCreatePostRights()
-        socialFeedViewModel.getUnreadNotificationCount()
-        socialFeedViewModel.getFeed(1, null)
+        socialFeedViewModel.apply {
+            helperViewModel.getLoggedInUser()
+            postViewModel.getCreatePostRights()
+            helperViewModel.getUnreadNotificationCount()
+            postViewModel.getFeed(1, null)
+        }
     }
 
     private fun initUI() {
@@ -211,7 +216,7 @@ open class LMFeedSocialFeedFragment :
         observePosting()
 
         //observes user response LiveData
-        socialFeedViewModel.userResponse.observe(viewLifecycleOwner) {
+        socialFeedViewModel.helperViewModel.userResponse.observe(viewLifecycleOwner) {
             binding.headerViewSocial.apply {
                 setUserProfileClickListener {
                     onUserProfileClicked(it)
@@ -221,12 +226,12 @@ open class LMFeedSocialFeedFragment :
         }
 
         // observes hasCreatePostRights LiveData
-        socialFeedViewModel.hasCreatePostRights.observe(viewLifecycleOwner) {
-            socialFeedViewModel.getLoggedInUser()
+        socialFeedViewModel.postViewModel.hasCreatePostRights.observe(viewLifecycleOwner) {
+            socialFeedViewModel.helperViewModel.getLoggedInUser()
             initNewPostClick(it)
         }
 
-        socialFeedViewModel.socialFeedResponse.observe(viewLifecycleOwner) { response ->
+        socialFeedViewModel.postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
             LMFeedProgressBarHelper.hideProgress(binding.progressBar)
             val page = response.first
             val posts = response.second
@@ -246,7 +251,7 @@ open class LMFeedSocialFeedFragment :
         }
 
         // observes deletePostResponse LiveData
-        socialFeedViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
+        socialFeedViewModel.helperViewModel.deletePostResponse.observe(viewLifecycleOwner) { postId ->
             binding.rvSocial.apply {
                 val indexToRemove = getIndexAndPostFromAdapter(postId)?.first ?: return@observe
                 removePostAtIndex(indexToRemove)
@@ -263,7 +268,7 @@ open class LMFeedSocialFeedFragment :
             }
         }
 
-        socialFeedViewModel.showTopicFilter.observe(viewLifecycleOwner) { showTopicFilter ->
+        socialFeedViewModel.helperViewModel.showTopicFilter.observe(viewLifecycleOwner) { showTopicFilter ->
             binding.topicSelectorBar.apply {
                 isVisible = showTopicFilter
                 setAllTopicsTextVisibility(showTopicFilter)
@@ -271,11 +276,11 @@ open class LMFeedSocialFeedFragment :
             }
         }
 
-        socialFeedViewModel.unreadNotificationCount.observe(viewLifecycleOwner) { unreadNotificationCount ->
+        socialFeedViewModel.helperViewModel.unreadNotificationCount.observe(viewLifecycleOwner) { unreadNotificationCount ->
             binding.headerViewSocial.setNotificationCountText(unreadNotificationCount)
         }
 
-        socialFeedViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
+        socialFeedViewModel.helperViewModel.postSavedResponse.observe(viewLifecycleOwner) { postViewData ->
             //create toast message
             val toastMessage = if (postViewData.actionViewData.isSaved) {
                 getString(
@@ -293,7 +298,7 @@ open class LMFeedSocialFeedFragment :
             LMFeedViewUtils.showShortToast(requireContext(), toastMessage)
         }
 
-        socialFeedViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
+        socialFeedViewModel.helperViewModel.postPinnedResponse.observe(viewLifecycleOwner) { postViewData ->
             //show toast message
             val toastMessage = if (postViewData.headerViewData.isPinned) {
                 getString(
@@ -312,33 +317,49 @@ open class LMFeedSocialFeedFragment :
         }
 
         //observers get post response
-        socialFeedViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
+        socialFeedViewModel.postViewModel.postResponse.observe(viewLifecycleOwner) { postViewData ->
             binding.rvSocial.apply {
                 val index = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return@observe
                 updatePostItem(index, postViewData)
             }
         }
 
-        socialFeedViewModel.errorMessageEventFlow.onEach { response ->
+        socialFeedViewModel.postViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SocialFeed -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
                     val errorMessage = response.errorMessage
                     mSwipeRefreshLayout.isRefreshing = false
                     LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.AddPost -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.AddPost -> {
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                     removePostingView()
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.DeletePost -> {
-                    val errorMessage = response.errorMessage
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                is LMFeedPostViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
+                    binding.headerViewSocial.setNotificationIconVisibility(false)
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.LikePost -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.SubmitVote -> {
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
+
+                is LMFeedPostViewModel.ErrorMessageEvent.AddPollOption -> {
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
+
+                is LMFeedPostViewModel.ErrorMessageEvent.GetPost -> {
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
+            }
+        }.observeInLifecycle(viewLifecycleOwner)
+
+        socialFeedViewModel.helperViewModel.errorMessageEventFlow.onEach { response ->
+            when (response) {
+                is LMFeedHelperViewModel.ErrorMessageEvent.LikePost -> {
                     val postId = response.postId
 
                     //get post and index
@@ -373,7 +394,12 @@ open class LMFeedSocialFeedFragment :
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.PinPost -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.DeletePost -> {
+                    val errorMessage = response.errorMessage
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+
+                is LMFeedHelperViewModel.ErrorMessageEvent.PinPost -> {
                     binding.rvSocial.apply {
                         val postId = response.postId
 
@@ -400,7 +426,7 @@ open class LMFeedSocialFeedFragment :
                     }
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SavePost -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.SavePost -> {
                     binding.rvSocial.apply {
                         val postId = response.postId
 
@@ -428,36 +454,21 @@ open class LMFeedSocialFeedFragment :
                     }
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetTopic -> {
+                is LMFeedHelperViewModel.ErrorMessageEvent.GetTopic -> {
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
-                    binding.headerViewSocial.setNotificationIconVisibility(false)
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.SubmitVote -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.AddPollOption -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
-
-                is LMFeedSocialFeedViewModel.ErrorMessageEvent.GetPost -> {
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
-                }
+                is LMFeedHelperViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {}
             }
         }.observeInLifecycle(viewLifecycleOwner)
     }
 
     // observes post live data
     private fun observePosting() {
-        socialFeedViewModel.postDataEventFlow.onEach { response ->
+        socialFeedViewModel.postViewModel.postDataEventFlow.onEach { response ->
             when (response) {
                 // when the post data comes from local db
-                is LMFeedSocialFeedViewModel.PostDataEvent.PostDbData -> {
+                is LMFeedPostViewModel.PostDataEvent.PostDbData -> {
                     val post = response.post
                     if (post.isPosted) {
                         removePostingView()
@@ -486,7 +497,7 @@ open class LMFeedSocialFeedFragment :
                 }
 
                 // when the post data comes from api response
-                is LMFeedSocialFeedViewModel.PostDataEvent.PostResponseData -> {
+                is LMFeedPostViewModel.PostDataEvent.PostResponseData -> {
                     binding.apply {
                         LMFeedViewUtils.showShortToast(
                             requireContext(),
@@ -542,7 +553,7 @@ open class LMFeedSocialFeedFragment :
                     setRetryVisibility(false)
                     setPostSuccessfulVisibility(true)
                 }
-                socialFeedViewModel.addPost(postingData)
+                socialFeedViewModel.postViewModel.addPost(postingData)
             }
 
             WorkInfo.State.FAILED -> {
@@ -623,6 +634,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    // initializes the recycler view of the social feed
     private fun initSocialFeedRecyclerView() {
         LMFeedProgressBarHelper.showProgress(binding.progressBar)
         binding.rvSocial.apply {
@@ -632,9 +644,11 @@ open class LMFeedSocialFeedFragment :
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
                     override fun onLoadMore(currentPage: Int) {
                         if (currentPage > 0) {
-                            socialFeedViewModel.getFeed(
+                            socialFeedViewModel.postViewModel.getFeed(
                                 currentPage,
-                                socialFeedViewModel.getTopicIdsFromAdapterList(binding.topicSelectorBar.getAllSelectedTopics())
+                                socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(
+                                    binding.topicSelectorBar.getAllSelectedTopics()
+                                )
                             )
                         }
                     }
@@ -643,13 +657,14 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    // initializes the swipe to refresh layout
     private fun initSwipeRefreshLayout() {
         mSwipeRefreshLayout = binding.swipeRefreshLayout
         mSwipeRefreshLayout.apply {
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    LMFeedTheme.getButtonColor()
+                    LMFeedAppearance.getButtonColor()
                 )
             )
 
@@ -662,7 +677,7 @@ open class LMFeedSocialFeedFragment :
     //init selected topic recycler view
     private fun initSelectedTopicRecyclerView() {
         binding.topicSelectorBar.apply {
-            socialFeedViewModel.getAllTopics(false)
+            socialFeedViewModel.helperViewModel.getAllTopics(false)
             setSelectedTopicAdapter(this@LMFeedSocialFeedFragment)
 
             setClearSelectedTopicsClickListener {
@@ -678,7 +693,7 @@ open class LMFeedSocialFeedFragment :
             topicSelectorBar.clearSelectedTopicsAndNotify()
             rvSocial.resetScrollListenerData()
             LMFeedProgressBarHelper.showProgress(progressBar, true)
-            socialFeedViewModel.getFeed(1, null)
+            socialFeedViewModel.postViewModel.getFeed(1, null)
 
             //show layout accordingly
             topicSelectorBar.setSelectedTopicFilterVisibility(false)
@@ -702,6 +717,7 @@ open class LMFeedSocialFeedFragment :
         }
     }
 
+    // callback when the user clicks on the post content
     override fun onPostContentClicked(position: Int, postViewData: LMFeedPostViewData) {
         // sends comment list open event
         LMFeedAnalytics.sendCommentListOpenEvent()
@@ -719,7 +735,7 @@ open class LMFeedSocialFeedFragment :
         val loggedInUUID = userPreferences.getUUID()
 
         //call api
-        socialFeedViewModel.likePost(
+        socialFeedViewModel.helperViewModel.likePost(
             postViewData.id,
             postViewData.actionViewData.isLiked,
             loggedInUUID
@@ -758,7 +774,7 @@ open class LMFeedSocialFeedFragment :
     //callback when the user clicks on the save post button
     override fun onPostSaveClicked(position: Int, postViewData: LMFeedPostViewData) {
         //call api
-        socialFeedViewModel.savePost(postViewData)
+        socialFeedViewModel.helperViewModel.savePost(postViewData)
 
         binding.rvSocial.apply {
             val adapterPosition = getIndexAndPostFromAdapter(postViewData.id)?.first ?: return
@@ -963,13 +979,13 @@ open class LMFeedSocialFeedFragment :
     override fun onEntityDeletedByAdmin(deleteExtras: LMFeedDeleteExtras, reason: String) {
         val post =
             binding.rvSocial.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        socialFeedViewModel.deletePost(post, reason)
+        socialFeedViewModel.helperViewModel.deletePost(post, reason)
     }
 
     override fun onEntityDeletedByAuthor(deleteExtras: LMFeedDeleteExtras) {
         val post =
             binding.rvSocial.getIndexAndPostFromAdapter(deleteExtras.postId)?.second ?: return
-        socialFeedViewModel.deletePost(post)
+        socialFeedViewModel.helperViewModel.deletePost(post)
     }
 
     override fun onTopicRemoved(position: Int, topicViewData: LMFeedTopicViewData) {
@@ -987,9 +1003,9 @@ open class LMFeedSocialFeedFragment :
                 rvSocial.resetScrollListenerData()
                 rvSocial.clearPostsAndNotify()
                 LMFeedProgressBarHelper.showProgress(binding.progressBar, true)
-                socialFeedViewModel.getFeed(
+                socialFeedViewModel.postViewModel.getFeed(
                     1,
-                    socialFeedViewModel.getTopicIdsFromAdapterList(selectedTopics)
+                    socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )
             }
         }
@@ -1093,7 +1109,7 @@ open class LMFeedSocialFeedFragment :
         val selectedOptionIds = selectedOptions.map { it.id }
 
         validateSelectedPollOptions(pollViewData, selectedOptions.size) {
-            socialFeedViewModel.submitPollVote(
+            socialFeedViewModel.postViewModel.submitPollVote(
                 requireContext(),
                 postViewData.id,
                 pollViewData.id,
@@ -1232,7 +1248,7 @@ open class LMFeedSocialFeedFragment :
                 }
 
                 //call api to submit vote
-                socialFeedViewModel.submitPollVote(
+                socialFeedViewModel.postViewModel.submitPollVote(
                     requireContext(),
                     postViewData.id,
                     pollViewData.id,
@@ -1348,7 +1364,7 @@ open class LMFeedSocialFeedFragment :
     ) {
         val post = binding.rvSocial.getIndexAndPostFromAdapter(postId)?.second ?: return
 
-        socialFeedViewModel.addPollOption(
+        socialFeedViewModel.postViewModel.addPollOption(
             post,
             option
         )
@@ -1377,7 +1393,7 @@ open class LMFeedSocialFeedFragment :
 
                 LMFeedCreatePostActivity.RESULT_UPLOAD_POST -> {
                     // post with attachments created, now upload and post it from db
-                    socialFeedViewModel.fetchPendingPostFromDB()
+                    socialFeedViewModel.postViewModel.fetchPendingPostFromDB()
                 }
             }
         }
@@ -1436,7 +1452,7 @@ open class LMFeedSocialFeedFragment :
     }
 
     //customizes the universal feed list view
-    protected open fun customizeUniversalFeedListView(rvUniversal: LMFeedSocialFeedListView) {
+    protected open fun customizeSocialFeedListView(rvUniversal: LMFeedSocialFeedListView) {
     }
 
     //processes the user profile clicked
@@ -1453,7 +1469,11 @@ open class LMFeedSocialFeedFragment :
 
     //processes the search icon clicked
     protected open fun onSearchIconClicked() {
-        LMFeedSearchActivity.start(requireContext())
+        val searchExtras = LMFeedSearchExtras.Builder()
+            .searchType(SearchType.TEXT)
+            .build()
+
+        LMFeedSearchActivity.start(requireContext(), searchExtras)
     }
 
     //customizes the no post layout
@@ -1501,7 +1521,7 @@ open class LMFeedSocialFeedFragment :
     }
 
     //customizes the topic selector bar
-    protected open fun customizeTopicSelectorBar(topicSelectorBar: LMFeedSocialTopicSelectorBarView) {
+    protected open fun customizeTopicSelectorBar(topicSelectorBar: LMFeedTopicSelectorBarView) {
         topicSelectorBar.apply {
             setStyle(LMFeedStyleTransformer.socialFeedFragmentViewStyle.topicSelectorBarStyle)
 
@@ -1511,7 +1531,7 @@ open class LMFeedSocialFeedFragment :
     }
 
     protected open fun onRetryUploadClicked(temporaryId: Long?, attachmentCount: Int) {
-        socialFeedViewModel.createRetryPostMediaWorker(
+        socialFeedViewModel.postViewModel.createRetryPostMediaWorker(
             requireContext(),
             temporaryId,
             attachmentCount
@@ -1545,7 +1565,7 @@ open class LMFeedSocialFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                socialFeedViewModel.getFeed(1, null)
+                socialFeedViewModel.postViewModel.getFeed(1, null)
             } else {
                 //show layouts accordingly
                 topicSelectorBar.setAllTopicsTextVisibility(false)
@@ -1557,9 +1577,9 @@ open class LMFeedSocialFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                socialFeedViewModel.getFeed(
+                socialFeedViewModel.postViewModel.getFeed(
                     1,
-                    socialFeedViewModel.getTopicIdsFromAdapterList(selectedTopics)
+                    socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )
             }
         }
@@ -1584,10 +1604,10 @@ open class LMFeedSocialFeedFragment :
         binding.apply {
             mSwipeRefreshLayout.isRefreshing = true
             rvSocial.resetScrollListenerData()
-            socialFeedViewModel.getUnreadNotificationCount()
-            socialFeedViewModel.getFeed(
+            socialFeedViewModel.helperViewModel.getUnreadNotificationCount()
+            socialFeedViewModel.postViewModel.getFeed(
                 1,
-                socialFeedViewModel.getTopicIdsFromAdapterList(topicSelectorBar.getAllSelectedTopics())
+                socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(topicSelectorBar.getAllSelectedTopics())
             )
         }
     }
@@ -1741,7 +1761,7 @@ open class LMFeedSocialFeedFragment :
         post: LMFeedPostViewData
     ) {
         //call api
-        socialFeedViewModel.pinPost(post)
+        socialFeedViewModel.helperViewModel.pinPost(post)
 
         binding.rvSocial.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return
@@ -1758,7 +1778,7 @@ open class LMFeedSocialFeedFragment :
         post: LMFeedPostViewData
     ) {
         //call api
-        socialFeedViewModel.pinPost(post)
+        socialFeedViewModel.helperViewModel.pinPost(post)
 
         binding.rvSocial.apply {
             val adapterPosition = getIndexAndPostFromAdapter(post.id)?.first ?: return

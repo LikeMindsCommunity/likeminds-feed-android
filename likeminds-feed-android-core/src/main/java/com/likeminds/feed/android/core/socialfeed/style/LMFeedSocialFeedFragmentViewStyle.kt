@@ -3,7 +3,7 @@ package com.likeminds.feed.android.core.socialfeed.style
 import android.text.TextUtils
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.style.LMFeedNoEntityLayoutViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
@@ -16,7 +16,7 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * @property createNewPostButtonViewStyle : [LMFeedFABStyle] this will help you to customize the create new post fab in the social feed fragment
  * @property noPostLayoutViewStyle: [LMFeedNoEntityLayoutViewStyle] this will help you to customize the no post layout in the social feed fragment
  * @property postingViewStyle: [LMFeedPostingViewStyle] this will help you to customize the posting progress view in the social feed fragment
- * @property topicSelectorBarStyle: [LMFeedSocialTopicSelectorBarViewStyle] this will help you to customize the topic selector bar in the social feed fragment
+ * @property topicSelectorBarStyle: [LMFeedTopicSelectorBarViewStyle] this will help you to customize the topic selector bar in the social feed fragment
  * */
 class LMFeedSocialFeedFragmentViewStyle private constructor(
     //header
@@ -28,7 +28,7 @@ class LMFeedSocialFeedFragmentViewStyle private constructor(
     //posting view
     val postingViewStyle: LMFeedPostingViewStyle,
     //topic selector bar view
-    val topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle
+    val topicSelectorBarStyle: LMFeedTopicSelectorBarViewStyle
 ) : LMFeedViewStyle {
 
     class Builder {
@@ -87,7 +87,7 @@ class LMFeedSocialFeedFragmentViewStyle private constructor(
 
         private var createNewPostButtonViewStyle = LMFeedFABStyle.Builder()
             .isExtended(false)
-            .backgroundColor(LMFeedTheme.getButtonColor())
+            .backgroundColor(LMFeedAppearance.getButtonColor())
             .icon(R.drawable.lm_feed_ic_new_post_plus)
             .iconTint(R.color.lm_feed_white)
             .iconSize(R.dimen.lm_feed_create_new_post_icon_size)
@@ -134,8 +134,8 @@ class LMFeedSocialFeedFragmentViewStyle private constructor(
         private var postingViewStyle: LMFeedPostingViewStyle = LMFeedPostingViewStyle.Builder()
             .build()
 
-        private var topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle =
-            LMFeedSocialTopicSelectorBarViewStyle.Builder()
+        private var topicSelectorBarStyle: LMFeedTopicSelectorBarViewStyle =
+            LMFeedTopicSelectorBarViewStyle.Builder()
                 .backgroundColor(R.color.lm_feed_white)
                 .build()
 
@@ -155,18 +155,19 @@ class LMFeedSocialFeedFragmentViewStyle private constructor(
             this.postingViewStyle = postingViewStyle
         }
 
-        fun topicSelectorBarStyle(topicSelectorBarStyle: LMFeedSocialTopicSelectorBarViewStyle) =
+        fun topicSelectorBarStyle(topicSelectorBarStyle: LMFeedTopicSelectorBarViewStyle) =
             apply {
                 this.topicSelectorBarStyle = topicSelectorBarStyle
             }
 
-        fun build() = LMFeedSocialFeedFragmentViewStyle(
-            headerViewStyle,
-            createNewPostButtonViewStyle,
-            noPostLayoutViewStyle,
-            postingViewStyle,
-            topicSelectorBarStyle
-        )
+        fun build() =
+            LMFeedSocialFeedFragmentViewStyle(
+                headerViewStyle,
+                createNewPostButtonViewStyle,
+                noPostLayoutViewStyle,
+                postingViewStyle,
+                topicSelectorBarStyle
+            )
     }
 
     fun toBuilder(): Builder {

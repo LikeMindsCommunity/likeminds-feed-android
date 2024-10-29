@@ -6,7 +6,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.style.LMFeedNoEntityLayoutViewStyle
 import com.likeminds.feed.android.core.ui.widgets.user.style.LMFeedUserViewStyle
@@ -18,7 +18,7 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * @property headerViewStyle : [LMFeedHeaderViewStyle] this will help you to customize the header view in the poll results fragment
  * @property pollResultsTabElevation: [Int] should be in format of [DimenRes] this will help you to customize the elevation of the poll results tab layout | Default value =  [R.dimen.lm_feed_elevation_extra_small]
  * @property noResultsLayoutViewStyle : [LMFeedNoEntityLayoutViewStyle] this will help you to customize the no poll results layout in the poll results fragment
- * @property selectedPollResultsTabColor : [Int] should be in format of [ColorRes] this will help you to customize the selected poll results tab color in the poll results fragment | Default value = [LMFeedTheme.getButtonColor]
+ * @property selectedPollResultsTabColor : [Int] should be in format of [ColorRes] this will help you to customize the selected poll results tab color in the poll results fragment | Default value = [LMFeedAppearance.getButtonColor]
  * @property unselectedPollResultsTabColor :  [Int] should be in format of [ColorRes] this will help you to customize the unselected poll results tab color in the poll results fragment | Default value = [R.color.lm_feed_grey]
  * @property pollResultsTabTextViewStyle :  [LMFeedTextStyle] this will help you to customize the text view of the poll vote results tab in the poll results fragment
  * @property userViewStyle: [LMFeedUserViewStyle] this will help you to customize the user view in the poll results fragment
@@ -93,7 +93,7 @@ class LMFeedPollResultsFragmentViewStyle private constructor(
                 .build()
 
         @ColorRes
-        private var selectedPollResultsTabColor: Int = LMFeedTheme.getButtonColor()
+        private var selectedPollResultsTabColor: Int = LMFeedAppearance.getButtonColor()
 
         @ColorRes
         private var unselectedPollResultsTabColor: Int = R.color.lm_feed_grey
@@ -110,7 +110,7 @@ class LMFeedPollResultsFragmentViewStyle private constructor(
                 LMFeedTextStyle.Builder()
                     .ellipsize(TextUtils.TruncateAt.END)
                     .maxLines(1)
-                    .textColor(LMFeedTheme.getButtonColor())
+                    .textColor(LMFeedAppearance.getButtonColor())
                     .textSize(R.dimen.lm_feed_text_medium)
                     .fontResource(R.font.lm_feed_roboto_medium)
                     .build()

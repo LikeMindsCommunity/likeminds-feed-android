@@ -11,7 +11,7 @@ import com.likeminds.feed.android.core.activityfeed.adapter.LMFeedActivityFeedAd
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.activityfeed.viewmodel.LMFeedActivityFeedViewModel
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentActivityFeedBinding
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.utils.*
@@ -130,7 +130,7 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
         mSwipeRefreshLayout.setColorSchemeColors(
             ContextCompat.getColor(
                 requireContext(),
-                LMFeedTheme.getButtonColor()
+                LMFeedAppearance.getButtonColor()
             )
         )
 

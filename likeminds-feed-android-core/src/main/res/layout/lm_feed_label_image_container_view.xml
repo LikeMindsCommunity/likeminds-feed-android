@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/view_separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/lm_feed_small_separator_size"
+            android:background="@color/lm_feed_blue_separator"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedImageView
+            android:id="@+id/iv_container"
+            android:layout_width="@dimen/lm_feed_standard_icon_size"
+            android:layout_height="@dimen/lm_feed_standard_icon_size"
+            android:layout_marginVertical="@dimen/lm_feed_medium_margin"
+            android:layout_marginStart="@dimen/lm_feed_large_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator"
+            tools:srcCompat="@drawable/lm_feed_picture_placeholder" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+            android:id="@+id/tv_container_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/lm_feed_regular_margin"
+            android:layout_marginEnd="@dimen/lm_feed_large_margin"
+            app:layout_constraintBottom_toBottomOf="@id/iv_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/iv_container"
+            app:layout_constraintTop_toTopOf="@id/iv_container"
+            tools:text="@string/lm_feed_be_the_first_one_to_s"
+            tools:textColor="@color/lm_feed_grey"
+            tools:textSize="@dimen/lm_feed_text_medium" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

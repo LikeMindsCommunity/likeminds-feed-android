@@ -1,5 +1,6 @@
 package com.likeminds.feed.android.core.socialfeed.model
 
+import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
@@ -15,7 +16,8 @@ class LMFeedPostViewData private constructor(
     val fromPostLiked: Boolean,
     val fromPostSaved: Boolean,
     val fromVideoAction: Boolean,
-    val isPosted: Boolean
+    val isPosted: Boolean,
+    val topResponses: List<LMFeedCommentViewData>
 ) : LMFeedBaseViewType {
 
     private val noOfCustomWidgets =
@@ -68,42 +70,74 @@ class LMFeedPostViewData private constructor(
 
     class Builder {
         private var id: String = ""
+
         private var headerViewData: LMFeedPostHeaderViewData =
             LMFeedPostHeaderViewData.Builder().build()
+
         private var contentViewData: LMFeedPostContentViewData =
             LMFeedPostContentViewData.Builder().build()
+
         private var mediaViewData: LMFeedMediaViewData =
             LMFeedMediaViewData.Builder().build()
+
         private var actionViewData: LMFeedPostActionViewData =
             LMFeedPostActionViewData.Builder().build()
+
         private var topicsViewData: List<LMFeedTopicViewData> = emptyList()
+
         private var fromPostLiked: Boolean = false
+
         private var fromPostSaved: Boolean = false
+
         private var fromVideoAction: Boolean = false
+
         private var isPosted: Boolean = true
 
-        fun id(id: String) = apply { this.id = id }
-        fun headerViewData(headerViewData: LMFeedPostHeaderViewData) =
-            apply { this.headerViewData = headerViewData }
+        private var topResponses: List<LMFeedCommentViewData> = emptyList()
 
-        fun contentViewData(contentViewData: LMFeedPostContentViewData) =
-            apply { this.contentViewData = contentViewData }
+        fun id(id: String) = apply {
+            this.id = id
+        }
 
-        fun mediaViewData(mediaViewData: LMFeedMediaViewData) =
-            apply { this.mediaViewData = mediaViewData }
+        fun headerViewData(headerViewData: LMFeedPostHeaderViewData) = apply {
+            this.headerViewData = headerViewData
+        }
 
-        fun actionViewData(actionViewData: LMFeedPostActionViewData) =
-            apply { this.actionViewData = actionViewData }
+        fun contentViewData(contentViewData: LMFeedPostContentViewData) = apply {
+            this.contentViewData = contentViewData
+        }
 
-        fun topicsViewData(topicsViewData: List<LMFeedTopicViewData>) =
-            apply { this.topicsViewData = topicsViewData }
+        fun mediaViewData(mediaViewData: LMFeedMediaViewData) = apply {
+            this.mediaViewData = mediaViewData
+        }
 
-        fun fromPostLiked(fromPostLiked: Boolean) = apply { this.fromPostLiked = fromPostLiked }
-        fun fromPostSaved(fromPostSaved: Boolean) = apply { this.fromPostSaved = fromPostSaved }
-        fun fromVideoAction(fromVideoAction: Boolean) =
-            apply { this.fromVideoAction = fromVideoAction }
+        fun actionViewData(actionViewData: LMFeedPostActionViewData) = apply {
+            this.actionViewData = actionViewData
+        }
 
-        fun isPosted(isPosted: Boolean) = apply { this.isPosted = isPosted }
+        fun topicsViewData(topicsViewData: List<LMFeedTopicViewData>) = apply {
+            this.topicsViewData = topicsViewData
+        }
+
+        fun fromPostLiked(fromPostLiked: Boolean) = apply {
+            this.fromPostLiked = fromPostLiked
+        }
+
+        fun fromPostSaved(fromPostSaved: Boolean) = apply {
+            this.fromPostSaved = fromPostSaved
+        }
+
+        fun fromVideoAction(fromVideoAction: Boolean) = apply {
+            this.fromVideoAction = fromVideoAction
+        }
+
+        fun isPosted(isPosted: Boolean) = apply {
+            this.isPosted = isPosted
+        }
+
+        fun topResponses(topResponses: List<LMFeedCommentViewData>) = apply {
+            this.topResponses = topResponses
+        }
 
         fun build() = LMFeedPostViewData(
             id,
@@ -115,7 +149,8 @@ class LMFeedPostViewData private constructor(
             fromPostLiked,
             fromPostSaved,
             fromVideoAction,
-            isPosted
+            isPosted,
+            topResponses
         )
     }
 
@@ -131,6 +166,7 @@ class LMFeedPostViewData private constructor(
             .fromPostSaved(fromPostSaved)
             .fromVideoAction(fromVideoAction)
             .isPosted(isPosted)
+            .topResponses(topResponses)
     }
 
     override fun toString(): String {
@@ -151,6 +187,8 @@ class LMFeedPostViewData private constructor(
             append(fromPostLiked)
             append(", fromPostSaved=")
             append(fromPostSaved)
+            append(", topResponses=")
+            append(topResponses)
             append(")")
         }
     }

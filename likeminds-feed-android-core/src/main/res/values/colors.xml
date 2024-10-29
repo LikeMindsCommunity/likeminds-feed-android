@@ -6,6 +6,7 @@
     <color name="lm_feed_black">#000000</color>
     <color name="lm_feed_grey">#666666</color>
     <color name="lm_feed_dark_grey">#333333</color>
+    <color name="lm_feed_dark_grey_70">#B3333333</color>
     <color name="lm_feed_blue">#2196F3</color>
     <color name="lm_feed_azure">#1da1f2</color>
     <color name="lm_feed_cultured">#F5F5F5</color>
@@ -38,4 +39,5 @@
     <color name="lm_feed_light_silver">#D9D9D9</color>
     <color name="lm_feed_white_smoke">#F1F1F1</color>
     <color name="lm_feed_divider_grey">#1e000000</color>
+    <color name="lm_feed_light_grayish_blue_50">#80e6ebf5</color>
 </resources>

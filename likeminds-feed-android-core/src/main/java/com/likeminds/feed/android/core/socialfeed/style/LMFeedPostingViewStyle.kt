@@ -6,7 +6,7 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedImageStyle
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedProgressBarStyle
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
@@ -38,7 +38,7 @@ class LMFeedPostingViewStyle private constructor(
 
         private var progressStyle: LMFeedProgressBarStyle = LMFeedProgressBarStyle.Builder()
             .isIndeterminate(false)
-            .progressColor(LMFeedTheme.getButtonColor())
+            .progressColor(LMFeedAppearance.getButtonColor())
             .build()
 
         private var retryButtonTextStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()

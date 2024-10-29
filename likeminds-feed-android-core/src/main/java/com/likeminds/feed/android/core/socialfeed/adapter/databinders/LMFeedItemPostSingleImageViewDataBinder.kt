@@ -2,11 +2,14 @@ package com.likeminds.feed.android.core.socialfeed.adapter.databinders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.likeminds.feed.android.core.*
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostSingleImageBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_SINGLE_IMAGE
 
@@ -27,11 +30,29 @@ class LMFeedItemPostSingleImageViewDataBinder(
         binding.apply {
             LMFeedPostBinderUtils.customizePostHeaderView(postHeader)
 
+            LMFeedPostBinderUtils.customizePostHeadingView(tvPostHeading)
+
             LMFeedPostBinderUtils.customizePostContentView(tvPostContent)
 
-            LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
+            when (LMFeedCoreApplication.selectedTheme) {
+                LMFeedTheme.SOCIAL_FEED -> {
+                    LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
+                }
+
+                LMFeedTheme.QNA_FEED -> {
+                    LMFeedPostBinderUtils.customizePostQnAActionHorizontalView(qnaPostAction)
+                }
+
+                else -> {
+                    LMFeedPostBinderUtils.customizePostActionHorizontalView(postAction)
+                }
+            }
 
             LMFeedPostBinderUtils.customizePostTopicsGroup(postTopicsGroup)
+
+            LMFeedPostBinderUtils.customizePostTopResponseView(postTopResponse)
+
+            LMFeedPostBinderUtils.customizePostQnAAnswerPromptView(containerQnaBeFirstLabel)
 
             setClickListeners(this)
 
@@ -56,15 +77,45 @@ class LMFeedItemPostSingleImageViewDataBinder(
             postViewData = data
 
             // updates the data in the post action view
-            LMFeedPostBinderUtils.setPostHorizontalActionViewData(
-                postAction,
-                data.actionViewData
-            )
+            when (LMFeedCoreApplication.selectedTheme) {
+                LMFeedTheme.SOCIAL_FEED -> {
+                    qnaPostAction.hide()
+                    postAction.show()
+
+                    LMFeedPostBinderUtils.setPostHorizontalActionViewData(
+                        postAction,
+                        data.actionViewData
+                    )
+                }
+
+                LMFeedTheme.QNA_FEED -> {
+                    postAction.hide()
+                    qnaPostAction.show()
+
+                    LMFeedPostBinderUtils.setPostQnAHorizontalActionViewData(
+                        qnaPostAction,
+                        data.actionViewData
+                    )
+                }
+
+                else -> {
+                    qnaPostAction.hide()
+                    postAction.show()
+
+                    LMFeedPostBinderUtils.setPostHorizontalActionViewData(
+                        postAction,
+                        data.actionViewData
+                    )
+                }
+            }
 
             // checks whether to bind complete data or not and execute corresponding lambda function
             LMFeedPostBinderUtils.setPostBindData(
                 postHeader,
+                tvPostHeading,
                 tvPostContent,
+                postTopResponse,
+                containerQnaBeFirstLabel,
                 data,
                 position,
                 postTopicsGroup,
@@ -132,6 +183,52 @@ class LMFeedItemPostSingleImageViewDataBinder(
             postAction.setShareIconListener {
                 val post = postViewData ?: return@setShareIconListener
                 postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            qnaPostAction.setUpvoteIconClickListener {
+                val post = this.postViewData ?: return@setUpvoteIconClickListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForLike(post)
+                postAdapterListener.onPostLikeClicked(position, updatedPost)
+            }
+
+            qnaPostAction.setUpvoteCountClickListener {
+                val post = this.postViewData ?: return@setUpvoteCountClickListener
+                if (post.actionViewData.likesCount > 0) {
+                    postAdapterListener.onPostLikesCountClicked(position, post)
+                } else {
+                    return@setUpvoteCountClickListener
+                }
+            }
+
+            qnaPostAction.setCommentsCountClickListener {
+                val post = this.postViewData ?: return@setCommentsCountClickListener
+                postAdapterListener.onPostCommentsCountClicked(position, post)
+            }
+
+            qnaPostAction.setSaveIconListener {
+                val post = this.postViewData ?: return@setSaveIconListener
+                val updatedPost = LMFeedPostBinderUtils.updatePostForSave(post)
+                postAdapterListener.onPostSaveClicked(position, updatedPost)
+            }
+
+            qnaPostAction.setShareIconListener {
+                val post = this.postViewData ?: return@setShareIconListener
+                postAdapterListener.onPostShareClicked(position, post)
+            }
+
+            postTopResponse.setTopResponseClickListener {
+                val post = this.postViewData ?: return@setTopResponseClickListener
+                postAdapterListener.onPostTopResponseClicked(position, post)
+            }
+
+            postTopResponse.setAuthorFrameClickListener {
+                val post = this.postViewData ?: return@setAuthorFrameClickListener
+                postAdapterListener.onPostTopResponseAuthorFrameCLicked(position, post)
+            }
+
+            containerQnaBeFirstLabel.setContainerClickListener {
+                val post = this.postViewData ?: return@setContainerClickListener
+                postAdapterListener.onPostAnswerPromptClicked(position, post)
             }
         }
     }

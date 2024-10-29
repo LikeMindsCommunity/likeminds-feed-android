@@ -14,10 +14,12 @@ import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikesScreenExtras
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesActivity.Companion.LM_FEED_LIKES_SCREEN_EXTRAS
 import com.likeminds.feed.android.core.likes.viewmodel.LMFeedLikesViewModel
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
 
@@ -82,7 +84,13 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
         headerViewLikes.apply {
             setStyle(LMFeedStyleTransformer.likesFragmentViewStyle.headerViewStyle)
 
-            setTitleText(getString(R.string.lm_feed_likes))
+            setTitleText(
+                getString(
+                    R.string.lm_feed_s_likes,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                )
+            )
         }
     }
 
@@ -134,7 +142,7 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
         mSwipeRefreshLayout.setColorSchemeColors(
             ContextCompat.getColor(
                 requireContext(),
-                LMFeedTheme.getButtonColor()
+                LMFeedAppearance.getButtonColor()
             )
         )
 
@@ -205,14 +213,21 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
 
     //set total likes count on toolbar
     private fun setTotalLikesCount(totalLikes: Int) {
+        val likeString = if (totalLikes == 1) {
+            LMFeedCommunityUtil.getLikeVariable()
+                .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+        } else {
+            LMFeedCommunityUtil.getLikeVariable()
+                .pluralizeOrCapitalize(LMFeedWordAction.ALL_CAPITAL_PLURAL)
+        }
         binding.headerViewLikes.setSubTitleText(
             this.resources.getQuantityString(
-                R.plurals.lm_feed_likes_small,
+                R.plurals.lm_feed_s_likes_small,
                 totalLikes,
-                totalLikes
+                totalLikes,
+                likeString
             )
         )
-
     }
 
     override fun onUserLikeItemClicked(position: Int, likesViewData: LMFeedLikeViewData) {

@@ -3,7 +3,6 @@ package com.likeminds.feed.android.core.videofeed.view
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -27,6 +26,8 @@ import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
 import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
@@ -40,7 +41,7 @@ import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
@@ -236,7 +237,10 @@ open class LMFeedVideoFeedFragment :
 
     //calls the getFeed() function to fetch feed videos
     private fun fetchData() {
-        videoFeedViewModel.getFeed()
+        videoFeedViewModel.apply {
+            pageToCall++
+            postViewModel.getFeed(pageToCall)
+        }
     }
 
     //initializes the refresh layout
@@ -246,7 +250,7 @@ open class LMFeedVideoFeedFragment :
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    LMFeedTheme.getButtonColor()
+                    LMFeedAppearance.getButtonColor()
                 )
             )
 
@@ -258,17 +262,23 @@ open class LMFeedVideoFeedFragment :
 
     //processes the feed refreshed event
     protected open fun onFeedRefreshed() {
-        binding.apply {
+        videoFeedViewModel.apply {
             mSwipeRefreshLayout.isRefreshing = true
-            videoFeedViewModel.getFeed(isRefreshed = true)
+            pageToCall = 1
+            postViewModel.getFeed(pageToCall)
         }
     }
 
     //observes live data responses
     private fun observeResponses() {
-        videoFeedViewModel.videoFeedResponse.observe(viewLifecycleOwner) { response ->
+        videoFeedViewModel.postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
             val posts = response.second
+
+            // update the variable that no new posts are available now
+            if (posts.isEmpty()) {
+                videoFeedViewModel.postsFinished = true
+            }
 
             //add only those posts which are supported by the adapter
             val finalPosts = posts.filter {
@@ -288,9 +298,22 @@ open class LMFeedVideoFeedFragment :
             }
         }
 
-        videoFeedViewModel.errorMessageEventFlow.onEach { response ->
+        videoFeedViewModel.postViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedVideoFeedViewModel.ErrorMessageEvent.LikePost -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
+                    videoFeedViewModel.pageToCall--
+                    val errorMessage = response.errorMessage
+                    mSwipeRefreshLayout.isRefreshing = false
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+
+                else -> {}
+            }
+        }.observeInLifecycle(viewLifecycleOwner)
+
+        videoFeedViewModel.helperViewModel.errorMessageEventFlow.onEach { response ->
+            when (response) {
+                is LMFeedHelperViewModel.ErrorMessageEvent.LikePost -> {
                     val postId = response.postId
 
                     //get post and index
@@ -324,11 +347,7 @@ open class LMFeedVideoFeedFragment :
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedVideoFeedViewModel.ErrorMessageEvent.VideoFeed -> {
-                    val errorMessage = response.errorMessage
-                    mSwipeRefreshLayout.isRefreshing = false
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
-                }
+                else -> {}
             }
         }.observeInLifecycle(viewLifecycleOwner)
     }
@@ -463,7 +482,7 @@ open class LMFeedVideoFeedFragment :
         val loggedInUUID = userPreferences.getUUID()
 
         //call api
-        videoFeedViewModel.likePost(
+        videoFeedViewModel.helperViewModel.likePost(
             postViewData.id,
             postViewData.actionViewData.isLiked,
             loggedInUUID

@@ -36,13 +36,13 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:fontFamily="@font/lm_feed_roboto"
             tools:ignore="UnusedAttribute"
-            tools:text="@string/lm_feed_likes"
+            tools:text="@string/lm_feed_s_likes"
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_medium" />
 
         <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
             android:id="@+id/tv_comments_count"
-            android:layout_width="@dimen/lm_feed_zero_dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/lm_feed_comments_count_margin"
             android:foreground="?selectableItemBackground"
@@ -56,7 +56,7 @@
             tools:drawableStart="@drawable/lm_feed_ic_comment"
             tools:fontFamily="@font/lm_feed_roboto"
             tools:ignore="UnusedAttribute"
-            tools:text="@string/lm_feed_comment"
+            tools:text="@string/lm_feed_s_comment"
             tools:textAlignment="center"
             tools:textColor="@color/lm_feed_grey"
             tools:textSize="@dimen/lm_feed_text_medium" />

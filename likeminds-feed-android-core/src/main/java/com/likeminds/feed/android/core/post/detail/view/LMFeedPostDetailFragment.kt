@@ -34,7 +34,7 @@ import com.likeminds.feed.android.core.report.view.*
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.view.LMFeedCommentComposerView
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
@@ -160,7 +160,13 @@ open class LMFeedPostDetailFragment :
     //customize comment composer
     protected open fun customizeCommentComposer(commentComposer: LMFeedCommentComposerView) {
         commentComposer.apply {
-            setCommentInputBoxHint(getString(R.string.lm_feed_write_a_comment))
+            setCommentInputBoxHint(
+                getString(
+                    R.string.lm_feed_write_s_comment,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                )
+            )
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.commentComposerStyle)
         }
     }
@@ -208,7 +214,7 @@ open class LMFeedPostDetailFragment :
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    LMFeedTheme.getButtonColor()
+                    LMFeedAppearance.getButtonColor()
                 )
             )
 
@@ -231,7 +237,7 @@ open class LMFeedPostDetailFragment :
         val config = UserTaggingConfig.Builder()
             .editText(binding.commentComposer.etComment)
             .maxHeightInPercentage(0.4f)
-            .color(LMFeedTheme.getTextLinkColor())
+            .color(LMFeedAppearance.getTextLinkColor())
             .hasAtRateSymbol(true)
             .build()
 
@@ -557,11 +563,20 @@ open class LMFeedPostDetailFragment :
 
     // updates the comments count on toolbar
     private fun updateCommentsCount(commentsCount: Int) {
+        val commentString = if (commentsCount == 1) {
+            LMFeedCommunityUtil.getCommentVariable()
+                .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+        } else {
+            LMFeedCommunityUtil.getCommentVariable()
+                .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_PLURAL)
+        }
+
         binding.headerViewPostDetail.setSubTitleText(
             resources.getQuantityString(
-                R.plurals.lm_feed_comments_small,
+                R.plurals.lm_feed_s_comments_small,
                 commentsCount,
-                commentsCount
+                commentsCount,
+                commentString
             )
         )
     }
@@ -890,7 +905,11 @@ open class LMFeedPostDetailFragment :
             if (!isLocal) {
                 LMFeedViewUtils.showShortToast(
                     requireContext(),
-                    getString(R.string.lm_feed_comment_deleted)
+                    getString(
+                        R.string.lm_feed_s_comment_deleted,
+                        LMFeedCommunityUtil.getCommentVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                    )
                 )
             }
 
@@ -1185,7 +1204,7 @@ open class LMFeedPostDetailFragment :
             UserTaggingDecoder.decode(
                 commentComposer.etComment,
                 commentText,
-                ContextCompat.getColor(requireContext(), LMFeedTheme.getTextLinkColor())
+                ContextCompat.getColor(requireContext(), LMFeedAppearance.getTextLinkColor())
             )
             commentComposer.etComment.setSelection(commentComposer.etComment.length())
             commentComposer.etComment.setSelection(commentComposer.etComment.length())
@@ -1554,6 +1573,13 @@ open class LMFeedPostDetailFragment :
                 }
             }
         }
+    }
+
+    // callback when the user clicks on the post answer prompt
+    override fun onPostAnswerPromptClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostAnswerPromptClicked(position, postViewData)
+
+        binding.commentComposer.etComment.focusAndShowKeyboard()
     }
 
     //callback when post menu items are clicked
@@ -2299,6 +2325,14 @@ open class LMFeedPostDetailFragment :
         val post = binding.rvPostDetails.getItem(postDataPosition) as LMFeedPostViewData
 
         postDetailViewModel.addPollOption(post, option)
+    }
+
+    // callback when the see more button is clicked on the post heading
+    override fun onPostHeadingSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        super.onPostHeadingSeeMoreClicked(position, postViewData)
+
+        //update recycler
+        binding.rvPostDetails.updateItem(postDataPosition, postViewData)
     }
 
     override fun onDestroyView() {

@@ -4,7 +4,7 @@ import android.text.TextUtils
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme.DEFAULT_VISIBLE_DOCUMENTS_LIMIT
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance.DEFAULT_VISIBLE_DOCUMENTS_LIMIT
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 class LMFeedPostDocumentsMediaViewStyle private constructor(

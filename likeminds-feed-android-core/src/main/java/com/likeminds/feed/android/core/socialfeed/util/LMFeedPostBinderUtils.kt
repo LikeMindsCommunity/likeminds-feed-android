@@ -20,13 +20,14 @@ import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedChipGroup
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
+import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.view.LMFeedLabelImageContainerView
 import com.likeminds.feed.android.core.ui.widgets.poll.adapter.LMFeedPollOptionsAdapterListener
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
-import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionHorizontalView
-import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.LMFeedPostActionVerticalView
+import com.likeminds.feed.android.core.ui.widgets.post.postactionview.view.*
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.*
+import com.likeminds.feed.android.core.ui.widgets.post.posttopresponse.view.LMFeedPostTopResponseView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getFormatedNumber
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
@@ -35,6 +36,8 @@ import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.link.LMFeedLinkMovementMethod
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
+import com.likeminds.feed.android.core.utils.user.LMFeedUserImageUtil
+import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.usertagging.util.UserTaggingDecoder
 
 object LMFeedPostBinderUtils {
@@ -45,18 +48,66 @@ object LMFeedPostBinderUtils {
         postHeaderView.setStyle(postHeaderViewStyle)
     }
 
+    // customizes the heading view of the post
+    fun customizePostHeadingView(postHeading: LMFeedTextView) {
+        val headingContentViewStyle =
+            LMFeedStyleTransformer.postViewStyle.postContentTextStyle.headingContentViewStyle
+
+        if (headingContentViewStyle != null) {
+            postHeading.show()
+            postHeading.setStyle(headingContentViewStyle)
+        } else {
+            postHeading.hide()
+        }
+    }
+
     // customizes the content view of the post
     fun customizePostContentView(
         postContent: LMFeedTextView,
     ) {
         val postContentTextStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-        postContent.setStyle(postContentTextStyle.postTextViewStyle)
+        postContent.setStyle(postContentTextStyle.textContentViewStyle)
     }
 
     // customizes the horizontal post action view
     fun customizePostActionHorizontalView(postActionHorizontalView: LMFeedPostActionHorizontalView) {
         val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
         postActionHorizontalView.setStyle(postActionViewStyle)
+    }
+
+    // customizes the horizontal post qna action view
+    fun customizePostQnAActionHorizontalView(postAQnAActionHorizontalView: LMFeedPostQnAActionHorizontalView) {
+        val postActionViewStyle = LMFeedStyleTransformer.postViewStyle.postActionViewStyle
+        postAQnAActionHorizontalView.setStyle(postActionViewStyle)
+    }
+
+    // customizes the post answer prompt view
+    fun customizePostQnAAnswerPromptView(labelImageContainerView: LMFeedLabelImageContainerView) {
+        labelImageContainerView.apply {
+            var postAnswerPromptViewStyle =
+                LMFeedStyleTransformer.postViewStyle.postAnswerPromptViewStyle
+            if (postAnswerPromptViewStyle != null) {
+                // set user first letter as placeholder
+                val containerImageViewStyle = postAnswerPromptViewStyle.containerImageStyle
+                val loggedInUserPrefs = LMFeedUserPreferences(context)
+
+                postAnswerPromptViewStyle =
+                    postAnswerPromptViewStyle.toBuilder().containerImageStyle(
+                        containerImageViewStyle.toBuilder().placeholderSrc(
+                            LMFeedUserImageUtil.getNameDrawable(
+                                loggedInUserPrefs.getUUID(),
+                                loggedInUserPrefs.getUserName(),
+                                containerImageViewStyle.isCircle,
+                            ).first
+                        ).build()
+                    ).build()
+
+                show()
+                setStyle(postAnswerPromptViewStyle)
+            } else {
+                hide()
+            }
+        }
     }
 
     // customizes the vertical post action view
@@ -75,10 +126,28 @@ object LMFeedPostBinderUtils {
         }
     }
 
+    // customizes the top response view of the post
+    fun customizePostTopResponseView(postTopResponseView: LMFeedPostTopResponseView) {
+        postTopResponseView.apply {
+            val postTopResponseViewStyle =
+                LMFeedStyleTransformer.postViewStyle.postTopResponseViewStyle
+
+            if (postTopResponseViewStyle == null) {
+                postTopResponseView.hide()
+            } else {
+                postTopResponseView.show()
+                postTopResponseView.setStyle(postTopResponseViewStyle)
+            }
+        }
+    }
+
     //bind post data to specific views
     fun setPostBindData(
         headerView: LMFeedPostHeaderView,
+        headingView: LMFeedTextView,
         contentView: LMFeedTextView,
+        postTopResponseView: LMFeedPostTopResponseView?,
+        postAnswerPromptView: LMFeedLabelImageContainerView?,
         data: LMFeedPostViewData,
         position: Int,
         topicsView: LMFeedChipGroup,
@@ -99,6 +168,14 @@ object LMFeedPostBinderUtils {
                 data.headerViewData
             )
 
+            // sets data to the heading view
+            setPostHeadingViewData(
+                headingView,
+                data,
+                postAdapterListener,
+                position
+            )
+
             // sets the text content of the post
             setPostContentViewData(
                 contentView,
@@ -107,9 +184,24 @@ object LMFeedPostBinderUtils {
                 position
             )
 
+            // sets the topics view of the post
             setPostTopicsViewData(
                 topicsView,
                 data.topicsViewData
+            )
+
+            // sets the top response view of the post
+            setPostTopResponse(
+                position,
+                postAdapterListener,
+                postTopResponseView,
+                data
+            )
+
+            // sets the answer prompt view of the post
+            setPostAnswerPrompt(
+                data,
+                postAnswerPromptView
             )
 
             executeBinder()
@@ -148,10 +240,10 @@ object LMFeedPostBinderUtils {
             val matchedKeyword = contentViewData.keywordMatchedInPostText
 
             val postContentStyle = LMFeedStyleTransformer.postViewStyle.postContentTextStyle
-            val postTextStyle = postContentStyle.postTextViewStyle
-            val searchHighlightedStyle = postContentStyle.searchHighlightedViewStyle
+            val postTextStyle = postContentStyle.textContentViewStyle
+            val searchHighlightedStyle = postContentStyle.searchHighlightedTextViewStyle
 
-            val maxLines = (postTextStyle.maxLines ?: LMFeedTheme.DEFAULT_POST_MAX_LINES)
+            val maxLines = (postTextStyle.maxLines ?: LMFeedAppearance.DEFAULT_POST_MAX_LINES)
 
             //if used while searching a post, when matchedKeyword is not null
             if (!matchedKeyword.isNullOrEmpty()) {
@@ -205,7 +297,7 @@ object LMFeedPostBinderUtils {
                 }
             } else {
                 //in normal cases
-                var alreadySeenFullContent = contentViewData.alreadySeenFullContent == true
+                var alreadySeenFullContent = contentViewData.alreadySeenFullText == true
 
                 val textForLinkify = postContent.getValidTextForLinkify()
 
@@ -228,7 +320,7 @@ object LMFeedPostBinderUtils {
                         enableClick = true,
                         highlightColor = ContextCompat.getColor(
                             context,
-                            LMFeedTheme.getTextLinkColor()
+                            LMFeedAppearance.getTextLinkColor()
                         ),
                         hasAtRateSymbol = true,
                     ) { route ->
@@ -246,7 +338,7 @@ object LMFeedPostBinderUtils {
                     val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
                         this,
                         maxLines,
-                        LMFeedTheme.getPostCharacterLimit()
+                        LMFeedAppearance.getPostCharacterLimit()
                     )
 
                     val trimmedText =
@@ -258,7 +350,7 @@ object LMFeedPostBinderUtils {
 
                     //creating see more spannable text for expanding post content.
                     val seeMoreSpannableStringBuilder = SpannableStringBuilder()
-                    val expandableText = postContentStyle.postTextViewStyle.expandableCTAText
+                    val expandableText = postTextStyle.expandableCTAText
 
                     if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
 
@@ -281,7 +373,7 @@ object LMFeedPostBinderUtils {
                                     return@setOnClickListener
                                 }
                                 alreadySeenFullContent = true
-                                val updatedPost = updatePostForSeeFullContent(postViewData)
+                                val updatedPost = updatePostContentForSeeFullContent(postViewData)
                                 postAdapterListener.onPostContentSeeMoreClicked(
                                     position,
                                     updatedPost
@@ -324,7 +416,159 @@ object LMFeedPostBinderUtils {
         }
     }
 
-    //sets the data in the post horizontal action view
+    //sets data in post heading view
+    private fun setPostHeadingViewData(
+        headingView: LMFeedTextView,
+        postViewData: LMFeedPostViewData,
+        postAdapterListener: LMFeedPostAdapterListener,
+        position: Int
+    ) {
+        headingView.apply {
+            val postContentTextStyle =
+                LMFeedStyleTransformer.postViewStyle.postContentTextStyle
+
+            val postContentViewData = postViewData.contentViewData
+
+            if (postContentTextStyle.headingContentViewStyle == null
+                || postContentViewData.heading.isNullOrEmpty()
+            ) {
+                headingView.hide()
+            } else {
+                headingView.show()
+
+                val postHeading = postContentViewData.heading
+                val matchedKeyword = postContentViewData.keywordMatchedInPostHeading
+
+                val postHeadingStyle = postContentTextStyle.headingContentViewStyle
+                val searchHeadingHighlightedStyle =
+                    postContentTextStyle.searchHighlightedHeadingViewStyle
+
+                val maxLines =
+                    (postHeadingStyle.maxLines ?: LMFeedAppearance.DEFAULT_POST_MAX_LINES)
+
+                //if used while searching a post, when matchedKeyword is not null
+                if (!matchedKeyword.isNullOrEmpty()) {
+                    post {
+                        setOnClickListener {
+                            postAdapterListener.onPostHeadingClicked(position, postViewData)
+                        }
+
+                        val tvPostText = SpannableStringBuilder()
+
+                        // get the color of text and background
+                        val textColor =
+                            searchHeadingHighlightedStyle?.textColor ?: R.color.lm_feed_black
+                        val backgroundColor =
+                            searchHeadingHighlightedStyle?.backgroundColor
+                                ?: R.color.lm_feed_transparent
+
+                        // update the post's text
+                        tvPostText.append(
+                            LMFeedSearchUtil.getTrimmedText(
+                                postHeading,
+                                matchedKeyword,
+                                ContextCompat.getColor(context, textColor),
+                                ContextCompat.getColor(context, backgroundColor)
+                            )
+                        )
+
+                        headingView.setText(tvPostText, TextView.BufferType.SPANNABLE)
+                    }
+                } else {
+                    //in normal cases
+                    var alreadySeenFullContent = postContentViewData.alreadySeenFullHeading == true
+
+                    post {
+                        setOnClickListener {
+                            postAdapterListener.onPostHeadingClicked(position, postViewData)
+                        }
+
+                        setText(postHeading, TextView.BufferType.EDITABLE)
+
+                        //shortens the text of the post to that of maxLines
+                        val shortText: String? = LMFeedSeeMoreUtil.getShortContent(
+                            this,
+                            maxLines,
+                            LMFeedAppearance.getPostHeadingLimit()
+                        )
+
+                        val trimmedText =
+                            if (!alreadySeenFullContent && !shortText.isNullOrEmpty()) {
+                                editableText.subSequence(0, shortText.length)
+                            } else {
+                                editableText
+                            }
+
+                        //creating see more spannable text for expanding post heading.
+                        val seeMoreSpannableStringBuilder = SpannableStringBuilder()
+                        val expandableText = postHeadingStyle.expandableCTAText
+
+                        if (!alreadySeenFullContent && !shortText.isNullOrEmpty() && expandableText != null) {
+
+                            val expandableTextColor = ContextCompat.getColor(
+                                context,
+                                postHeadingStyle.expandableCTAColor ?: R.color.lm_feed_brown_grey
+                            )
+                            val expandSpannable = SpannableStringBuilder(expandableText)
+                            expandSpannable.setSpan(
+                                ForegroundColorSpan(expandableTextColor),
+                                0,
+                                expandSpannable.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+
+                            //handling click of spannable text
+                            val seeMoreClickableSpan = object : ClickableSpan() {
+                                override fun onClick(view: View) {
+                                    setOnClickListener {
+                                        return@setOnClickListener
+                                    }
+                                    alreadySeenFullContent = true
+                                    val updatedPost =
+                                        updatePostHeadingForSeeFullContent(postViewData)
+                                    postAdapterListener.onPostHeadingSeeMoreClicked(
+                                        position,
+                                        updatedPost
+                                    )
+                                }
+
+                                override fun updateDrawState(textPaint: TextPaint) {
+                                    textPaint.isUnderlineText = false
+                                }
+                            }
+
+                            seeMoreSpannableStringBuilder.append(expandSpannable)
+                            seeMoreSpannableStringBuilder.setSpan(
+                                seeMoreClickableSpan,
+                                0,
+                                expandSpannable.length,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+
+                        text = TextUtils.concat(
+                            trimmedText,
+                            seeMoreSpannableStringBuilder
+                        )
+
+                        //handling click of web links or email addresses or phone numbers in post content
+                        val linkifyLinks =
+                            (Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS)
+                        LinkifyCompat.addLinks(this, linkifyLinks)
+                        movementMethod = LMFeedLinkMovementMethod {
+                            setOnClickListener {
+                                return@setOnClickListener
+                            }
+
+                            true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // sets the data in the post horizontal action view
     fun setPostHorizontalActionViewData(
         horizontalActionView: LMFeedPostActionHorizontalView,
         postActionViewData: LMFeedPostActionViewData
@@ -336,12 +580,24 @@ object LMFeedPostBinderUtils {
             val likesCount = postActionViewData.likesCount
 
             val likesCountText = if (likesCount == 0) {
-                context.getString(R.string.lm_feed_like)
+                context.getString(
+                    R.string.lm_feed_s_like,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
+                val likeString = if (likesCount == 1) {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
                 context.resources.getQuantityString(
-                    R.plurals.lm_feed_likes,
+                    R.plurals.lm_feed_s_likes,
                     likesCount,
-                    likesCount
+                    likesCount,
+                    likeString
                 )
             }
             setLikesCount(likesCountText)
@@ -349,13 +605,65 @@ object LMFeedPostBinderUtils {
             val commentsCount = postActionViewData.commentsCount
 
             val commentsCountText = if (commentsCount == 0) {
-                context.getString(R.string.lm_feed_add_comment)
-            } else {
-                context.resources.getQuantityString(
-                    R.plurals.lm_feed_comments,
-                    commentsCount,
-                    commentsCount
+                context.getString(
+                    R.string.lm_feed_add_s_comment,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_PLURAL)
                 )
+            } else {
+                val commentString = if (commentsCount == 1) {
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                } else {
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_PLURAL)
+                }
+                context.resources.getQuantityString(
+                    R.plurals.lm_feed_s_comments,
+                    commentsCount,
+                    commentsCount,
+                    commentString
+                )
+            }
+            setCommentsCount(commentsCountText)
+        }
+    }
+
+    // sets the data in the post qna horizontal action view
+    fun setPostQnAHorizontalActionViewData(
+        qnaHorizontalActionView: LMFeedPostQnAActionHorizontalView,
+        postActionViewData: LMFeedPostActionViewData
+    ) {
+        qnaHorizontalActionView.apply {
+            setUpvoteIcon(postActionViewData.isLiked)
+            setSaveIcon(postActionViewData.isSaved)
+
+            val upvoteCount = postActionViewData.likesCount
+
+            val upvoteCountText = if (upvoteCount == 0) {
+                ""
+            } else {
+                upvoteCount.toString()
+            }
+            setUpvoteText(
+                context.getString(
+                    R.string.lm_feed_s_likes,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            )
+            setUpvoteCount(upvoteCountText)
+
+            val commentsCount = postActionViewData.commentsCount
+
+            val commentsCountText = if (commentsCount == 0) {
+                context.getString(
+                    R.string.lm_feed_s_answer,
+                    LMFeedCommunityUtil.getCommentVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            } else {
+                commentsCount.toString()
             }
             setCommentsCount(commentsCountText)
         }
@@ -372,7 +680,11 @@ object LMFeedPostBinderUtils {
             val likesCount = postActionViewData.likesCount
 
             val likesCountText = if (likesCount == 0) {
-                context.getString(R.string.lm_feed_like)
+                context.getString(
+                    R.string.lm_feed_s_like,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
                 likesCount.toLong().getFormatedNumber()
             }
@@ -395,6 +707,74 @@ object LMFeedPostBinderUtils {
                 topics.forEach { topic ->
                     addChip(topic.name, LMFeedStyleTransformer.postViewStyle.postTopicChipsStyle)
                 }
+            }
+        }
+    }
+
+    // sets the data in post top response view
+    private fun setPostTopResponse(
+        position: Int,
+        postAdapterListener: LMFeedPostAdapterListener,
+        postTopResponseView: LMFeedPostTopResponseView?,
+        postViewData: LMFeedPostViewData
+    ) {
+        postTopResponseView?.apply {
+            val topResponses = postViewData.topResponses
+            if (topResponses.isEmpty()) {
+                hide()
+            } else {
+                show()
+
+                val topResponse = topResponses.first()
+
+                setTopResponseTitle(context.getString(R.string.lm_feed_top_response))
+                setAuthorImage(topResponse.user)
+                setAuthorName(topResponse.user.name)
+                setTimestamp(topResponse.createdAt)
+
+                postTopResponseView.setTopResponseContent(
+                    topResponse.text,
+                    topResponse.alreadySeenFullContent,
+                    onTopResponseContentClicked = {
+                        postAdapterListener.onPostTopResponseContentClicked(
+                            position,
+                            postViewData
+                        )
+                    },
+                    onTopResponseSeeMoreClickListener = {
+                        val updatedPost = updatePostForSeeFullTopResponseContent(postViewData)
+                        postAdapterListener.onPostTopResponseSeeMoreClicked(
+                            position,
+                            updatedPost
+                        )
+                    },
+                    onMemberTagClickListener = { uuid ->
+                        postAdapterListener.onPostTopResponseTaggedMemberClicked(position, uuid)
+                    }
+                )
+            }
+        }
+    }
+
+    // sets the data in answer prompt view of the post
+    private fun setPostAnswerPrompt(
+        data: LMFeedPostViewData,
+        postAnswerPromptView: LMFeedLabelImageContainerView?
+    ) {
+        postAnswerPromptView?.apply {
+            if (data.actionViewData.commentsCount == 0) {
+                show()
+                val loggedInUserImage = LMFeedUserPreferences(context).getUserImage()
+                setContainerImage(loggedInUserImage)
+                setContainerLabel(
+                    context.getString(
+                        R.string.lm_feed_be_the_first_one_to_s,
+                        LMFeedCommunityUtil.getCommentVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                    )
+                )
+            } else {
+                hide()
             }
         }
     }
@@ -529,14 +909,37 @@ object LMFeedPostBinderUtils {
     }
 
     //updates post object for a see full content action and returns updated post
-    fun updatePostForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
+    private fun updatePostContentForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
         val contentViewData = oldPostViewData.contentViewData.toBuilder()
-            .alreadySeenFullContent(true)
+            .alreadySeenFullText(true)
             .build()
 
         //return updated comment view data
         return oldPostViewData.toBuilder()
             .contentViewData(contentViewData)
+            .build()
+    }
+
+    //updates post object for a see full content action on post heading and returns updated post
+    private fun updatePostHeadingForSeeFullContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
+        val contentViewData = oldPostViewData.contentViewData.toBuilder()
+            .alreadySeenFullHeading(true)
+            .build()
+
+        //return updated comment view data
+        return oldPostViewData.toBuilder()
+            .contentViewData(contentViewData)
+            .build()
+    }
+
+    //updates post object for a see full content action on the top response view and returns updated post
+    private fun updatePostForSeeFullTopResponseContent(oldPostViewData: LMFeedPostViewData): LMFeedPostViewData {
+        val topResponseViewData = oldPostViewData.topResponses.first().toBuilder()
+            .alreadySeenFullContent(true)
+            .build()
+
+        return oldPostViewData.toBuilder()
+            .topResponses(listOf(topResponseViewData))
             .build()
     }
 

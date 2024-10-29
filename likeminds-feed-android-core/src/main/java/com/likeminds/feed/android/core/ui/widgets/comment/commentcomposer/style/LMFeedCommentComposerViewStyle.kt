@@ -6,7 +6,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
@@ -58,7 +58,7 @@ class LMFeedCommentComposerViewStyle private constructor(
             .activeSrc(R.drawable.lm_feed_ic_comment_send_enable)
             .inActiveSrc(R.drawable.lm_feed_ic_comment_send_disable)
             .backgroundColor(R.color.lm_feed_white)
-            .iconTint(LMFeedTheme.getButtonColor())
+            .iconTint(LMFeedAppearance.getButtonColor())
             .build()
 
         private var commentRestrictedStyle: LMFeedTextStyle? = null
