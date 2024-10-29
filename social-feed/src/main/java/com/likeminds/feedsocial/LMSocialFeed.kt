@@ -48,7 +48,7 @@ class LMSocialFeed : Application(), LMFeedCoreCallback {
             )
 
             val task = GetTokensTask()
-            val tokens = task.getTokens(applicationContext, false)
+            val tokens = task.getTokens(applicationContext, true)
             Log.d(LM_SOCIAL_FEED_TAG, "tokens: $tokens")
             tokens
         }

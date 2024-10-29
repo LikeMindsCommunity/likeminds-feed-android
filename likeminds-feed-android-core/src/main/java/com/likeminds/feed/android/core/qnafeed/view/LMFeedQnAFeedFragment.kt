@@ -51,6 +51,8 @@ import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListe
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSelectedTopicAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
+import com.likeminds.feed.android.core.socialfeed.view.LMFeedPostingView
+import com.likeminds.feed.android.core.socialfeed.view.LMFeedTopicSelectorBarView
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionExtras
 import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelectionResultExtras
@@ -61,6 +63,7 @@ import com.likeminds.feed.android.core.ui.base.views.LMFeedFAB
 import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.labelimagecontainer.style.LMFeedLabelImageContainerViewStyle
+import com.likeminds.feed.android.core.ui.widgets.noentitylayout.view.LMFeedNoEntityLayoutView
 import com.likeminds.feed.android.core.ui.widgets.overflowmenu.view.LMFeedOverflowMenu
 import com.likeminds.feed.android.core.ui.widgets.poll.model.LMFeedAddPollOptionExtras
 import com.likeminds.feed.android.core.ui.widgets.poll.view.*
@@ -115,6 +118,9 @@ open class LMFeedQnAFeedFragment :
 
             customizeQnAFeedHeaderView(headerViewQna)
             customizeCreateNewPostButton(fabNewPost)
+            customizeNoPostLayout(layoutNoPost)
+            customizePostingLayout(layoutPosting)
+            customizeTopicSelectorBar(topicSelectorBar)
             customizePostHeaderView()
             customizePostContentView()
             customizePostHeadingView()
@@ -1001,6 +1007,60 @@ open class LMFeedQnAFeedFragment :
             .build()
 
         LMFeedSearchActivity.start(requireContext(), searchExtras)
+    }
+
+    //customizes the no post layout
+    protected open fun customizeNoPostLayout(layoutNoPost: LMFeedNoEntityLayoutView) {
+        layoutNoPost.apply {
+            val postAsVariable = LMFeedCommunityUtil.getPostVariable()
+
+            setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.noPostLayoutViewStyle)
+
+            setTitleText(
+                getString(
+                    R.string.lm_feed_no_s_to_show,
+                    postAsVariable.pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            )
+            setSubtitleText(
+                getString(
+                    R.string.lm_feed_be_the_first_one_to_s_here,
+                    postAsVariable.pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            )
+            setActionCTAText(
+                getString(
+                    R.string.lm_feed_new_s,
+                    postAsVariable.pluralizeOrCapitalize(LMFeedWordAction.ALL_CAPITAL_SINGULAR)
+                )
+            )
+        }
+    }
+
+    //customizes the posting layout
+    protected open fun customizePostingLayout(layoutPosting: LMFeedPostingView) {
+        layoutPosting.apply {
+            setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.postingViewStyle)
+
+            setPostingText(
+                getString(
+                    R.string.lm_feed_creating_s,
+                    LMFeedCommunityUtil.getPostVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
+            )
+            setRetryCTAText(getString(R.string.lm_feed_retry))
+        }
+    }
+
+    //customizes the topic selector bar
+    protected open fun customizeTopicSelectorBar(topicSelectorBar: LMFeedTopicSelectorBarView) {
+        topicSelectorBar.apply {
+            setStyle(LMFeedStyleTransformer.qnaFeedFragmentViewStyle.topicSelectorBarStyle)
+
+            setAllTopicsText(getString(R.string.lm_feed_all_topics))
+            setClearTopicsText(getString(R.string.lm_feed_clear))
+        }
     }
 
     private val topicSelectionLauncher =

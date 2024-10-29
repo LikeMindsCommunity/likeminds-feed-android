@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     private fun callInitiateUser(callback: (String, String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val task = GetTokensTask()
-            val tokens = task.getTokens(applicationContext, false)
+            val tokens = task.getTokens(applicationContext, true)
             Log.d(LM_VIDEO_FEED_TAG, "tokens: $tokens")
             callback(tokens.first, tokens.second)
         }
