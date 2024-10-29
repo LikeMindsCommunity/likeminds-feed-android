@@ -312,6 +312,9 @@ open class LMFeedCreatePostFragment :
                 LMFeedStyleTransformer.createPostFragmentViewStyle.postHeadingComposerStyle
 
             if (postHeadingComposerStyle != null) {
+                /** sets the ime options to [IME_ACTION_NEXT] and raw input type to [TYPE_TEXT_FLAG_CAP_SENTENCES]
+                 * to provide the Next button on keypad and start the sentence with capital letter
+                 */
                 imeOptions = EditorInfo.IME_ACTION_NEXT
                 setRawInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
 
