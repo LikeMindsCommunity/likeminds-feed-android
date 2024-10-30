@@ -24,7 +24,7 @@ class LMFeedLabelImageContainerViewStyle private constructor(
             .build()
 
         private var containerLabelStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()
-            .textSize(R.dimen.lm_feed_text_large)
+            .textSize(R.dimen.lm_feed_text_medium)
             .textColor(R.color.lm_feed_grey_brown_50)
             .fontResource(R.font.lm_feed_roboto)
             .build()
