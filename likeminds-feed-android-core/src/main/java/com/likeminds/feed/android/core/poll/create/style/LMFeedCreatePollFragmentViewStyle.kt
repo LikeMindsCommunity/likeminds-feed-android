@@ -3,7 +3,7 @@ package com.likeminds.feed.android.core.poll.create.style
 import android.text.TextUtils
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
@@ -69,7 +69,7 @@ class LMFeedCreatePollFragmentViewStyle private constructor(
                     .fontResource(R.font.lm_feed_roboto_medium)
                     .build()
             )
-            .activeSubmitColor(LMFeedTheme.getButtonColor())
+            .activeSubmitColor(LMFeedAppearance.getButtonColor())
             .navigationIconStyle(
                 LMFeedIconStyle.Builder()
                     .iconTint(R.color.lm_feed_black)
@@ -104,7 +104,7 @@ class LMFeedCreatePollFragmentViewStyle private constructor(
             .build()
 
         private var pollQuestionTitleViewStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()
-            .textColor(LMFeedTheme.getButtonColor())
+            .textColor(LMFeedAppearance.getButtonColor())
             .textSize(R.dimen.lm_feed_text_large)
             .fontResource(R.font.lm_feed_roboto)
             .maxLines(1)
@@ -122,14 +122,14 @@ class LMFeedCreatePollFragmentViewStyle private constructor(
             .build()
 
         private var pollOptionsTitleViewStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()
-            .textColor(LMFeedTheme.getButtonColor())
+            .textColor(LMFeedAppearance.getButtonColor())
             .textSize(R.dimen.lm_feed_text_large)
             .fontResource(R.font.lm_feed_roboto)
             .maxLines(1)
             .build()
 
         private var pollAddOptionViewStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()
-            .textColor(LMFeedTheme.getButtonColor())
+            .textColor(LMFeedAppearance.getButtonColor())
             .textSize(R.dimen.lm_feed_text_large)
             .fontResource(R.font.lm_feed_roboto)
             .maxLines(1)
@@ -138,7 +138,7 @@ class LMFeedCreatePollFragmentViewStyle private constructor(
             .build()
 
         private var pollExpiryTimeTitleViewStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()
-            .textColor(LMFeedTheme.getButtonColor())
+            .textColor(LMFeedAppearance.getButtonColor())
             .textSize(R.dimen.lm_feed_text_large)
             .fontResource(R.font.lm_feed_roboto)
             .maxLines(1)
@@ -171,7 +171,7 @@ class LMFeedCreatePollFragmentViewStyle private constructor(
                         .textColor(R.color.lm_feed_black)
                         .build()
                 )
-                .trackColor(LMFeedTheme.getButtonColor())
+                .trackColor(LMFeedAppearance.getButtonColor())
                 .thumbColor(R.color.lm_feed_white_smoke)
                 .build()
 

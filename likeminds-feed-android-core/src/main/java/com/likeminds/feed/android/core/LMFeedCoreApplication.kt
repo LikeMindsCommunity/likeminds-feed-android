@@ -29,6 +29,9 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
         private var credentialsProvider: CognitoCachingCredentialsProvider? = null
         private var s3Client: AmazonS3Client? = null
 
+        // the active theme being used
+        var selectedTheme: LMFeedTheme = LMFeedTheme.SOCIAL_FEED
+
         /**
          * @return Singleton Instance of Core Application class
          * */
@@ -92,6 +95,7 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
 
     fun initCoreApplication(
         application: Application,
+        theme: LMFeedTheme,
         lmFeedCoreCallback: LMFeedCoreCallback?,
         domain: String? = null,
         enablePushNotifications: Boolean = false,
@@ -99,6 +103,8 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
     ) {
         //instantiates the cache data source factory for caching videos
         LMFeedVideoCache.getCacheDataSourceFactory(application.applicationContext)
+
+        selectedTheme = theme
 
         mClient = LMFeedClient.Builder(application)
             .lmCallback(this)
@@ -115,7 +121,7 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
 
     override fun onRefreshTokenExpired(): Pair<String?, String?> {
         val apiKey = mClient.getAPIKey().data
-        return if (apiKey != null) {
+        return if (!apiKey.isNullOrEmpty()) {
             runBlocking {
                 val user = mClient.getLoggedInUserWithRights().data?.user
                 if (user != null) {
@@ -131,10 +137,10 @@ class LMFeedCoreApplication : LMFeedSDKCallback {
                         val refreshToken = response.data?.refreshToken ?: ""
                         Pair(accessToken, refreshToken)
                     } else {
-                        Pair("", "")
+                        Pair(null, null)
                     }
                 } else {
-                    Pair("", "")
+                    Pair(null, null)
                 }
             }
         } else {

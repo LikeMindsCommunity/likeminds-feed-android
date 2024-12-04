@@ -25,7 +25,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_view_social" />
 
-        <com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialTopicSelectorBarView
+        <com.likeminds.feed.android.core.socialfeed.view.LMFeedTopicSelectorBarView
             android:id="@+id/topic_selector_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

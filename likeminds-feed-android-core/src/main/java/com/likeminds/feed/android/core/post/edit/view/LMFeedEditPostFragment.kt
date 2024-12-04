@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.text.*
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CheckResult
@@ -19,8 +19,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.likeminds.feed.android.core.*
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
-import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentEditPostBinding
 import com.likeminds.feed.android.core.databinding.LmFeedItemMultipleMediaVideoBinding
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollViewData
@@ -41,9 +41,8 @@ import com.likeminds.feed.android.core.topicselection.model.LMFeedTopicSelection
 import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionActivity
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
-import com.likeminds.feed.android.core.ui.base.views.LMFeedEditText
-import com.likeminds.feed.android.core.ui.base.views.LMFeedProgressBar
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.base.views.*
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedPostPollView
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.view.LMFeedPostHeaderView
@@ -79,7 +78,6 @@ open class LMFeedEditPostFragment :
     LMFeedPostAdapterListener {
 
     private lateinit var binding: LmFeedFragmentEditPostBinding
-
     private lateinit var editPostExtras: LMFeedEditPostExtras
 
     private var postMediaViewData: LMFeedMediaViewData? = null
@@ -161,6 +159,9 @@ open class LMFeedEditPostFragment :
             customizePostMultipleMedia(multipleMediaAttachment.multipleMediaView)
             customizeEditPostProgressbar(progressBar.progressView)
             customizePostPollAttachmentView(pollView)
+            customizePostHeadingComposer(etPostHeadingComposer)
+            customizePostHeadingLimit(tvHeadingLimit)
+
             return binding.root
         }
     }
@@ -192,6 +193,18 @@ open class LMFeedEditPostFragment :
 
     //customizes post composer edit text
     protected open fun customizePostComposer(etPostComposer: LMFeedEditText) {
+        // sets the hint to the post composer edit text
+        val hint = when (LMFeedCoreApplication.selectedTheme) {
+            LMFeedTheme.QNA_FEED -> {
+                getString(R.string.lm_feed_add_description)
+            }
+
+            else -> {
+                getString(R.string.lm_feed_write_something_here)
+            }
+        }
+        etPostComposer.hint = hint
+
         etPostComposer.setStyle(LMFeedStyleTransformer.editPostFragmentViewStyle.postComposerStyle)
     }
 
@@ -261,6 +274,56 @@ open class LMFeedEditPostFragment :
         pollView.setStyle(updatedPollStyles)
     }
 
+    //customize post heading composer edit text
+    protected open fun customizePostHeadingComposer(etPostHeadingComposer: LMFeedEditText) {
+        etPostHeadingComposer.apply {
+            val postHeadingComposerStyle =
+                LMFeedStyleTransformer.editPostFragmentViewStyle.postHeadingComposerStyle
+
+            if (postHeadingComposerStyle != null) {
+                /** sets the ime options to [IME_ACTION_NEXT] and raw input type to [TYPE_TEXT_FLAG_CAP_SENTENCES]
+                 * to provide the Next button on keypad and start the sentence with capital letter
+                 */
+                imeOptions = EditorInfo.IME_ACTION_NEXT
+                setRawInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+
+                setStyle(postHeadingComposerStyle)
+                LMFeedViewUtils.getMandatoryAsterisk(
+                    getString(
+                        R.string.lm_feed_add_your_s_here,
+                        LMFeedCommunityUtil.getPostVariable()
+                            .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                    ),
+                    etPostHeadingComposer
+                )
+                show()
+                binding.headingSeparator.show()
+            } else {
+                hide()
+                binding.headingSeparator.hide()
+            }
+        }
+    }
+
+    //customize post heading limit text
+    protected open fun customizePostHeadingLimit(tvPostHeadingLimitTextView: LMFeedTextView) {
+        tvPostHeadingLimitTextView.apply {
+            val postHeadingLimitTextViewStyle =
+                LMFeedStyleTransformer.editPostFragmentViewStyle.postHeadingLimitTextStyle
+
+            if (postHeadingLimitTextViewStyle != null) {
+                binding.etPostHeadingComposer.filters =
+                    arrayOf(InputFilter.LengthFilter(LMFeedAppearance.getPostHeadingLimit()))
+
+                setStyle(postHeadingLimitTextViewStyle)
+                setPostHeadingLimitText(this, 0)
+                show()
+            } else {
+                hide()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -292,7 +355,7 @@ open class LMFeedEditPostFragment :
         val config = UserTaggingConfig.Builder()
             .editText(binding.etPostComposer)
             .maxHeightInPercentage(0.4f)
-            .color(LMFeedTheme.getTextLinkColor())
+            .color(LMFeedAppearance.getTextLinkColor())
             .hasAtRateSymbol(true)
             .build()
 
@@ -320,6 +383,8 @@ open class LMFeedEditPostFragment :
             val updatedText = memberTagging.replaceSelectedMembers(text).trim()
             val topics = selectedTopic.values
 
+            val updatedHeading = etPostHeadingComposer.text?.trim().toString()
+
             //get media attachments from post
             val mediaAttachments = postMediaViewData?.attachments?.filter {
                 it.attachmentType != CUSTOM_WIDGET
@@ -333,6 +398,7 @@ open class LMFeedEditPostFragment :
                     editPostViewModel.editPost(
                         editPostExtras.postId,
                         updatedText,
+                        updatedHeading,
                         attachments = mediaAttachments,
                         ogTags = ogTags,
                         selectedTopics = topics.toList(),
@@ -350,6 +416,7 @@ open class LMFeedEditPostFragment :
                 editPostViewModel.editPost(
                     editPostExtras.postId,
                     updatedText,
+                    updatedHeading,
                     attachments = mediaAttachments,
                     ogTags = ogTags,
                     selectedTopics = topics.toList(),
@@ -514,8 +581,14 @@ open class LMFeedEditPostFragment :
             UserTaggingDecoder.decode(
                 etPostComposer,
                 post.contentViewData.text,
-                ContextCompat.getColor(requireContext(), LMFeedTheme.getTextLinkColor())
+                ContextCompat.getColor(requireContext(), LMFeedAppearance.getTextLinkColor())
             )
+
+            // sets the heading to the heading edit text
+            val heading = post.contentViewData.heading
+            if (!heading.isNullOrEmpty()) {
+                etPostHeadingComposer.setText(heading)
+            }
 
             // sets the cursor to the end and opens keyboard
             etPostComposer.setSelection(etPostComposer.length())
@@ -593,6 +666,7 @@ open class LMFeedEditPostFragment :
             }
 
             initPostComposerTextListener()
+            initPostHeadingComposerTextListener()
         }
     }
 
@@ -647,19 +721,54 @@ open class LMFeedEditPostFragment :
 
             // text watcher to handleSaveButton click-ability
             addTextChangedListener {
-                val text = it?.toString()?.trim()
-                if (text.isNullOrEmpty()) {
-                    clearPreviewLink()
-                    if (postMediaViewData != null) {
-                        binding.headerViewEditPost.setSubmitButtonEnabled(isEnabled = true)
-                    } else {
-                        binding.headerViewEditPost.setSubmitButtonEnabled(isEnabled = false)
-                    }
-                } else {
-                    binding.headerViewEditPost.setSubmitButtonEnabled(isEnabled = true)
-                }
+                handleSubmitButtonVisibility()
             }
         }
+    }
+
+    // adds text change listener on post heading edit text
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initPostHeadingComposerTextListener() {
+        binding.etPostHeadingComposer.apply {
+            /**
+             * As the scrollable edit text is inside a scroll view,
+             * this touch listener handles the scrolling of the edit text.
+             * When the edit text is touched and has focus then it disables scroll of scroll-view.
+             */
+            setOnTouchListener(View.OnTouchListener { v, event ->
+                if (hasFocus()) {
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                    when (event.action and MotionEvent.ACTION_MASK) {
+                        MotionEvent.ACTION_SCROLL -> {
+                            v.parent.requestDisallowInterceptTouchEvent(false)
+                            return@OnTouchListener true
+                        }
+                    }
+                }
+                false
+            })
+
+            addTextChangedListener {
+                val text = it?.toString()?.trim()
+                if (text != null) {
+                    setPostHeadingLimitText(binding.tvHeadingLimit, text.length)
+                }
+
+                handleSubmitButtonVisibility()
+            }
+        }
+    }
+
+    //sets the heading limit text to the heading limit text view
+    protected open fun setPostHeadingLimitText(
+        headingTextView: LMFeedTextView,
+        headingTextLength: Int
+    ) {
+        headingTextView.text = getString(
+            R.string.lm_feed_heading_limit_text_d,
+            headingTextLength,
+            LMFeedAppearance.getPostHeadingLimit()
+        )
     }
 
     /**
@@ -813,7 +922,7 @@ open class LMFeedEditPostFragment :
 
     //shows single image preview
     private fun showSingleImagePreview() {
-        binding.headerViewEditPost.setSubmitButtonEnabled(isEnabled = true)
+        handleSubmitButtonVisibility()
         val attachmentUrl = postMediaViewData?.attachments?.firstOrNull {
             it.attachmentType == IMAGE
         }?.attachmentMeta?.url ?: return
@@ -843,7 +952,7 @@ open class LMFeedEditPostFragment :
 
     //shows documents preview
     private fun showDocumentsPreview() {
-        binding.headerViewEditPost.setSubmitButtonEnabled(isEnabled = true)
+        handleSubmitButtonVisibility()
         binding.documentsAttachment.root.show()
         binding.documentsAttachment.postDocumentsMediaView.apply {
 
@@ -873,7 +982,7 @@ open class LMFeedEditPostFragment :
     //shows multimedia preview
     private fun showMultiMediaPreview() {
         binding.apply {
-            headerViewEditPost.setSubmitButtonEnabled(isEnabled = true)
+            handleSubmitButtonVisibility()
             multipleMediaAttachment.root.show()
             postMediaViewData?.attachments?.let {
                 multipleMediaAttachment.multipleMediaView.setViewPager(
@@ -928,6 +1037,22 @@ open class LMFeedEditPostFragment :
         postMediaViewData = null
         binding.linkPreview.apply {
             root.hide()
+        }
+    }
+
+    // handles the visible of submit post button
+    private fun handleSubmitButtonVisibility() {
+        binding.apply {
+            if (LMFeedStyleTransformer.editPostFragmentViewStyle.postHeadingComposerStyle != null) {
+                headerViewEditPost.setSubmitButtonEnabled(
+                    !etPostHeadingComposer.text?.trim().isNullOrEmpty()
+                )
+            } else {
+                headerViewEditPost.setSubmitButtonEnabled(
+                    !etPostComposer.text?.trim()
+                        .isNullOrEmpty() || (postMediaViewData != null)
+                )
+            }
         }
     }
 

@@ -22,7 +22,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -37,9 +36,14 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/LMFeedAppTheme.NoActionBar" />
+
+        <activity
+            android:name=".SocialFeedActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/LMFeedAppTheme.NoActionBar" />

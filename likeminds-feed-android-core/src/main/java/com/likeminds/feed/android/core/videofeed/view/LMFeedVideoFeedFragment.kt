@@ -26,6 +26,8 @@ import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
 import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
@@ -38,7 +40,8 @@ import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListe
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
 import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
@@ -70,10 +73,6 @@ open class LMFeedVideoFeedFragment :
         LMFeedPostVideoPreviewAutoPlayHelper.getInstance()
     }
 
-    private var pageToCall: Int = 0
-
-    private var previousTotal: Int = 0
-
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
         private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
@@ -87,29 +86,14 @@ open class LMFeedVideoFeedFragment :
     ): View {
         binding = LmFeedFragmentVideoFeedBinding.inflate(layoutInflater)
 
+        setVerticalVideoPostViewStyle()
         setupVideoFeed()
         binding.apply {
             customizeVideoFeedListView(binding.vp2VideoFeed, videoFeedAdapter)
         }
+        setViewPagerAdapter()
 
         return binding.root
-    }
-
-    //sets up the video feed
-    private fun setupVideoFeed() {
-        binding.vp2VideoFeed.apply {
-            for (i in 0 until childCount) {
-                if (getChildAt(i) is RecyclerView) {
-                    val recyclerView = getChildAt(i) as RecyclerView
-                    val itemAnimator = recyclerView.itemAnimator
-                    if (itemAnimator != null && itemAnimator is SimpleItemAnimator) {
-                        itemAnimator.supportsChangeAnimations = false
-                    }
-                }
-            }
-        }
-        videoFeedAdapter = LMFeedVideoFeedAdapter(this)
-        setVerticalVideoPostViewStyle()
     }
 
     //sets view style to vertical video post
@@ -143,11 +127,14 @@ open class LMFeedVideoFeedFragment :
             )
             .postContentTextStyle(
                 postViewStyle.postContentTextStyle.toBuilder()
-                    .textColor(R.color.lm_feed_white)
-                    .maxLines(1)
-                    .expandableCTAText("...")
-                    .expandableCTAColor(R.color.lm_feed_white)
-                    .build()
+                    .postTextViewStyle(
+                        LMFeedTextStyle.Builder()
+                            .textColor(R.color.lm_feed_white)
+                            .maxLines(1)
+                            .expandableCTAText("...")
+                            .expandableCTAColor(R.color.lm_feed_white)
+                            .build()
+                    ).build()
             )
             .postActionViewStyle(
                 postActionViewStyle.toBuilder()
@@ -173,31 +160,18 @@ open class LMFeedVideoFeedFragment :
             .build()
     }
 
-    protected open fun customizeVideoFeedListView(
-        vp2VideoFeed: ViewPager2,
-        videoFeedAdapter: LMFeedVideoFeedAdapter
-    ) {
-        //customize video feed view here
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        fetchData()
-        initViewPager()
-        initSwipeRefreshLayout()
-        observeResponses()
-    }
-
-    //calls the getFeed() function to fetch feed videos
-    private fun fetchData() {
-        pageToCall++
-        videoFeedViewModel.getFeed(pageToCall)
-    }
-
-    //initializes the view pager
-    private fun initViewPager() {
+    private fun setupVideoFeed() {
         binding.vp2VideoFeed.apply {
+            for (i in 0 until childCount) {
+                if (getChildAt(i) is RecyclerView) {
+                    val recyclerView = getChildAt(i) as RecyclerView
+                    val itemAnimator = recyclerView.itemAnimator
+                    if (itemAnimator != null && itemAnimator is SimpleItemAnimator) {
+                        itemAnimator.supportsChangeAnimations = false
+                    }
+                }
+            }
+
             registerOnPageChangeCallback(object : OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
@@ -220,15 +194,52 @@ open class LMFeedVideoFeedFragment :
 
                     // Call API if the [VIDEO_PRELOAD_THRESHOLD] is reached
                     if (currentItem > 0 && currentItem >= size - VIDEO_PRELOAD_THRESHOLD) {
-                        if (videoFeedAdapter.itemCount > previousTotal) {
-                            previousTotal = videoFeedAdapter.itemCount
+                        if (size > videoFeedViewModel.previousTotal && !videoFeedViewModel.postsFinished) {
+                            videoFeedViewModel.previousTotal = size
                             fetchData()
                         }
                     }
                 }
             })
 
-            adapter = videoFeedAdapter
+            videoFeedAdapter = LMFeedVideoFeedAdapter(this@LMFeedVideoFeedFragment)
+        }
+    }
+
+    protected open fun customizeVideoFeedListView(
+        vp2VideoFeed: ViewPager2,
+        videoFeedAdapter: LMFeedVideoFeedAdapter
+    ) {
+        //customize video feed view here
+    }
+
+    //sets adapter to the view pager
+    private fun setViewPagerAdapter() {
+        binding.vp2VideoFeed.adapter = videoFeedAdapter
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (videoFeedViewModel.adapterItems.isEmpty()) {
+            fetchData()
+        } else {
+            videoFeedAdapter.replace(videoFeedViewModel.adapterItems.toList())
+            binding.vp2VideoFeed.apply {
+                post {
+                    setCurrentItem(videoFeedViewModel.adapterPosition, true)
+                }
+            }
+        }
+        initSwipeRefreshLayout()
+        observeResponses()
+    }
+
+    //calls the getFeed() function to fetch feed videos
+    private fun fetchData() {
+        videoFeedViewModel.apply {
+            pageToCall++
+            postViewModel.getFeed(pageToCall)
         }
     }
 
@@ -239,7 +250,7 @@ open class LMFeedVideoFeedFragment :
             setColorSchemeColors(
                 ContextCompat.getColor(
                     requireContext(),
-                    LMFeedTheme.getButtonColor()
+                    LMFeedAppearance.getButtonColor()
                 )
             )
 
@@ -251,17 +262,23 @@ open class LMFeedVideoFeedFragment :
 
     //processes the feed refreshed event
     protected open fun onFeedRefreshed() {
-        binding.apply {
+        videoFeedViewModel.apply {
             mSwipeRefreshLayout.isRefreshing = true
-            videoFeedViewModel.getFeed(1)
+            pageToCall = 1
+            postViewModel.getFeed(pageToCall)
         }
     }
 
     //observes live data responses
     private fun observeResponses() {
-        videoFeedViewModel.videoFeedResponse.observe(viewLifecycleOwner) { response ->
+        videoFeedViewModel.postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
             val posts = response.second
+
+            // update the variable that no new posts are available now
+            if (posts.isEmpty()) {
+                videoFeedViewModel.postsFinished = true
+            }
 
             //add only those posts which are supported by the adapter
             val finalPosts = posts.filter {
@@ -281,9 +298,22 @@ open class LMFeedVideoFeedFragment :
             }
         }
 
-        videoFeedViewModel.errorMessageEventFlow.onEach { response ->
+        videoFeedViewModel.postViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedVideoFeedViewModel.ErrorMessageEvent.LikePost -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
+                    videoFeedViewModel.pageToCall--
+                    val errorMessage = response.errorMessage
+                    mSwipeRefreshLayout.isRefreshing = false
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+
+                else -> {}
+            }
+        }.observeInLifecycle(viewLifecycleOwner)
+
+        videoFeedViewModel.helperViewModel.errorMessageEventFlow.onEach { response ->
+            when (response) {
+                is LMFeedHelperViewModel.ErrorMessageEvent.LikePost -> {
                     val postId = response.postId
 
                     //get post and index
@@ -317,11 +347,7 @@ open class LMFeedVideoFeedFragment :
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedVideoFeedViewModel.ErrorMessageEvent.VideoFeed -> {
-                    val errorMessage = response.errorMessage
-                    mSwipeRefreshLayout.isRefreshing = false
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
-                }
+                else -> {}
             }
         }.observeInLifecycle(viewLifecycleOwner)
     }
@@ -355,7 +381,9 @@ open class LMFeedVideoFeedFragment :
                 postVideoPreviewAutoPlayHelper.removePlayer()
                 return
             }
+
             val videoView = replaceVideoView(position) ?: return
+
             val url = data.mediaViewData.attachments.firstOrNull()?.attachmentMeta?.url ?: ""
 
             //plays the video in the [postVideoView]
@@ -415,6 +443,25 @@ open class LMFeedVideoFeedFragment :
         }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+
+        if (hidden) {
+            // remove the player when fragment is hidden
+            postVideoPreviewAutoPlayHelper.removePlayer()
+        } else {
+            // play the video when fragment is not hidden
+            val currentItem = binding.vp2VideoFeed.currentItem
+
+            if (currentItem >= 0
+                && videoFeedAdapter.itemCount > currentItem
+                && videoFeedAdapter.items()[currentItem] != null
+            ) {
+                playVideoInViewPager(currentItem)
+            }
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         postVideoPreviewAutoPlayHelper.removePlayer()
@@ -422,6 +469,10 @@ open class LMFeedVideoFeedFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (this::videoFeedAdapter.isInitialized && videoFeedAdapter.items().isNotEmpty()) {
+            val postItems = videoFeedAdapter.items().filterIsInstance<LMFeedPostViewData>()
+            videoFeedViewModel.setViewPagerState(binding.vp2VideoFeed.currentItem, postItems)
+        }
         postVideoPreviewAutoPlayHelper.removePlayer()
     }
 
@@ -431,7 +482,7 @@ open class LMFeedVideoFeedFragment :
         val loggedInUUID = userPreferences.getUUID()
 
         //call api
-        videoFeedViewModel.likePost(
+        videoFeedViewModel.helperViewModel.likePost(
             postViewData.id,
             postViewData.actionViewData.isLiked,
             loggedInUUID

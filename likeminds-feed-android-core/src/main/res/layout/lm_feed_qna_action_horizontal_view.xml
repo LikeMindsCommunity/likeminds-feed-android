@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/lm_qna_action_view_vertical_padding">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_upvote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/lm_feed_large_padding"
+            android:layout_marginTop="@dimen/lm_qna_action_view_vertical_margin"
+            android:paddingHorizontal="@dimen/lm_feed_medium_padding"
+            android:background="@drawable/lm_feed_background_qna_upvote_button"
+            android:paddingVertical="@dimen/lm_feed_small_padding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
+                android:id="@+id/iv_upvote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:srcCompat="@drawable/lm_feed_ic_upvote_unfilled"
+                tools:visibility="visible" />
+
+            <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+                android:id="@+id/tv_upvote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/lm_feed_small_margin"
+                android:text="@string/lm_feed_upvote"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_upvote"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription"
+                tools:srcCompat="@drawable/lm_feed_ic_upvote_unfilled"
+                tools:visibility="visible" />
+
+            <View
+                android:id="@+id/view_dot_upvotes_count"
+                android:layout_width="@dimen/lm_feed_dot_view_size"
+                android:layout_height="@dimen/lm_feed_dot_view_size"
+                android:layout_marginStart="@dimen/lm_feed_small_margin"
+                android:background="@drawable/lm_feed_shape_dot_grey"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_upvote"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+            <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+                android:id="@+id/tv_upvotes_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/lm_feed_small_margin"
+                android:foreground="?selectableItemBackground"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/view_dot_upvotes_count"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:fontFamily="@font/lm_feed_roboto"
+                tools:ignore="UnusedAttribute"
+                tools:text="31k"
+                tools:textColor="@color/lm_feed_grey"
+                tools:textSize="@dimen/lm_feed_text_medium" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+            android:id="@+id/tv_comments_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/lm_feed_comments_count_margin"
+            android:foreground="?selectableItemBackground"
+            android:gravity="center"
+            android:paddingVertical="@dimen/lm_feed_small_padding"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="@id/cl_upvote"
+            app:layout_constraintEnd_toStartOf="@id/iv_save"
+            app:layout_constraintTop_toTopOf="@id/cl_upvote"
+            tools:drawablePadding="@dimen/lm_feed_regular_padding"
+            tools:drawableStart="@drawable/lm_feed_ic_comment"
+            tools:fontFamily="@font/lm_feed_roboto"
+            tools:ignore="UnusedAttribute"
+            tools:text="@string/lm_feed_s_comment"
+            tools:textAlignment="center"
+            tools:textColor="@color/lm_feed_grey"
+            tools:textSize="@dimen/lm_feed_text_medium" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
+            android:id="@+id/iv_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/lm_feed_comments_count_margin"
+            android:padding="@dimen/lm_feed_small_padding"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@id/cl_upvote"
+            app:layout_constraintEnd_toStartOf="@id/iv_share"
+            app:layout_constraintTop_toTopOf="@id/cl_upvote"
+            tools:ignore="ContentDescription"
+            tools:srcCompat="@drawable/lm_feed_ic_bookmark_filled" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedIcon
+            android:id="@+id/iv_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/lm_feed_large_padding"
+            android:foreground="?selectableItemBackground"
+            android:padding="@dimen/lm_feed_small_padding"
+            android:scaleType="fitCenter"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/cl_upvote"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cl_upvote"
+            tools:ignore="ContentDescription,UnusedAttribute"
+            tools:srcCompat="@drawable/lm_feed_ic_share" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

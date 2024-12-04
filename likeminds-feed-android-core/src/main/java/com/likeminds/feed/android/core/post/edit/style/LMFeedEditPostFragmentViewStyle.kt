@@ -2,9 +2,9 @@ package com.likeminds.feed.android.core.post.edit.style
 
 import android.graphics.Typeface
 import android.text.TextUtils
-import com.likeminds.feed.android.core.R
+import com.likeminds.feed.android.core.*
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.alertdialog.style.LMFeedAlertDialogViewStyle
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.post.postheaderview.style.LMFeedPostHeaderViewStyle
@@ -17,6 +17,8 @@ import com.likeminds.feed.android.core.utils.model.LMFeedPadding
  * @property headerViewStyle : [LMFeedHeaderViewStyle] this will help you to customize the header view in the edit post fragment
  * @property postHeaderViewStyle : [LMFeedPostHeaderViewStyle] this will help you to customize the post header view in the edit post fragment
  * @property postComposerStyle : [LMFeedEditTextStyle] this will help you to customize the post composer edit text in the edit post fragment
+ * @property postHeadingComposerStyle: [LMFeedEditTextStyle] helps to customize the post heading composer in the edit post fragment
+ * @property postHeadingLimitTextStyle: [LMFeedTextStyle] helps to customize the post heading limit text view in the edit post fragment
  * @property progressBarStyle: [LMFeedProgressBarStyle] this will help you to customize the progress bar in the edit post fragment
  * @property selectTopicsChipStyle: [LMFeedChipStyle] this will help you to customize the select topics chip in the edit post fragment
  * @property editTopicsChipStyle: [LMFeedChipStyle] this will help you to customize the edit topics chip in the edit post fragment
@@ -29,6 +31,10 @@ class LMFeedEditPostFragmentViewStyle private constructor(
     val postHeaderViewStyle: LMFeedPostHeaderViewStyle,
     //post composer view style
     val postComposerStyle: LMFeedEditTextStyle,
+    //post heading composer view style
+    val postHeadingComposerStyle: LMFeedEditTextStyle?,
+    //post heading limit text style
+    val postHeadingLimitTextStyle: LMFeedTextStyle?,
     //progress bar view style
     val progressBarStyle: LMFeedProgressBarStyle,
     //select topics chip style
@@ -71,7 +77,7 @@ class LMFeedEditPostFragmentViewStyle private constructor(
                     .fontResource(R.font.lm_feed_roboto_medium)
                     .build()
             )
-            .activeSubmitColor(LMFeedTheme.getButtonColor())
+            .activeSubmitColor(LMFeedAppearance.getButtonColor())
             .build()
 
         private var postHeaderViewStyle: LMFeedPostHeaderViewStyle =
@@ -99,18 +105,48 @@ class LMFeedEditPostFragmentViewStyle private constructor(
                     .maxHeight(R.dimen.lm_feed_post_composer_max_height)
                     .minHeight(R.dimen.lm_feed_post_composer_min_height)
                     .textColor(R.color.lm_feed_dark_grey)
-                    .textSize(R.dimen.lm_feed_text_medium)
+                    .textSize(R.dimen.lm_feed_text_large)
                     .build()
             )
             .hintTextColor(R.color.lm_feed_maastricht_blue_40)
             .build()
+
+        private var postHeadingComposerStyle: LMFeedEditTextStyle? =
+            if (LMFeedCoreApplication.selectedTheme == LMFeedTheme.QNA_FEED) {
+                LMFeedEditTextStyle.Builder()
+                    .inputTextStyle(
+                        LMFeedTextStyle.Builder()
+                            .ellipsize(TextUtils.TruncateAt.END)
+                            .maxHeight(R.dimen.lm_feed_post_heading_composer_max_height)
+                            .minHeight(R.dimen.lm_feed_post_heading_composer_min_height)
+                            .textColor(R.color.lm_feed_dark_grey)
+                            .fontResource(R.font.lm_feed_roboto_medium)
+                            .textSize(R.dimen.lm_feed_text_large)
+                            .build()
+                    )
+                    .hintTextColor(R.color.lm_feed_maastricht_blue_40)
+                    .build()
+            } else {
+                null
+            }
+
+        private var postHeadingLimitTextStyle: LMFeedTextStyle? =
+            if (LMFeedCoreApplication.selectedTheme == LMFeedTheme.QNA_FEED) {
+                LMFeedTextStyle.Builder()
+                    .textColor(R.color.lm_feed_dark_grey_70)
+                    .textSize(R.dimen.lm_feed_text_small)
+                    .fontResource(R.font.lm_feed_roboto)
+                    .build()
+            } else {
+                null
+            }
 
         private var selectTopicsChipStyle: LMFeedChipStyle = LMFeedChipStyle.Builder()
             .chipBackgroundColor(R.color.lm_feed_majorelle_blue_10)
             .chipStartPadding(R.dimen.lm_feed_regular_padding)
             .chipIcon(R.drawable.lm_feed_ic_add_topics)
             .chipIconSize(R.dimen.lm_feed_chip_default_icon_size)
-            .chipIconTint(LMFeedTheme.getButtonColor())
+            .chipIconTint(LMFeedAppearance.getButtonColor())
             .build()
 
         private var editTopicsChipStyle: LMFeedChipStyle = LMFeedChipStyle.Builder()
@@ -119,12 +155,12 @@ class LMFeedEditPostFragmentViewStyle private constructor(
             .chipStartPadding(R.dimen.lm_feed_edit_chip_end_size)
             .chipIcon(R.drawable.lm_feed_ic_edit_topic)
             .chipIconSize(R.dimen.lm_feed_chip_default_icon_size)
-            .chipIconTint(LMFeedTheme.getButtonColor())
+            .chipIconTint(LMFeedAppearance.getButtonColor())
             .build()
 
         private var progressBarStyle: LMFeedProgressBarStyle = LMFeedProgressBarStyle.Builder()
             .isIndeterminate(false)
-            .progressColor(LMFeedTheme.getButtonColor())
+            .progressColor(LMFeedAppearance.getButtonColor())
             .build()
 
         private var disabledTopicsAlertDialogStyle: LMFeedAlertDialogViewStyle =
@@ -140,7 +176,7 @@ class LMFeedEditPostFragmentViewStyle private constructor(
                 .alertPositiveButtonStyle(
                     LMFeedTextStyle.Builder()
                         .textAllCaps(true)
-                        .textColor(LMFeedTheme.getButtonColor())
+                        .textColor(LMFeedAppearance.getButtonColor())
                         .textSize(R.dimen.lm_feed_text_small)
                         .typeface(Typeface.NORMAL)
                         .fontResource(R.font.lm_feed_roboto_medium)
@@ -158,6 +194,14 @@ class LMFeedEditPostFragmentViewStyle private constructor(
 
         fun postComposerStyle(postComposerStyle: LMFeedEditTextStyle) = apply {
             this.postComposerStyle = postComposerStyle
+        }
+
+        fun postHeadingComposerStyle(postHeadingComposerStyle: LMFeedEditTextStyle?) = apply {
+            this.postHeadingComposerStyle = postHeadingComposerStyle
+        }
+
+        fun postHeadingLimitTextStyle(postHeadingLimitTextStyle: LMFeedTextStyle?) = apply {
+            this.postHeadingLimitTextStyle = postHeadingLimitTextStyle
         }
 
         fun progressBarStyle(progressBarStyle: LMFeedProgressBarStyle) = apply {
@@ -181,6 +225,8 @@ class LMFeedEditPostFragmentViewStyle private constructor(
             headerViewStyle,
             postHeaderViewStyle,
             postComposerStyle,
+            postHeadingComposerStyle,
+            postHeadingLimitTextStyle,
             progressBarStyle,
             selectTopicsChipStyle,
             editTopicsChipStyle,
@@ -192,6 +238,8 @@ class LMFeedEditPostFragmentViewStyle private constructor(
         return Builder().headerViewStyle(headerViewStyle)
             .postHeaderViewStyle(postHeaderViewStyle)
             .postComposerStyle(postComposerStyle)
+            .postHeadingComposerStyle(postHeadingComposerStyle)
+            .postHeadingLimitTextStyle(postHeadingLimitTextStyle)
             .progressBarStyle(progressBarStyle)
             .selectTopicsChipStyle(selectTopicsChipStyle)
             .editTopicsChipStyle(editTopicsChipStyle)

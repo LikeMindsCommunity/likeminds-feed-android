@@ -12,6 +12,7 @@
 -keep class com.likeminds.feed.android.core.postmenu.model.** { *; }
 -keep class com.likeminds.feed.android.core.pushnotification.model.** { *; }
 -keep class com.likeminds.feed.android.core.report.model.** { *; }
+-keep class com.likeminds.feed.android.core.search.model.** { *; }
 -keep class com.likeminds.feed.android.core.socialfeed.model.** { *; }
 -keep class com.likeminds.feed.android.core.topics.model.** { *; }
 -keep class com.likeminds.feed.android.core.topicselection.model.** { *; }

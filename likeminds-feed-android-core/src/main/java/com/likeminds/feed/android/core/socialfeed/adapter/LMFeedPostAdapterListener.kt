@@ -150,4 +150,36 @@ interface LMFeedPostAdapterListener {
     fun onPostVideoFeedCaughtUpClicked() {
         //triggered when the user clicks on the cta on video feed caught up screen
     }
+
+    fun onPostHeadingClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the heading of the post
+    }
+
+    fun onPostHeadingSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on "See More" on post content
+    }
+
+    fun onPostTopResponseClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the top response of the post
+    }
+
+    fun onPostTopResponseSeeMoreClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the see more button in top response of the post
+    }
+
+    fun onPostTopResponseTaggedMemberClicked(position: Int, uuid: String) {
+        //triggered when the user clicks on tagged member in the top response of the post
+    }
+
+    fun onPostTopResponseContentClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the content of the post top response
+    }
+
+    fun onPostTopResponseAuthorFrameCLicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the author frame of the post top response
+    }
+
+    fun onPostAnswerPromptClicked(position: Int, postViewData: LMFeedPostViewData) {
+        //triggered when the user clicks on the answer prompt of the post
+    }
 }

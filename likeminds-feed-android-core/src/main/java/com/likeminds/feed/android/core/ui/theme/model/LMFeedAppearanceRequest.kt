@@ -2,15 +2,15 @@ package com.likeminds.feed.android.core.ui.theme.model
 
 import androidx.annotation.*
 
-class LMFeedSetThemeRequest private constructor(
+class LMFeedAppearanceRequest private constructor(
     @FontRes
     val fontResource: Int?,
     val fontAssetsPath: String?,
     @ColorRes val textLinkColor: Int?,
     @ColorRes val buttonColor: Int?,
     val postCharacterLimit: Int?,
+    val postHeadingLimit: Int?,
     @DrawableRes val notificationIcon: Int?,
-    @ColorRes val notificationTextColor: Int?,
 ) {
     class Builder {
         @FontRes
@@ -26,11 +26,10 @@ class LMFeedSetThemeRequest private constructor(
 
         private var postCharacterLimit: Int? = null
 
+        private var postHeadingLimit: Int? = null
+
         @DrawableRes
         private var notificationIcon: Int? = null
-
-        @ColorRes
-        private var notificationTextColor: Int? = null
 
         fun fontResource(@FontRes fontResource: Int?) = apply {
             this.fontResource = fontResource
@@ -52,22 +51,22 @@ class LMFeedSetThemeRequest private constructor(
             this.postCharacterLimit = postCharacterLimit
         }
 
+        fun postHeadingLimit(postHeadingLimit: Int?) = apply {
+            this.postHeadingLimit = postHeadingLimit
+        }
+
         fun notificationIcon(@DrawableRes notificationIcon: Int?) = apply {
             this.notificationIcon = notificationIcon
         }
 
-        fun notificationTextColor(@ColorRes notificationTextColor: Int?) = apply {
-            this.notificationTextColor = notificationTextColor
-        }
-
-        fun build() = LMFeedSetThemeRequest(
+        fun build() = LMFeedAppearanceRequest(
             fontResource,
             fontAssetsPath,
             textLinkColor,
             buttonColor,
             postCharacterLimit,
-            notificationIcon,
-            notificationTextColor,
+            postHeadingLimit,
+            notificationIcon
         )
     }
 
@@ -77,7 +76,7 @@ class LMFeedSetThemeRequest private constructor(
             .textLinkColor(textLinkColor)
             .buttonColor(buttonColor)
             .postCharacterLimit(postCharacterLimit)
+            .postHeadingLimit(postHeadingLimit)
             .notificationIcon(notificationIcon)
-            .notificationTextColor(notificationTextColor)
     }
 }

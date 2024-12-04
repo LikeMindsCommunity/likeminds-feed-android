@@ -7,10 +7,13 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getFormatedNumber
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.base.PostItemViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_VIDEO_FEED
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feedvideo.databinding.ItemCustomReelsViewDataBinderBinding
 
 class CustomReelsViewDataBinder(
@@ -102,7 +105,11 @@ class CustomReelsViewDataBinder(
             val likesCount = data.actionViewData.likesCount
 
             val likesCountText = if (likesCount == 0) {
-                root.context.getString(R.string.lm_feed_like)
+                root.context.getString(
+                    R.string.lm_feed_s_like,
+                    LMFeedCommunityUtil.getLikeVariable()
+                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                )
             } else {
                 likesCount.toLong().getFormatedNumber()
             }
@@ -112,7 +119,10 @@ class CustomReelsViewDataBinder(
             // checks whether to bind complete data or not and execute corresponding lambda function
             LMFeedPostBinderUtils.setPostBindData(
                 postHeader,
+                tvPostHeading,
                 tvPostContent,
+                null,
+                null,
                 data,
                 position,
                 postTopicsGroup,

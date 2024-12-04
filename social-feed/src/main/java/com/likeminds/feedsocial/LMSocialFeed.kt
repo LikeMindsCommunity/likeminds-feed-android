@@ -4,8 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.provider.Settings
 import android.util.Log
-import com.likeminds.feed.android.core.LMFeedCore
-import com.likeminds.feed.android.core.LMFeedCoreCallback
+import com.likeminds.feed.android.core.*
 import kotlinx.coroutines.runBlocking
 
 
@@ -22,6 +21,7 @@ class LMSocialFeed : Application(), LMFeedCoreCallback {
         val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) ?: ""
         LMFeedCore.setup(
             application = this,
+            LMFeedTheme.SOCIAL_FEED,
             enablePushNotifications = true,
             deviceId = deviceId,
             domain = "https://www.samplefeed.com",
@@ -48,7 +48,7 @@ class LMSocialFeed : Application(), LMFeedCoreCallback {
             )
 
             val task = GetTokensTask()
-            val tokens = task.getTokens(applicationContext, false)
+            val tokens = task.getTokens(applicationContext, true)
             Log.d(LM_SOCIAL_FEED_TAG, "tokens: $tokens")
             tokens
         }

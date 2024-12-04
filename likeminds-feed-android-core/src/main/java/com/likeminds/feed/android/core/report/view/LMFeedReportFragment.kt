@@ -160,7 +160,11 @@ open class LMFeedReportFragment : Fragment(), LMFeedReportTagAdapterListener {
                 REPORT_TYPE_COMMENT -> {
                     tvReportSubHeader.text = getString(
                         R.string.lm_feed_report_sub_header,
-                        getString(R.string.lm_feed_comment).lowercase(Locale.getDefault())
+                        getString(
+                            R.string.lm_feed_s_comment,
+                            LMFeedCommunityUtil.getCommentVariable()
+                                .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                        )
                     )
                 }
 

@@ -5,7 +5,7 @@ import android.text.TextUtils
 import androidx.annotation.ColorRes
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.alertdialog.style.LMFeedAlertDialogViewStyle
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
@@ -91,7 +91,7 @@ class LMFeedReportFragmentViewStyle private constructor(
                     .fontResource(R.font.lm_feed_roboto)
                     .build()
             )
-            .backgroundColor(LMFeedTheme.getButtonColor())
+            .backgroundColor(LMFeedAppearance.getButtonColor())
             .build()
 
         private var reportButtonStyle: LMFeedButtonStyle = LMFeedButtonStyle.Builder()
@@ -116,7 +116,7 @@ class LMFeedReportFragmentViewStyle private constructor(
             .build()
 
         @ColorRes
-        private var selectedReportTagColor: Int = LMFeedTheme.getButtonColor()
+        private var selectedReportTagColor: Int = LMFeedAppearance.getButtonColor()
 
         private var reportSuccessDialogFragmentStyle: LMFeedAlertDialogViewStyle =
             LMFeedAlertDialogViewStyle.Builder()

@@ -6,15 +6,16 @@ import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityEntityVi
 import com.likeminds.feed.android.core.activityfeed.model.LMFeedActivityViewData
 import com.likeminds.feed.android.core.delete.model.LMFeedReasonChooseViewData
 import com.likeminds.feed.android.core.likes.model.LMFeedLikeViewData
-import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.poll.result.model.*
 import com.likeminds.feed.android.core.post.create.model.LMFeedFileUploadViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentsCountViewData
 import com.likeminds.feed.android.core.post.model.*
+import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.report.model.LMFeedReportTagViewData
-import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
+import com.likeminds.feed.android.core.search.util.LMFeedSearchUtil
 import com.likeminds.feed.android.core.socialfeed.model.*
+import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findBooleanOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findIntOrDefault
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.findLongOrDefault
@@ -35,6 +36,7 @@ import com.likeminds.likemindsfeed.post.util.AttachmentUtil.getAttachmentType
 import com.likeminds.likemindsfeed.post.util.AttachmentUtil.getAttachmentValue
 import com.likeminds.likemindsfeed.sdk.model.SDKClientInfo
 import com.likeminds.likemindsfeed.sdk.model.User
+import com.likeminds.likemindsfeed.search.model.SearchType
 import com.likeminds.likemindsfeed.topic.model.Topic
 import com.likeminds.likemindsfeed.widgets.model.Widget
 import org.json.JSONObject
@@ -116,6 +118,7 @@ object LMFeedViewDataConvertor {
         //post content view data
         val postContentViewData = LMFeedPostContentViewData.Builder()
             .text(post.text)
+            .heading(post.heading)
             .build()
 
         //post media view data
@@ -182,14 +185,16 @@ object LMFeedViewDataConvertor {
         posts: List<Post>,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
-        widgetsMap: Map<String, Widget>
+        widgetsMap: Map<String, Widget>,
+        filteredCommentsMap: Map<String, Comment>?,
     ): List<LMFeedPostViewData> {
         return posts.map { post ->
             convertPost(
                 post,
                 usersMap,
                 topicsMap,
-                widgetsMap
+                widgetsMap,
+                filteredCommentsMap
             )
         }
     }
@@ -204,13 +209,17 @@ object LMFeedViewDataConvertor {
         post: Post,
         usersMap: Map<String, User>,
         topicsMap: Map<String, Topic>,
-        widgetsMap: Map<String, Widget>
+        widgetsMap: Map<String, Widget>,
+        filteredCommentsMap: Map<String, Comment>? = null,
+        searchString: String? = null,
+        searchType: SearchType? = null
     ): LMFeedPostViewData {
         val postCreatorUUID = post.uuid
         val postCreator = usersMap[postCreatorUUID]
         val postId = post.id
         val replies = post.replies?.toMutableList()
         val topicsIds = post.topicIds ?: emptyList()
+        val commentIds = post.commentIds ?: emptyList()
 
         //get user view data
         val userViewData = if (postCreator == null) {
@@ -219,7 +228,7 @@ object LMFeedViewDataConvertor {
             convertUser(postCreator)
         }
 
-        //get topics view data
+        // get topics view data
         val topicsViewData = topicsIds.mapNotNull { topicId ->
             topicsMap[topicId]
         }.map { topic ->
@@ -238,9 +247,40 @@ object LMFeedViewDataConvertor {
             .build()
 
         //post content view data
-        val postContentViewData = LMFeedPostContentViewData.Builder()
+        val postContentViewDataBuilder = LMFeedPostContentViewData.Builder()
             .text(post.text)
-            .build()
+            .heading(post.heading)
+
+        // add searched keywords in post content
+        val postContentViewData = when (searchType) {
+            SearchType.TEXT -> {
+                // update matched keywords in post text
+                postContentViewDataBuilder
+                    .keywordMatchedInPostText(
+                        LMFeedSearchUtil.findMatchedKeyword(
+                            searchString,
+                            post.text
+                        )
+                    )
+                    .build()
+            }
+
+            SearchType.HEADING -> {
+                postContentViewDataBuilder
+                    // update matched keywords in post heading
+                    .keywordMatchedInPostHeading(
+                        LMFeedSearchUtil.findMatchedKeyword(
+                            searchString,
+                            post.heading
+                        )
+                    )
+                    .build()
+            }
+
+            else -> {
+                postContentViewDataBuilder.build()
+            }
+        }
 
         //post media view data
         val postMediaViewData = LMFeedMediaViewData.Builder()
@@ -269,6 +309,21 @@ object LMFeedViewDataConvertor {
             )
             .build()
 
+        // get top responses
+        val topResponses = if (filteredCommentsMap == null) {
+            emptyList()
+        } else {
+            commentIds.mapNotNull { commentId ->
+                filteredCommentsMap[commentId]
+            }.map { comment ->
+                convertComment(
+                    comment,
+                    usersMap,
+                    postId
+                )
+            }
+        }
+
         //creating a final instance
         return LMFeedPostViewData.Builder()
             .id(postId)
@@ -277,6 +332,7 @@ object LMFeedViewDataConvertor {
             .mediaViewData(postMediaViewData)
             .actionViewData(postActionViewData)
             .topicsViewData(topicsViewData)
+            .topResponses(topResponses)
             .build()
     }
 
@@ -879,6 +935,37 @@ object LMFeedViewDataConvertor {
             .build()
     }
 
+    /**
+     * convert list of [Post] to [LMFeedPostViewData]
+     * @param searchString: [String]
+     * @param searchType: [SearchType]
+     * @param posts: List of [Post]
+     * @param usersMap: [Map] of String to [User]
+     * @param topicsMap: [Map] of String to [Topic]
+     * @param widgetsMap: [Map] of String to [Widget]
+     * @return [LMFeedPostViewData]
+     * */
+    fun convertSearchedPosts(
+        searchString: String,
+        searchType: SearchType,
+        posts: List<Post>,
+        usersMap: Map<String, User>,
+        topicsMap: Map<String, Topic>,
+        widgetsMap: Map<String, Widget>
+    ): List<LMFeedPostViewData> {
+        return posts.map { post ->
+            convertPost(
+                post,
+                usersMap,
+                topicsMap,
+                widgetsMap,
+                null,
+                searchString,
+                searchType
+            )
+        }
+    }
+
     /**--------------------------------
      * View Data Model -> Network Model
     --------------------------------*/
@@ -887,6 +974,7 @@ object LMFeedViewDataConvertor {
         temporaryId: String,
         workerUUID: String,
         text: String?,
+        heading: String?,
         fileUris: List<LMFeedFileUploadViewData>,
         metadata: JSONObject?,
     ): Post {
@@ -895,6 +983,7 @@ object LMFeedViewDataConvertor {
             .id(temporaryId)
             .workerUUID(workerUUID)
             .text(text ?: "")
+            .heading(heading)
             .attachments(convertAttachments(fileUris, Pair(null, metadata)))
             .build()
     }

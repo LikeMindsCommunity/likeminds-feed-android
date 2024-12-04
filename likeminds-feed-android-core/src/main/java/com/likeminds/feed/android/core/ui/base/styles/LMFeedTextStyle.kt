@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.views.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 import kotlin.math.roundToInt
 
@@ -315,7 +315,7 @@ class LMFeedTextStyle private constructor(
             }
 
             //sets the text link color
-            this.setLinkTextColor(ContextCompat.getColor(context, LMFeedTheme.getTextLinkColor()))
+            this.setLinkTextColor(ContextCompat.getColor(context, LMFeedAppearance.getTextLinkColor()))
 
             this@LMFeedTextStyle.hintTextColor?.let {
                 setHintTextColor(
@@ -346,7 +346,7 @@ class LMFeedTextStyle private constructor(
     //sets font to the text view
     private fun setFont(textView: TextView) {
         textView.apply {
-            val defaultFont = LMFeedTheme.getFontResources()
+            val defaultFont = LMFeedAppearance.getFontResources()
             when {
                 fontResource != null -> {
                     val font = ResourcesCompat.getFont(context, fontResource)
@@ -384,6 +384,6 @@ class LMFeedTextStyle private constructor(
 /**
  * Util function that helps to apply all the styling [LMFeedTextStyle] to [LMFeedTextView]
  **/
-fun LMFeedTextView.setStyle(viewStyle: LMFeedTextStyle, value: Int = 0) {
+fun LMFeedTextView.setStyle(viewStyle: LMFeedTextStyle) {
     viewStyle.apply(this)
 }

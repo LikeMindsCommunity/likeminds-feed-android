@@ -7,7 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.pushnotification.model.LMFeedNotificationActionData
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.utils.LMFeedRoute
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import org.json.JSONObject
@@ -18,9 +18,6 @@ class LMFeedNotificationHandler {
 
     //icon of notification
     private var notificationIcon: Int = 0
-
-    //color of notification text
-    private var notificationTextColor: Int = 0
 
     companion object {
         private var notificationHandler: LMFeedNotificationHandler? = null
@@ -48,10 +45,8 @@ class LMFeedNotificationHandler {
     fun create(application: Application) {
         mApplication = application
 
-        notificationIcon = LMFeedTheme.getNotificationIcon() ?: com.likeminds.customgallery.R.drawable.ic_notification
-
-        notificationTextColor =
-            LMFeedTheme.getNotificationTextColor() ?: LMFeedTheme.getButtonColor()
+        notificationIcon = LMFeedAppearance.getNotificationIcon()
+            ?: com.likeminds.customgallery.R.drawable.ic_notification
 
         createNotificationChannel()
     }
@@ -140,13 +135,14 @@ class LMFeedNotificationHandler {
                 category,
                 subcategory
             )
-        val notificationBuilder = NotificationCompat.Builder(mApplication, LM_FEED_GENERAL_CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(subTitle)
-            .setSmallIcon(notificationIcon)
-            .setAutoCancel(true)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(subTitle))
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
+        val notificationBuilder =
+            NotificationCompat.Builder(mApplication, LM_FEED_GENERAL_CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(subTitle)
+                .setSmallIcon(notificationIcon)
+                .setAutoCancel(true)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(subTitle))
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
         if (resultPendingIntent != null) {
             notificationBuilder.setContentIntent(resultPendingIntent)
         }

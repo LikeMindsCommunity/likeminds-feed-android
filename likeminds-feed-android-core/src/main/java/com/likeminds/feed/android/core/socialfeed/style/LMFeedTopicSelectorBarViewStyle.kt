@@ -4,11 +4,11 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
- * [LMFeedSocialTopicSelectorBarViewStyle] helps you to customize the likes fragment [LMFeedSocialTopicSelectorBarView]
+ * [LMFeedTopicSelectorBarViewStyle] helps you to customize the likes fragment [LMFeedTopicSelectorBarView]
  *
  * @property allTopicsSelectorStyle : [LMFeedTextStyle] this will help you to customize the all topics selector text of the topic selector bar
  * @property clearTopicFilterStyle : [LMFeedTextStyle] this will help you to customize the clear topic filter text of the topic selector bar
@@ -17,7 +17,7 @@ import com.likeminds.feed.android.core.utils.LMFeedViewStyle
  * @property backgroundColor: [Int] should be in format of [ColorRes] this will help you to customize the background color of the topic selector bar | Default value = [null]
  * @property elevation: [Int] should be in format of [DimenRes] to add custom elevation of the topic selector bar | Default value =  [null]
  * */
-class LMFeedSocialTopicSelectorBarViewStyle private constructor(
+class LMFeedTopicSelectorBarViewStyle private constructor(
     //all topics selector style
     val allTopicsSelectorStyle: LMFeedTextStyle,
     //clear topic filter view style
@@ -39,17 +39,17 @@ class LMFeedSocialTopicSelectorBarViewStyle private constructor(
             .build()
 
         private var clearTopicFilterStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()
-            .textColor(LMFeedTheme.getButtonColor())
+            .textColor(LMFeedAppearance.getButtonColor())
             .textSize(R.dimen.lm_feed_text_large)
             .build()
 
         private var selectedTopicTextStyle: LMFeedTextStyle = LMFeedTextStyle.Builder()
-            .textColor(LMFeedTheme.getButtonColor())
+            .textColor(LMFeedAppearance.getButtonColor())
             .textSize(R.dimen.lm_feed_text_large)
             .build()
 
         private var removeSelectedTopicIconStyle: LMFeedIconStyle = LMFeedIconStyle.Builder()
-            .iconTint(LMFeedTheme.getButtonColor())
+            .iconTint(LMFeedAppearance.getButtonColor())
             .inActiveSrc(R.drawable.lm_feed_ic_cross_topics)
             .build()
 
@@ -83,7 +83,7 @@ class LMFeedSocialTopicSelectorBarViewStyle private constructor(
             this.elevation = elevation
         }
 
-        fun build() = LMFeedSocialTopicSelectorBarViewStyle(
+        fun build() = LMFeedTopicSelectorBarViewStyle(
             allTopicsSelectorStyle,
             clearTopicFilterStyle,
             selectedTopicTextStyle,

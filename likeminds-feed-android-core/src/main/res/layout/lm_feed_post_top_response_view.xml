@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_top_response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+            android:id="@+id/tv_top_response_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:fontFamily="@font/roboto_medium"
+            tools:text="@string/lm_feed_top_response"
+            tools:textColor="@color/lm_feed_dark_grey" />
+
+        <com.likeminds.feed.android.core.ui.base.views.LMFeedImageView
+            android:id="@+id/iv_top_response_author_image"
+            android:layout_width="@dimen/lm_feed_top_response_author_image_size"
+            android:layout_height="@dimen/lm_feed_top_response_author_image_size"
+            android:layout_marginVertical="@dimen/lm_feed_regular_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_top_response_title"
+            tools:src="@color/lm_feed_majorelle_blue" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_top_response"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/lm_feed_regular_margin"
+            android:orientation="vertical"
+            app:cardBackgroundColor="@color/lm_feed_light_grayish_blue_50"
+            app:cardCornerRadius="@dimen/lm_feed_corner_radius_medium"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_top_response_author_image"
+            app:layout_constraintTop_toTopOf="@id/iv_top_response_author_image">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/lm_feed_medium_padding">
+
+                <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+                    android:id="@+id/tv_top_response_author_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/lm_feed_dark_grey"
+                    android:textSize="@dimen/lm_feed_text_medium"
+                    tools:fontFamily="@font/lm_feed_roboto_bold"
+                    tools:ignore="UnusedAttribute"
+                    tools:text="@string/lm_feed_sample_name" />
+
+                <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+                    android:id="@+id/tv_top_response_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_top_response_author_name"
+                    android:textColor="@color/lm_feed_brown_grey"
+                    android:textSize="@dimen/lm_feed_text_small"
+                    android:textStyle="normal"
+                    tools:fontFamily="@font/lm_feed_roboto"
+                    tools:text="@string/lm_feed_sample_time" />
+
+                <com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
+                    android:id="@+id/tv_top_response_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_top_response_time"
+                    android:layout_marginTop="@dimen/lm_feed_small_margin"
+                    android:lineSpacingExtra="@dimen/lm_feed_line_spacing_extra_extra_small"
+                    tools:fontFamily="@font/lm_feed_roboto"
+                    tools:textColor="@color/lm_feed_grey"
+                    tools:textSize="@dimen/lm_feed_text_large" />
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

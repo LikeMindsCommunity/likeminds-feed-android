@@ -7,14 +7,14 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.views.LMFeedSwitch
-import com.likeminds.feed.android.core.ui.theme.LMFeedTheme
+import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 
 /***
  * [LMFeedSwitchStyle] helps to customize the switch [LMFeedSwitch]
  *
  * @property textStyle [LMFeedTextStyle] helps to customize the text style of the switch | Default: [LMFeedTextStyle]
  * @property thumbColor [Int] should be in the form of [ColorRes] to add color to the thumb | Default: [R.color.lm_feed_white_smoke]
- * @property trackColor [Int] should be in the form of [ColorRes] to add color to the track | Default: [LMFeedTheme.getButtonColor]
+ * @property trackColor [Int] should be in the form of [ColorRes] to add color to the track | Default: [LMFeedAppearance.getButtonColor]
  * @property thumbIcon [Int] should be in the form of [DrawableRes] to add icon to the track | Default: null
  * @property thumbIconColor [Int] should be in the form of [ColorRes] to add color to the icon | Default: null
  */
@@ -35,7 +35,7 @@ class LMFeedSwitchStyle private constructor(
             .build()
 
         private var thumbColor: Int? = R.color.lm_feed_white_smoke
-        private var trackColor: Int? = LMFeedTheme.getButtonColor()
+        private var trackColor: Int? = LMFeedAppearance.getButtonColor()
         private var thumbIcon: Int? = null
         private var thumbIconColor: Int? = null
 
