@@ -762,7 +762,10 @@ object LMFeedPostBinderUtils {
         postAnswerPromptView: LMFeedLabelImageContainerView?
     ) {
         postAnswerPromptView?.apply {
-            if (data.actionViewData.commentsCount == 0) {
+            val postAnswerPromptViewStyle =
+                LMFeedStyleTransformer.postViewStyle.postAnswerPromptViewStyle
+
+            if (data.actionViewData.commentsCount == 0 && postAnswerPromptViewStyle != null) {
                 show()
                 val loggedInUserImage = LMFeedUserPreferences(context).getUserImage()
                 setContainerImage(loggedInUserImage)
