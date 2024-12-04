@@ -8,6 +8,8 @@ import android.text.util.Linkify
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.text.util.LinkifyCompat
+import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.LMFeedTheme
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.post.model.*
 import com.likeminds.feed.android.core.postmenu.model.PIN_POST_MENU_ITEM_ID
@@ -331,6 +333,88 @@ object LMFeedPostBinderUtils {
                 removeAllChips()
                 topics.forEach { topic ->
                     addChip(topic.name, LMFeedStyleTransformer.postViewStyle.postTopicChipsStyle)
+                }
+            }
+        }
+    }
+
+    // sets the data in post top response view
+    private fun setPostTopResponse(
+        position: Int,
+        postAdapterListener: LMFeedPostAdapterListener,
+        postTopResponseView: LMFeedPostTopResponseView?,
+        postViewData: LMFeedPostViewData
+    ) {
+        postTopResponseView?.apply {
+            val topResponses = postViewData.topResponses
+            if (topResponses.isEmpty()) {
+                hide()
+            } else {
+                show()
+
+                val topResponse = topResponses.first()
+
+                setTopResponseTitle(context.getString(R.string.lm_feed_top_response))
+                setAuthorImage(topResponse.user)
+                setAuthorName(topResponse.user.name)
+                setTimestamp(topResponse.createdAt)
+
+                postTopResponseView.setTopResponseContent(
+                    topResponse.text,
+                    topResponse.alreadySeenFullContent,
+                    onTopResponseContentClicked = {
+                        postAdapterListener.onPostTopResponseContentClicked(
+                            position,
+                            postViewData
+                        )
+                    },
+                    onTopResponseSeeMoreClickListener = {
+                        val updatedPost = updatePostForSeeFullTopResponseContent(postViewData)
+                        postAdapterListener.onPostTopResponseSeeMoreClicked(
+                            position,
+                            updatedPost
+                        )
+                    },
+                    onMemberTagClickListener = { uuid ->
+                        postAdapterListener.onPostTopResponseTaggedMemberClicked(position, uuid)
+                    }
+                )
+            }
+        }
+    }
+
+    // sets the data in answer prompt view of the post
+    private fun setPostAnswerPrompt(
+        data: LMFeedPostViewData,
+        postAnswerPromptView: LMFeedLabelImageContainerView?
+    ) {
+        when (LMFeedCoreApplication.selectedTheme) {
+            LMFeedTheme.SOCIAL_FEED -> {
+                postAnswerPromptView?.hide()
+                return
+            }
+
+            LMFeedTheme.VIDEO_FEED -> {
+                postAnswerPromptView?.hide()
+                return
+            }
+
+            LMFeedTheme.QNA_FEED -> {
+                postAnswerPromptView?.apply {
+                    if (data.actionViewData.commentsCount == 0) {
+                        show()
+                        val loggedInUserImage = LMFeedUserPreferences(context).getUserImage()
+                        setContainerImage(loggedInUserImage)
+                        setContainerLabel(
+                            context.getString(
+                                R.string.lm_feed_be_the_first_one_to_s,
+                                LMFeedCommunityUtil.getCommentVariable()
+                                    .pluralizeOrCapitalize(LMFeedWordAction.ALL_SMALL_SINGULAR)
+                            )
+                        )
+                    } else {
+                        hide()
+                    }
                 }
             }
         }
