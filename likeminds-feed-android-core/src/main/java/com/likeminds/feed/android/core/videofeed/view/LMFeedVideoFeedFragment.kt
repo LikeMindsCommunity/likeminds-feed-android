@@ -45,6 +45,7 @@ import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
@@ -71,6 +72,10 @@ open class LMFeedVideoFeedFragment :
 
     private val postVideoPreviewAutoPlayHelper by lazy {
         LMFeedPostVideoPreviewAutoPlayHelper.getInstance()
+    }
+
+    private val userPreferences by lazy {
+        LMFeedUserPreferences(requireContext())
     }
 
     companion object {
@@ -231,6 +236,8 @@ open class LMFeedVideoFeedFragment :
                 }
             }
         }
+
+        sendExploreReelsOpenedEvent()
         initSwipeRefreshLayout()
         observeResponses()
     }
@@ -719,5 +726,11 @@ open class LMFeedVideoFeedFragment :
         val post = videoFeedAdapter.items()[index] as? LMFeedPostViewData ?: return null
 
         return Pair(index, post)
+    }
+
+    //send analytics events
+    private fun sendExploreReelsOpenedEvent() {
+        val loggedInUUID = userPreferences.getUUID()
+        LMFeedAnalytics.sendExploreReelsOpenedEvent(loggedInUUID)
     }
 }

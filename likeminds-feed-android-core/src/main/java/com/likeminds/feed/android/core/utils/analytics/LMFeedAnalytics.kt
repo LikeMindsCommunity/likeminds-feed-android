@@ -547,24 +547,15 @@ object LMFeedAnalytics {
      * @param loggedInUUID - uuid of the user
      * @param reelId - id of the reel
      */
-    fun sendReelsLikedEvent(loggedInUUID: String, reelId: String) {
-        track(
-            LMFeedEvents.REEL_LIKED,
-            mapOf(
-                LMFeedKeys.UUID to loggedInUUID,
-                "reel_id" to reelId
-            )
-        )
-    }
+    fun sendReelsLikedEvent(loggedInUUID: String, reelId: String, liked: Boolean) {
+        val eventName = if (liked) {
+            LMFeedEvents.REEL_LIKED
+        } else {
+            LMFeedEvents.REEL_UNLIKED
+        }
 
-    /**
-     * Triggers when the user unlikes a reel
-     * @param loggedInUUID - uuid of the user
-     * @param reelId - id of the reel
-     */
-    fun sendReelsUnlikedEvent(loggedInUUID: String, reelId: String) {
         track(
-            LMFeedEvents.REEL_UNLIKED,
+            eventName,
             mapOf(
                 LMFeedKeys.UUID to loggedInUUID,
                 "reel_id" to reelId
