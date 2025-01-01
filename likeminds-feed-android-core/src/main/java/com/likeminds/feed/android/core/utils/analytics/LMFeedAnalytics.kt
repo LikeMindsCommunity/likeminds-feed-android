@@ -54,6 +54,13 @@ object LMFeedAnalytics {
         const val NOTIFICATION_CLICKED = "notification_clicked"
 
         const val NOTIFICATION_PAGE_OPENED = "notification_page_opened"
+
+        //Video Feed Analytics
+        const val EXPLORE_REELS_OPENED = "explore_reels_opened"
+        const val REEL_VIEWED = "reel_viewed"
+        const val REEL_LIKED = "reel_liked"
+        const val REEL_UNLIKED = "reel_unliked"
+        const val NO_MORE_REELS_SHOWN = "no_more_reels_shown"
     }
 
     /*
@@ -503,6 +510,77 @@ object LMFeedAnalytics {
                 "tagged_user_uuid" to uuid,
                 "tagged_user_count" to userCount.toString(),
                 LMFeedKeys.SCREEN_NAME to screenName
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user opens explore reels
+     * @param loggedInUUID - uuid of the user
+     */
+    fun sendExploreReelsOpenedEvent(loggedInUUID: String) {
+        track(
+            LMFeedEvents.EXPLORE_REELS_OPENED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user views a reel
+     * @param loggedInUUID - uuid of the user
+     * @param reelId - id of the reel
+     */
+    fun sendReelsViewedEvent(loggedInUUID: String, reelId: String) {
+        track(
+            LMFeedEvents.REEL_VIEWED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "reel_id" to reelId
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user likes a reel
+     * @param loggedInUUID - uuid of the user
+     * @param reelId - id of the reel
+     */
+    fun sendReelsLikedEvent(loggedInUUID: String, reelId: String) {
+        track(
+            LMFeedEvents.REEL_LIKED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "reel_id" to reelId
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user unlikes a reel
+     * @param loggedInUUID - uuid of the user
+     * @param reelId - id of the reel
+     */
+    fun sendReelsUnlikedEvent(loggedInUUID: String, reelId: String) {
+        track(
+            LMFeedEvents.REEL_UNLIKED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "reel_id" to reelId
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user doesn't see any more reels
+     * @param loggedInUUID - uuid of the user
+     */
+    fun sendNoMoreReelsShownEvent(loggedInUUID: String) {
+        track(
+            LMFeedEvents.NO_MORE_REELS_SHOWN,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID
             )
         )
     }
