@@ -188,6 +188,11 @@ open class LMFeedVideoFeedFragment :
                         videoFeedAdapter.add(LMFeedCaughtUpViewData.Builder().build())
                     }
 
+                    val item = videoFeedAdapter.items()[position]
+                    if (item is LMFeedCaughtUpViewData) {
+                        sendNoMoreReelsShownEvent()
+                    }
+
                     //plays the video in the view pager
                     playVideoInViewPager(position)
                 }
@@ -728,9 +733,15 @@ open class LMFeedVideoFeedFragment :
         return Pair(index, post)
     }
 
-    //send analytics events
+    //send analytics events for explore reels opened
     private fun sendExploreReelsOpenedEvent() {
         val loggedInUUID = userPreferences.getUUID()
         LMFeedAnalytics.sendExploreReelsOpenedEvent(loggedInUUID)
+    }
+
+    //send analytics events for no more reels shown
+    private fun sendNoMoreReelsShownEvent() {
+        val loggedInUUID = userPreferences.getUUID()
+        LMFeedAnalytics.sendNoMoreReelsShownEvent(loggedInUUID)
     }
 }

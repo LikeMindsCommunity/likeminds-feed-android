@@ -1,8 +1,6 @@
 package com.likeminds.feed.android.core.utils.analytics
 
-import android.util.Log
 import com.likeminds.feed.android.core.LMFeedCoreApplication
-import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.model.IMAGE
 import com.likeminds.feed.android.core.post.model.VIDEO
@@ -61,6 +59,7 @@ object LMFeedAnalytics {
         const val REEL_LIKED = "reel_liked"
         const val REEL_UNLIKED = "reel_unliked"
         const val NO_MORE_REELS_SHOWN = "no_more_reels_shown"
+        const val REEL_REPORTED = "reel_reported"
     }
 
     /*
@@ -120,13 +119,6 @@ object LMFeedAnalytics {
      * @param eventProperties - {key: value} pair for properties related to event
      * */
     fun track(eventName: String, eventProperties: Map<String, String?> = mapOf()) {
-        Log.d(
-            LOG_TAG, """
-            eventName: $eventName
-            eventProperties: $eventProperties
-        """.trimIndent()
-        )
-
         val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
         coreCallback?.trackEvent(eventName, eventProperties)
     }
@@ -572,6 +564,23 @@ object LMFeedAnalytics {
             LMFeedEvents.NO_MORE_REELS_SHOWN,
             mapOf(
                 LMFeedKeys.UUID to loggedInUUID
+            )
+        )
+    }
+
+    fun sendReelReportedEvent(
+        loggedInUUID: String,
+        reelCreatedByUUID: String,
+        reelId: String,
+        reason: String
+    ) {
+        track(
+            LMFeedEvents.REEL_REPORTED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "reel_id" to reelId,
+                "reel_created_by_uuid" to reelCreatedByUUID,
+                "report_reason" to reason
             )
         )
     }

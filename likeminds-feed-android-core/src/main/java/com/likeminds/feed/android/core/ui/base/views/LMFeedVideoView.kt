@@ -68,7 +68,7 @@ class LMFeedVideoView @JvmOverloads constructor(
                 super.onPlaybackStateChanged(playbackState)
                 when (playbackState) {
                     Player.STATE_READY -> {
-                        Log.d(LOG_TAG, "STATE_READY: ")
+                        Log.d("PUI", "STATE_READY: ")
                         thumbnailView?.hide()
                         progressBar?.hide()
                         show()
