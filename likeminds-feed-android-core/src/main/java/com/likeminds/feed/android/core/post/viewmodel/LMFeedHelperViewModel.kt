@@ -1,6 +1,8 @@
 package com.likeminds.feed.android.core.post.viewmodel
 
 import androidx.lifecycle.*
+import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.LMFeedTheme.*
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
@@ -108,11 +110,23 @@ class LMFeedHelperViewModel : ViewModel() {
             //check for error
             if (response.success) {
                 //sends event for post liked
-                LMFeedAnalytics.sendPostLikedEvent(
-                    uuid = loggedInUUID,
-                    postId = postId,
-                    postLiked = postLiked
-                )
+                when (LMFeedCoreApplication.selectedTheme) {
+                    SOCIAL_FEED, QNA_FEED -> {
+                        LMFeedAnalytics.sendPostLikedEvent(
+                            uuid = loggedInUUID,
+                            postId = postId,
+                            postLiked = postLiked
+                        )
+                    }
+
+                    VIDEO_FEED -> {
+                        LMFeedAnalytics.sendReelsLikedEvent(
+                            loggedInUUID = loggedInUUID,
+                            reelId = postId,
+                            liked = postLiked
+                        )
+                    }
+                }
             } else {
                 errorMessageChannel.send(
                     ErrorMessageEvent.LikePost(

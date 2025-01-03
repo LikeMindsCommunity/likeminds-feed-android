@@ -9,7 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.likeminds.feed.android.core.LMFeedCoreApplication
 import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
+import com.likeminds.feed.android.core.LMFeedTheme.*
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedFragmentReportBinding
 import com.likeminds.feed.android.core.report.adapter.LMFeedReportTagAdapterListener
@@ -22,6 +24,7 @@ import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
+import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import java.util.Locale
 
 open class LMFeedReportFragment : Fragment(), LMFeedReportTagAdapterListener {
@@ -34,6 +37,10 @@ open class LMFeedReportFragment : Fragment(), LMFeedReportTagAdapterListener {
 
     private var tagSelected: LMFeedReportTagViewData? = null
     private lateinit var reasonOrTag: String
+
+    private val userPreferences by lazy {
+        LMFeedUserPreferences(requireContext())
+    }
 
     companion object {
         const val TAG = "LMFeedReportFragment"
@@ -281,12 +288,25 @@ open class LMFeedReportFragment : Fragment(), LMFeedReportTagAdapterListener {
         when (reportExtras.entityType) {
             REPORT_TYPE_POST -> {
                 // sends post reported event
-                LMFeedAnalytics.sendPostReportedEvent(
-                    reportExtras.entityId,
-                    reportExtras.uuid,
-                    LMFeedViewUtils.getPostTypeFromViewType(reportExtras.postViewType),
-                    reasonOrTag
-                )
+                when (LMFeedCoreApplication.selectedTheme) {
+                    VIDEO_FEED -> {
+                        LMFeedAnalytics.sendReelReportedEvent(
+                            loggedInUUID = userPreferences.getUUID(),
+                            reelCreatedByUUID = reportExtras.uuid,
+                            reelId = reportExtras.entityId,
+                            reason = reasonOrTag
+                        )
+                    }
+
+                    SOCIAL_FEED, QNA_FEED -> {
+                        LMFeedAnalytics.sendPostReportedEvent(
+                            reportExtras.entityId,
+                            reportExtras.uuid,
+                            LMFeedViewUtils.getPostTypeFromViewType(reportExtras.postViewType),
+                            reasonOrTag
+                        )
+                    }
+                }
             }
 
             REPORT_TYPE_COMMENT -> {

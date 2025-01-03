@@ -45,22 +45,24 @@ import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
-import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
-import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
+import com.likeminds.feed.android.core.utils.video.*
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
 import com.likeminds.feed.android.core.videofeed.model.LMFeedCaughtUpViewData
+import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
 
-open class LMFeedVideoFeedFragment :
+open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = null) :
     Fragment(),
     LMFeedPostAdapterListener,
-    LMFeedPostMenuBottomSheetListener {
+    LMFeedPostMenuBottomSheetListener,
+    LMFeedVideoPlayerListener {
 
     lateinit var binding: LmFeedFragmentVideoFeedBinding
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
@@ -73,10 +75,18 @@ open class LMFeedVideoFeedFragment :
         LMFeedPostVideoPreviewAutoPlayHelper.getInstance()
     }
 
+    private val userPreferences by lazy {
+        LMFeedUserPreferences(requireContext())
+    }
+
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
         private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
         private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
+
+        fun getInstance(config: LMFeedVideoFeedConfig?): LMFeedVideoFeedFragment {
+            return LMFeedVideoFeedFragment(config)
+        }
     }
 
     override fun onCreateView(
@@ -183,6 +193,12 @@ open class LMFeedVideoFeedFragment :
                         videoFeedAdapter.add(LMFeedCaughtUpViewData.Builder().build())
                     }
 
+                    //for sending no more reels view event
+                    val item = videoFeedAdapter.items()[position]
+                    if (item is LMFeedCaughtUpViewData) {
+                        sendNoMoreReelsShownEvent()
+                    }
+
                     //plays the video in the view pager
                     playVideoInViewPager(position)
                 }
@@ -231,6 +247,8 @@ open class LMFeedVideoFeedFragment :
                 }
             }
         }
+
+        sendExploreReelsOpenedEvent()
         initSwipeRefreshLayout()
         observeResponses()
     }
@@ -378,7 +396,7 @@ open class LMFeedVideoFeedFragment :
         if (position >= 0 && videoFeedAdapter.items()[position] != null) {
             val data = videoFeedAdapter.items()[position]
             if (data !is LMFeedPostViewData) {
-                postVideoPreviewAutoPlayHelper.removePlayer()
+                postVideoPreviewAutoPlayHelper.removePlayer(triggerSwipeOrScrollEvent = true, this)
                 return
             }
 
@@ -387,12 +405,39 @@ open class LMFeedVideoFeedFragment :
             val url = data.mediaViewData.attachments.firstOrNull()?.attachmentMeta?.url ?: ""
 
             //plays the video in the [postVideoView]
-            postVideoPreviewAutoPlayHelper.playVideoInView(videoView, url)
+            postVideoPreviewAutoPlayHelper.playVideoInView(
+                videoPost = videoView,
+                url = url,
+                config = config ?: LMFeedVideoFeedConfig.Builder().build(),
+                videoPlayerListener = this
+            )
 
             //cache videos from next position till [PRECACHE_VIDEO_COUNT]
             preCache(position + 1)
         } else {
             postVideoPreviewAutoPlayHelper.removePlayer()
+        }
+    }
+
+    override fun onDurationThresholdReached(duration: Long, totalDuration: Long) {
+        val currentPosition = binding.vp2VideoFeed.currentItem
+        val currentReel = videoFeedAdapter.items()[currentPosition]
+        if (currentReel is LMFeedPostViewData) {
+            val reelId = currentReel.id
+            sendReelViewedEvent(reelId, duration, totalDuration)
+        }
+    }
+
+    override fun onVideoSwipedOrScrolled(duration: Long, totalDuration: Long) {
+        //for reel swiped event
+        val currentPosition = binding.vp2VideoFeed.currentItem
+        val previousItem = videoFeedAdapter.items().getOrNull(currentPosition - 1)
+        if (previousItem != null && previousItem is LMFeedPostViewData) {
+            sendReelSwipedEvent(
+                previousItem.id,
+                duration,
+                totalDuration
+            )
         }
     }
 
@@ -719,5 +764,50 @@ open class LMFeedVideoFeedFragment :
         val post = videoFeedAdapter.items()[index] as? LMFeedPostViewData ?: return null
 
         return Pair(index, post)
+    }
+
+    //send analytics events for explore reels opened
+    private fun sendExploreReelsOpenedEvent() {
+        val loggedInUUID = userPreferences.getUUID()
+        LMFeedAnalytics.sendExploreReelsOpenedEvent(loggedInUUID)
+    }
+
+    //send analytics events for no more reels shown
+    private fun sendNoMoreReelsShownEvent() {
+        val loggedInUUID = userPreferences.getUUID()
+        LMFeedAnalytics.sendNoMoreReelsShownEvent(loggedInUUID)
+    }
+
+    //send analytics events for reel viewed
+    private fun sendReelViewedEvent(reelId: String, watchDuration: Long, totalDuration: Long) {
+        val loggedInUUID = userPreferences.getUUID()
+
+        val watchDurationInInt = (watchDuration / 1000).toInt()
+        val totalDurationInFloat = totalDuration / 1000f
+
+        LMFeedAnalytics.sendReelsViewedEvent(
+            loggedInUUID,
+            reelId,
+            watchDurationInInt,
+            totalDurationInFloat
+        )
+    }
+
+    //send analytics events for reel swiped
+    private fun sendReelSwipedEvent(
+        previousReelId: String,
+        previousReelWatchDuration: Long,
+        previousReelTotalDuration: Long
+    ) {
+        val loggedInUUID = userPreferences.getUUID()
+
+        val previousWatchDurationInFloat = previousReelWatchDuration / 1000f
+        val previousReelTotalDurationInFloat = previousReelTotalDuration / 1000f
+        LMFeedAnalytics.sendReelSwipedEvent(
+            loggedInUUID,
+            previousReelId,
+            previousWatchDurationInFloat,
+            previousReelTotalDurationInFloat
+        )
     }
 }

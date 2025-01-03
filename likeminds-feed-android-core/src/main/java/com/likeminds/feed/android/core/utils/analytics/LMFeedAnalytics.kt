@@ -1,8 +1,6 @@
 package com.likeminds.feed.android.core.utils.analytics
 
-import android.util.Log
 import com.likeminds.feed.android.core.LMFeedCoreApplication
-import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.post.detail.model.LMFeedCommentViewData
 import com.likeminds.feed.android.core.post.model.IMAGE
 import com.likeminds.feed.android.core.post.model.VIDEO
@@ -54,6 +52,15 @@ object LMFeedAnalytics {
         const val NOTIFICATION_CLICKED = "notification_clicked"
 
         const val NOTIFICATION_PAGE_OPENED = "notification_page_opened"
+
+        //Video Feed Analytics
+        const val EXPLORE_REELS_OPENED = "explore_reels_opened"
+        const val REEL_VIEWED = "reel_viewed"
+        const val REEL_LIKED = "reel_liked"
+        const val REEL_UNLIKED = "reel_unliked"
+        const val NO_MORE_REELS_SHOWN = "no_more_reels_shown"
+        const val REEL_REPORTED = "reel_reported"
+        const val REEL_SWIPED = "reel_swiped"
     }
 
     /*
@@ -113,13 +120,6 @@ object LMFeedAnalytics {
      * @param eventProperties - {key: value} pair for properties related to event
      * */
     fun track(eventName: String, eventProperties: Map<String, String?> = mapOf()) {
-        Log.d(
-            LOG_TAG, """
-            eventName: $eventName
-            eventProperties: $eventProperties
-        """.trimIndent()
-        )
-
         val coreCallback = LMFeedCoreApplication.getLMFeedCoreCallback()
         coreCallback?.trackEvent(eventName, eventProperties)
     }
@@ -503,6 +503,125 @@ object LMFeedAnalytics {
                 "tagged_user_uuid" to uuid,
                 "tagged_user_count" to userCount.toString(),
                 LMFeedKeys.SCREEN_NAME to screenName
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user opens explore reels
+     * @param loggedInUUID - uuid of the user
+     */
+    fun sendExploreReelsOpenedEvent(loggedInUUID: String) {
+        track(
+            LMFeedEvents.EXPLORE_REELS_OPENED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user views a reel
+     * @param loggedInUUID - uuid of the user
+     * @param reelId - id of the reel
+     * @param watchDuration - duration of the reel in seconds
+     * @param totalDuration - total duration of the reel in seconds
+     */
+    fun sendReelsViewedEvent(
+        loggedInUUID: String,
+        reelId: String,
+        watchDuration: Int,
+        totalDuration: Float
+    ) {
+        track(
+            LMFeedEvents.REEL_VIEWED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "reel_id" to reelId,
+                "watch_duration" to "$watchDuration secs",
+                "total_duration" to "$totalDuration secs"
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user likes a reel
+     * @param loggedInUUID - uuid of the user
+     * @param reelId - id of the reel
+     */
+    fun sendReelsLikedEvent(loggedInUUID: String, reelId: String, liked: Boolean) {
+        val eventName = if (liked) {
+            LMFeedEvents.REEL_LIKED
+        } else {
+            LMFeedEvents.REEL_UNLIKED
+        }
+
+        track(
+            eventName,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "reel_id" to reelId
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user doesn't see any more reels
+     * @param loggedInUUID - uuid of the user
+     */
+    fun sendNoMoreReelsShownEvent(loggedInUUID: String) {
+        track(
+            LMFeedEvents.NO_MORE_REELS_SHOWN,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user reports a reel
+     * @param loggedInUUID - uuid of the user
+     * @param reelId - id of the reel
+     * @param reelCreatedByUUID - uuid of the user who created the reel
+     * @param reason - reason for reporting the reel
+     */
+    fun sendReelReportedEvent(
+        loggedInUUID: String,
+        reelCreatedByUUID: String,
+        reelId: String,
+        reason: String
+    ) {
+        track(
+            LMFeedEvents.REEL_REPORTED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "reel_id" to reelId,
+                "reel_created_by_uuid" to reelCreatedByUUID,
+                "report_reason" to reason
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user swipes a reel
+     * @param loggedInUUID - uuid of the user
+     * @param previousReelId - id of the previous reel
+     * @param previousWatchDuration - duration of the previous reel in seconds
+     * @param previousReelTotalDuration - total duration of the previous reel in seconds
+     */
+    fun sendReelSwipedEvent(
+        loggedInUUID: String,
+        previousReelId: String,
+        previousWatchDuration: Float,
+        previousReelTotalDuration: Float
+    ) {
+        track(
+            LMFeedEvents.REEL_SWIPED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "previous_reel_id" to previousReelId,
+                "previous_reel_watch_duration" to "$previousWatchDuration secs",
+                "previous_reel_total_duration" to "$previousReelTotalDuration secs"
             )
         )
     }
