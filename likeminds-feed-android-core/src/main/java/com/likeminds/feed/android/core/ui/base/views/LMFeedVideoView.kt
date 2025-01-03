@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -14,7 +13,6 @@ import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultAllocator
 import com.google.android.exoplayer2.util.Util
-import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostVideoMediaViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
@@ -71,25 +69,21 @@ class LMFeedVideoView @JvmOverloads constructor(
                 super.onPlaybackStateChanged(playbackState)
                 when (playbackState) {
                     Player.STATE_READY -> {
-                        Log.d(LOG_TAG, "STATE_READY: ")
                         thumbnailView?.hide()
                         progressBar?.hide()
                         show()
                     }
 
                     Player.STATE_BUFFERING -> {
-                        Log.d(LOG_TAG, "STATE_BUFFERING: ")
                         progressBar?.show()
                     }
 
                     Player.STATE_IDLE -> {
-                        Log.d(LOG_TAG, "STATE_IDLE: ")
                         progressBar?.hide()
                         thumbnailView?.hide()
                     }
 
                     Player.STATE_ENDED -> {
-                        Log.d(LOG_TAG, "STATE_ENDED: ")
                         progressBar?.hide()
                         thumbnailView?.hide()
                     }
