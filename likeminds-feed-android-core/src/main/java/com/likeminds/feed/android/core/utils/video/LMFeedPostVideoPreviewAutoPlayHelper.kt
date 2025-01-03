@@ -80,16 +80,19 @@ class LMFeedPostVideoPreviewAutoPlayHelper {
             )
 
             // stop last player
-            removePlayer()
+            removePlayer(true, videoPlayerListener)
         }
         lastPlayerView = videoPost.videoView
     }
 
     // removes the player from view and sets it to null
-    fun removePlayer() {
+    fun removePlayer(
+        triggerSwipeOrScrollEvent: Boolean = false,
+        videoPlayerListener: LMFeedVideoPlayerListener? = null
+    ) {
         if (lastPlayerView != null) {
             // stop last player
-            lastPlayerView?.removePlayer()
+            lastPlayerView?.removePlayer(triggerSwipeOrScrollEvent, videoPlayerListener)
             lastPlayerView = null
         }
     }

@@ -193,6 +193,7 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
                         videoFeedAdapter.add(LMFeedCaughtUpViewData.Builder().build())
                     }
 
+                    //for sending no more reels view event
                     val item = videoFeedAdapter.items()[position]
                     if (item is LMFeedCaughtUpViewData) {
                         sendNoMoreReelsShownEvent()
@@ -395,7 +396,7 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         if (position >= 0 && videoFeedAdapter.items()[position] != null) {
             val data = videoFeedAdapter.items()[position]
             if (data !is LMFeedPostViewData) {
-                postVideoPreviewAutoPlayHelper.removePlayer()
+                postVideoPreviewAutoPlayHelper.removePlayer(triggerSwipeOrScrollEvent = true, this)
                 return
             }
 
@@ -424,6 +425,19 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         if (currentReel is LMFeedPostViewData) {
             val reelId = currentReel.id
             sendReelViewedEvent(reelId, duration, totalDuration)
+        }
+    }
+
+    override fun onVideoSwipedOrScrolled(duration: Long, totalDuration: Long) {
+        //for reel swiped event
+        val currentPosition = binding.vp2VideoFeed.currentItem
+        val previousItem = videoFeedAdapter.items().getOrNull(currentPosition - 1)
+        if (previousItem != null && previousItem is LMFeedPostViewData) {
+            sendReelSwipedEvent(
+                previousItem.id,
+                duration,
+                totalDuration
+            )
         }
     }
 
@@ -764,6 +778,7 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         LMFeedAnalytics.sendNoMoreReelsShownEvent(loggedInUUID)
     }
 
+    //send analytics events for reel viewed
     private fun sendReelViewedEvent(reelId: String, watchDuration: Long, totalDuration: Long) {
         val loggedInUUID = userPreferences.getUUID()
 
@@ -775,6 +790,24 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
             reelId,
             watchDurationInInt,
             totalDurationInFloat
+        )
+    }
+
+    //send analytics events for reel swiped
+    private fun sendReelSwipedEvent(
+        previousReelId: String,
+        previousReelWatchDuration: Long,
+        previousReelTotalDuration: Long
+    ) {
+        val loggedInUUID = userPreferences.getUUID()
+
+        val previousWatchDurationInFloat = previousReelWatchDuration / 1000f
+        val previousReelTotalDurationInFloat = previousReelTotalDuration / 1000f
+        LMFeedAnalytics.sendReelSwipedEvent(
+            loggedInUUID,
+            previousReelId,
+            previousWatchDurationInFloat,
+            previousReelTotalDurationInFloat
         )
     }
 }

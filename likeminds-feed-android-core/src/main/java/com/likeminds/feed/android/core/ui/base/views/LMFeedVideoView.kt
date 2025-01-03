@@ -71,7 +71,7 @@ class LMFeedVideoView @JvmOverloads constructor(
                 super.onPlaybackStateChanged(playbackState)
                 when (playbackState) {
                     Player.STATE_READY -> {
-                        Log.d("PUI", "STATE_READY: ")
+                        Log.d(LOG_TAG, "STATE_READY: ")
                         thumbnailView?.hide()
                         progressBar?.hide()
                         show()
@@ -201,9 +201,15 @@ class LMFeedVideoView @JvmOverloads constructor(
      * and paused player can not be played with new URL, after stopping the player we can reuse that with new URL
      *
      */
-    fun removePlayer() {
+    fun removePlayer(
+        triggerSwipeOrScrollEvent: Boolean = false,
+        videoPlayerListener: LMFeedVideoPlayerListener? = null
+    ) {
         exoPlayer.playWhenReady = false
         lastPos = exoPlayer.currentPosition
+        if (triggerSwipeOrScrollEvent) {
+            videoPlayerListener?.onVideoSwipedOrScrolled(lastPos, exoPlayer.duration)
+        }
         exoPlayer.stop()
     }
 

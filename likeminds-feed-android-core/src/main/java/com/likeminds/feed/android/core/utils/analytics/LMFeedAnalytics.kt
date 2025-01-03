@@ -60,6 +60,7 @@ object LMFeedAnalytics {
         const val REEL_UNLIKED = "reel_unliked"
         const val NO_MORE_REELS_SHOWN = "no_more_reels_shown"
         const val REEL_REPORTED = "reel_reported"
+        const val REEL_SWIPED = "reel_swiped"
     }
 
     /*
@@ -577,6 +578,13 @@ object LMFeedAnalytics {
         )
     }
 
+    /**
+     * Triggers when the user reports a reel
+     * @param loggedInUUID - uuid of the user
+     * @param reelId - id of the reel
+     * @param reelCreatedByUUID - uuid of the user who created the reel
+     * @param reason - reason for reporting the reel
+     */
     fun sendReelReportedEvent(
         loggedInUUID: String,
         reelCreatedByUUID: String,
@@ -590,6 +598,30 @@ object LMFeedAnalytics {
                 "reel_id" to reelId,
                 "reel_created_by_uuid" to reelCreatedByUUID,
                 "report_reason" to reason
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user swipes a reel
+     * @param loggedInUUID - uuid of the user
+     * @param previousReelId - id of the previous reel
+     * @param previousWatchDuration - duration of the previous reel in seconds
+     * @param previousReelTotalDuration - total duration of the previous reel in seconds
+     */
+    fun sendReelSwipedEvent(
+        loggedInUUID: String,
+        previousReelId: String,
+        previousWatchDuration: Float,
+        previousReelTotalDuration: Float
+    ) {
+        track(
+            LMFeedEvents.REEL_SWIPED,
+            mapOf(
+                LMFeedKeys.UUID to loggedInUUID,
+                "previous_reel_id" to previousReelId,
+                "previous_reel_watch_duration" to "$previousWatchDuration secs",
+                "previous_reel_total_duration" to "$previousReelTotalDuration secs"
             )
         )
     }
