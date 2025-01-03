@@ -20,7 +20,7 @@ class LMFeedVideoFeedFragmentViewStyle private constructor(
 
     class Builder {
         private var videoFeedCaughtUpIcon: LMFeedIconStyle? = LMFeedIconStyle.Builder()
-            .inActiveSrc(R.drawable.lm_feed_ic_large_tick)
+            .inActiveSrc(R.drawable.lm_feed_ic_circle_tick)
             .build()
 
         private var videoFeedCaughtUpTitleStyle: LMFeedTextStyle? = LMFeedTextStyle.Builder()

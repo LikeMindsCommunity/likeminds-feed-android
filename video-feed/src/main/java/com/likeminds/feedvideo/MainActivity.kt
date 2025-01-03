@@ -35,11 +35,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun replaceFragment() {
         val containerViewId = R.id.frame_layout
-
-//        val config = LMFeedVideoFeedConfig.Builder()
-//            .reelViewedAnalyticThreshold(4)
-//            .build()
-
         val fragment = LMFeedVideoFeedFragment()
 
         val transaction = supportFragmentManager.beginTransaction()
