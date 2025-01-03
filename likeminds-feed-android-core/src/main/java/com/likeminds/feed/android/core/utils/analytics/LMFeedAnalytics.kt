@@ -523,13 +523,22 @@ object LMFeedAnalytics {
      * Triggers when the user views a reel
      * @param loggedInUUID - uuid of the user
      * @param reelId - id of the reel
+     * @param watchDuration - duration of the reel in seconds
+     * @param totalDuration - total duration of the reel in seconds
      */
-    fun sendReelsViewedEvent(loggedInUUID: String, reelId: String) {
+    fun sendReelsViewedEvent(
+        loggedInUUID: String,
+        reelId: String,
+        watchDuration: Int,
+        totalDuration: Float
+    ) {
         track(
             LMFeedEvents.REEL_VIEWED,
             mapOf(
                 LMFeedKeys.UUID to loggedInUUID,
-                "reel_id" to reelId
+                "reel_id" to reelId,
+                "watch_duration" to "$watchDuration secs",
+                "total_duration" to "$totalDuration secs"
             )
         )
     }

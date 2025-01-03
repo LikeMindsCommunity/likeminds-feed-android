@@ -3,20 +3,18 @@ package com.likeminds.feed.android.core.ui.widgets.post.postmedia.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.likeminds.feed.android.core.databinding.LmFeedPostVerticalVideoMediaViewBinding
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedImageStyle
-import com.likeminds.feed.android.core.ui.base.styles.LMFeedProgressBarStyle
-import com.likeminds.feed.android.core.ui.base.styles.setStyle
+import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.style.LMFeedPostVideoMediaViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener
+import com.likeminds.feed.android.core.utils.video.LMFeedVideoPlayerListener
+import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
 
 class LMFeedPostVerticalVideoMediaView : ConstraintLayout {
 
@@ -190,7 +188,9 @@ class LMFeedPostVerticalVideoMediaView : ConstraintLayout {
     fun playVideo(
         uri: Uri,
         isVideoLocal: Boolean,
-        thumbnailSrc: Any? = null
+        thumbnailSrc: Any? = null,
+        config: LMFeedVideoFeedConfig,
+        videoPlayerListener: LMFeedVideoPlayerListener
     ) {
         binding.apply {
             if (isVideoLocal) {
@@ -205,7 +205,9 @@ class LMFeedPostVerticalVideoMediaView : ConstraintLayout {
                     uri,
                     pbVideoLoader,
                     ivVideoThumbnail,
-                    thumbnailSrc
+                    thumbnailSrc,
+                    config,
+                    videoPlayerListener
                 )
             }
         }

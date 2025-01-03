@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.ui.base.views
 
 import android.content.Context
 import android.net.Uri
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import com.google.android.exoplayer2.*
@@ -19,6 +20,8 @@ import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.show
 import com.likeminds.feed.android.core.utils.video.LMFeedVideoCache
+import com.likeminds.feed.android.core.utils.video.LMFeedVideoPlayerListener
+import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
 
 /**
  * Represents a video view
@@ -102,14 +105,28 @@ class LMFeedVideoView @JvmOverloads constructor(
         videoUri: Uri,
         progressBar: LMFeedProgressBar,
         thumbnailView: LMFeedImageView,
-        thumbnailSrc: Any? = null
+        thumbnailSrc: Any? = null,
+        config: LMFeedVideoFeedConfig? = null,
+        videoPlayerListener: LMFeedVideoPlayerListener? = null
     ) {
         //progress style is null then we don't have to show the progressBar
         if (LMFeedStyleTransformer.postViewStyle.postMediaViewStyle.postVideoMediaStyle?.videoProgressStyle != null) {
             this.progressBar = progressBar
         }
 
+        val thresholdValue = (config?.reelViewedAnalyticThreshold ?: 2) * 1000L
+
         setThumbnail(thumbnailView, thumbnailSrc)
+
+        // create and send analytic for playing reel at threshold
+        exoPlayer.createMessage { _, _ ->
+            val currentTime = exoPlayer.currentPosition
+            val totalDuration = exoPlayer.duration
+            videoPlayerListener?.onDurationThresholdReached(currentTime, totalDuration)
+        }.setPosition(thresholdValue)
+            .setDeleteAfterDelivery(true)
+            .setLooper(Looper.getMainLooper())
+            .send()
 
         val mediaSource = createCachedMediaSource(context.applicationContext, videoUri)
         exoPlayer.setMediaSource(mediaSource)
