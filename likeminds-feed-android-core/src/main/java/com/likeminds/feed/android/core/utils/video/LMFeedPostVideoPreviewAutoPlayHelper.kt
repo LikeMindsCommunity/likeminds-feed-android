@@ -1,11 +1,11 @@
 package com.likeminds.feed.android.core.utils.video
 
 import android.net.Uri
-import android.util.Log
 import com.likeminds.feed.android.core.ui.base.views.LMFeedVideoView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVerticalVideoMediaView
 import com.likeminds.feed.android.core.ui.widgets.post.postmedia.view.LMFeedPostVideoMediaView
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
+import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
 
 class LMFeedPostVideoPreviewAutoPlayHelper {
 
@@ -62,7 +62,9 @@ class LMFeedPostVideoPreviewAutoPlayHelper {
      */
     fun playVideoInView(
         videoPost: LMFeedPostVerticalVideoMediaView,
-        url: String? = null
+        url: String? = null,
+        config: LMFeedVideoFeedConfig,
+        videoPlayerListener: LMFeedVideoPlayerListener
     ) {
         if (url == null) {
             return
@@ -72,20 +74,25 @@ class LMFeedPostVideoPreviewAutoPlayHelper {
             videoPost.playVideo(
                 Uri.parse(url),
                 false,
-                LMFeedViewUtils.getShimmer()
+                LMFeedViewUtils.getShimmer(),
+                config,
+                videoPlayerListener
             )
 
             // stop last player
-            removePlayer()
+            removePlayer(true, videoPlayerListener)
         }
         lastPlayerView = videoPost.videoView
     }
 
     // removes the player from view and sets it to null
-    fun removePlayer() {
+    fun removePlayer(
+        triggerSwipeOrScrollEvent: Boolean = false,
+        videoPlayerListener: LMFeedVideoPlayerListener? = null
+    ) {
         if (lastPlayerView != null) {
             // stop last player
-            lastPlayerView?.removePlayer()
+            lastPlayerView?.removePlayer(triggerSwipeOrScrollEvent, videoPlayerListener)
             lastPlayerView = null
         }
     }

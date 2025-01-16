@@ -5,6 +5,7 @@ import android.app.Application
 import android.provider.Settings
 import android.util.Log
 import com.likeminds.feed.android.core.*
+import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import kotlinx.coroutines.runBlocking
 
 class LMVideoFeed : Application(), LMFeedCoreCallback {
@@ -25,6 +26,15 @@ class LMVideoFeed : Application(), LMFeedCoreCallback {
             deviceId = deviceId,
             domain = "https://www.samplefeed.com",
             lmFeedCoreCallback = this
+        )
+    }
+
+    override fun trackEvent(eventName: String, eventProperties: Map<String, String?>) {
+        Log.d(
+            LOG_TAG, """
+            eventName: $eventName
+            eventProperties: $eventProperties
+        """.trimIndent()
         )
     }
 
