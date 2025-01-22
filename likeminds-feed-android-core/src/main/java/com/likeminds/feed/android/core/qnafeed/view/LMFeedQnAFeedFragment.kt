@@ -347,7 +347,7 @@ open class LMFeedQnAFeedFragment :
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
                     override fun onLoadMore(currentPage: Int) {
                         if (currentPage > 0) {
-                            qnaFeedViewModel.postViewModel.getFeed(
+                            qnaFeedViewModel.postViewModel.getUniversalFeed(
                                 currentPage,
                                 qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(binding.topicSelectorBar.getAllSelectedTopics())
                             )
@@ -394,7 +394,7 @@ open class LMFeedQnAFeedFragment :
             topicSelectorBar.clearSelectedTopicsAndNotify()
             rvQna.resetScrollListenerData()
             LMFeedProgressBarHelper.showProgress(progressBar, true)
-            qnaFeedViewModel.postViewModel.getFeed(1, null)
+            qnaFeedViewModel.postViewModel.getUniversalFeed(1, null)
 
             //show layout accordingly
             topicSelectorBar.setSelectedTopicFilterVisibility(false)
@@ -407,7 +407,7 @@ open class LMFeedQnAFeedFragment :
             helperViewModel.getLoggedInUser()
             postViewModel.getCreatePostRights()
             helperViewModel.getUnreadNotificationCount()
-            postViewModel.getFeed(1, null)
+            postViewModel.getUniversalFeed(1, null)
         }
     }
 
@@ -457,7 +457,7 @@ open class LMFeedQnAFeedFragment :
             }
 
             // observes feedResponse LiveData
-            postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
+            postViewModel.universalFeedResponse.observe(viewLifecycleOwner) { response ->
                 LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                 val page = response.first
                 val posts = response.second
@@ -567,7 +567,7 @@ open class LMFeedQnAFeedFragment :
             // observes errorMessageEventFlow
             postViewModel.errorMessageEventFlow.onEach { response ->
                 when (response) {
-                    is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
+                    is LMFeedPostViewModel.ErrorMessageEvent.UniversalFeed -> {
                         val errorMessage = response.errorMessage
                         mSwipeRefreshLayout.isRefreshing = false
                         LMFeedProgressBarHelper.hideProgress(binding.progressBar)
@@ -580,14 +580,6 @@ open class LMFeedQnAFeedFragment :
                             response.errorMessage
                         )
                         removePostingView()
-                    }
-
-                    is LMFeedPostViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
-                        binding.headerViewQna.setNotificationIconVisibility(false)
-                        LMFeedViewUtils.showErrorMessageToast(
-                            requireContext(),
-                            response.errorMessage
-                        )
                     }
 
                     is LMFeedPostViewModel.ErrorMessageEvent.SubmitVote -> {
@@ -714,7 +706,13 @@ open class LMFeedQnAFeedFragment :
                         LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                     }
 
-                    is LMFeedHelperViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {}
+                    is LMFeedHelperViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
+                        binding.headerViewQna.setNotificationIconVisibility(false)
+                        LMFeedViewUtils.showErrorMessageToast(
+                            requireContext(),
+                            response.errorMessage
+                        )
+                    }
                 }
             }.observeInLifecycle(viewLifecycleOwner)
 
@@ -928,7 +926,7 @@ open class LMFeedQnAFeedFragment :
             mSwipeRefreshLayout.isRefreshing = true
             rvQna.resetScrollListenerData()
             qnaFeedViewModel.helperViewModel.getUnreadNotificationCount()
-            qnaFeedViewModel.postViewModel.getFeed(
+            qnaFeedViewModel.postViewModel.getUniversalFeed(
                 1,
                 qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(topicSelectorBar.getAllSelectedTopics())
             )
@@ -1090,7 +1088,7 @@ open class LMFeedQnAFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                qnaFeedViewModel.postViewModel.getFeed(1, null)
+                qnaFeedViewModel.postViewModel.getUniversalFeed(1, null)
             } else {
                 //show layouts accordingly
                 topicSelectorBar.setAllTopicsTextVisibility(false)
@@ -1102,7 +1100,7 @@ open class LMFeedQnAFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                qnaFeedViewModel.postViewModel.getFeed(
+                qnaFeedViewModel.postViewModel.getUniversalFeed(
                     1,
                     qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )
@@ -1445,7 +1443,7 @@ open class LMFeedQnAFeedFragment :
                 rvQna.resetScrollListenerData()
                 rvQna.clearPostsAndNotify()
                 LMFeedProgressBarHelper.showProgress(binding.progressBar, true)
-                qnaFeedViewModel.postViewModel.getFeed(
+                qnaFeedViewModel.postViewModel.getUniversalFeed(
                     1,
                     qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )

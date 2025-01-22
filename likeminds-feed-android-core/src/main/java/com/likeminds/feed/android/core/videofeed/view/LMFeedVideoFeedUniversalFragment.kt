@@ -84,6 +84,7 @@ open class LMFeedVideoFeedUniversalFragment(private val config: LMFeedVideoFeedC
         private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
         private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
 
+        @JvmStatic
         fun getInstance(config: LMFeedVideoFeedConfig?): LMFeedVideoFeedUniversalFragment {
             return LMFeedVideoFeedUniversalFragment(config)
         }
@@ -257,7 +258,7 @@ open class LMFeedVideoFeedUniversalFragment(private val config: LMFeedVideoFeedC
     private fun fetchData() {
         videoFeedViewModel.apply {
             pageToCall++
-            postViewModel.getFeed(pageToCall)
+            postViewModel.getUniversalFeed(pageToCall)
         }
     }
 
@@ -283,13 +284,13 @@ open class LMFeedVideoFeedUniversalFragment(private val config: LMFeedVideoFeedC
         videoFeedViewModel.apply {
             mSwipeRefreshLayout.isRefreshing = true
             pageToCall = 1
-            postViewModel.getFeed(pageToCall)
+            postViewModel.getUniversalFeed(pageToCall)
         }
     }
 
     //observes live data responses
     private fun observeResponses() {
-        videoFeedViewModel.postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
+        videoFeedViewModel.postViewModel.universalFeedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
             val posts = response.second
 
@@ -318,7 +319,7 @@ open class LMFeedVideoFeedUniversalFragment(private val config: LMFeedVideoFeedC
 
         videoFeedViewModel.postViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.UniversalFeed -> {
                     videoFeedViewModel.pageToCall--
                     val errorMessage = response.errorMessage
                     mSwipeRefreshLayout.isRefreshing = false

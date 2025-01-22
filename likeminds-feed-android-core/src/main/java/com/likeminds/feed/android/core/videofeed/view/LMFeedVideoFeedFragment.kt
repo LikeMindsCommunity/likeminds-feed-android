@@ -9,6 +9,8 @@ import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
 open class LMFeedVideoFeedFragment : Fragment() {
 
     companion object {
+
+        @JvmStatic
         fun getInstance(
             feedType: LMFeedType,
             config: LMFeedVideoFeedConfig?

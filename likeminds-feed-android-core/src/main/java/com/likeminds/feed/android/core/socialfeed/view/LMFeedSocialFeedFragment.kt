@@ -162,7 +162,7 @@ open class LMFeedSocialFeedFragment :
             helperViewModel.getLoggedInUser()
             postViewModel.getCreatePostRights()
             helperViewModel.getUnreadNotificationCount()
-            postViewModel.getFeed(1, null)
+            postViewModel.getUniversalFeed(1, null)
         }
     }
 
@@ -231,7 +231,7 @@ open class LMFeedSocialFeedFragment :
             initNewPostClick(it)
         }
 
-        socialFeedViewModel.postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
+        socialFeedViewModel.postViewModel.universalFeedResponse.observe(viewLifecycleOwner) { response ->
             LMFeedProgressBarHelper.hideProgress(binding.progressBar)
             val page = response.first
             val posts = response.second
@@ -326,7 +326,7 @@ open class LMFeedSocialFeedFragment :
 
         socialFeedViewModel.postViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
+                is LMFeedPostViewModel.ErrorMessageEvent.UniversalFeed -> {
                     val errorMessage = response.errorMessage
                     mSwipeRefreshLayout.isRefreshing = false
                     LMFeedProgressBarHelper.hideProgress(binding.progressBar)
@@ -336,11 +336,6 @@ open class LMFeedSocialFeedFragment :
                 is LMFeedPostViewModel.ErrorMessageEvent.AddPost -> {
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                     removePostingView()
-                }
-
-                is LMFeedPostViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
-                    binding.headerViewSocial.setNotificationIconVisibility(false)
-                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
                 }
 
                 is LMFeedPostViewModel.ErrorMessageEvent.SubmitVote -> {
@@ -458,7 +453,10 @@ open class LMFeedSocialFeedFragment :
                     LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                 }
 
-                is LMFeedHelperViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {}
+                is LMFeedHelperViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
+                    binding.headerViewSocial.setNotificationIconVisibility(false)
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), response.errorMessage)
+                }
             }
         }.observeInLifecycle(viewLifecycleOwner)
     }
@@ -644,7 +642,7 @@ open class LMFeedSocialFeedFragment :
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
                     override fun onLoadMore(currentPage: Int) {
                         if (currentPage > 0) {
-                            socialFeedViewModel.postViewModel.getFeed(
+                            socialFeedViewModel.postViewModel.getUniversalFeed(
                                 currentPage,
                                 socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(
                                     binding.topicSelectorBar.getAllSelectedTopics()
@@ -693,7 +691,7 @@ open class LMFeedSocialFeedFragment :
             topicSelectorBar.clearSelectedTopicsAndNotify()
             rvSocial.resetScrollListenerData()
             LMFeedProgressBarHelper.showProgress(progressBar, true)
-            socialFeedViewModel.postViewModel.getFeed(1, null)
+            socialFeedViewModel.postViewModel.getUniversalFeed(1, null)
 
             //show layout accordingly
             topicSelectorBar.setSelectedTopicFilterVisibility(false)
@@ -1003,7 +1001,7 @@ open class LMFeedSocialFeedFragment :
                 rvSocial.resetScrollListenerData()
                 rvSocial.clearPostsAndNotify()
                 LMFeedProgressBarHelper.showProgress(binding.progressBar, true)
-                socialFeedViewModel.postViewModel.getFeed(
+                socialFeedViewModel.postViewModel.getUniversalFeed(
                     1,
                     socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )
@@ -1565,7 +1563,7 @@ open class LMFeedSocialFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                socialFeedViewModel.postViewModel.getFeed(1, null)
+                socialFeedViewModel.postViewModel.getUniversalFeed(1, null)
             } else {
                 //show layouts accordingly
                 topicSelectorBar.setAllTopicsTextVisibility(false)
@@ -1577,7 +1575,7 @@ open class LMFeedSocialFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                socialFeedViewModel.postViewModel.getFeed(
+                socialFeedViewModel.postViewModel.getUniversalFeed(
                     1,
                     socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )
@@ -1605,7 +1603,7 @@ open class LMFeedSocialFeedFragment :
             mSwipeRefreshLayout.isRefreshing = true
             rvSocial.resetScrollListenerData()
             socialFeedViewModel.helperViewModel.getUnreadNotificationCount()
-            socialFeedViewModel.postViewModel.getFeed(
+            socialFeedViewModel.postViewModel.getUniversalFeed(
                 1,
                 socialFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(topicSelectorBar.getAllSelectedTopics())
             )
