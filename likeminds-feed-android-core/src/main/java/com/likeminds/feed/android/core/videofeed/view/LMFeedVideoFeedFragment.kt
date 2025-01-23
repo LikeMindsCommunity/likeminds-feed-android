@@ -13,10 +13,10 @@ open class LMFeedVideoFeedFragment : Fragment() {
         @JvmStatic
         fun getInstance(
             feedType: LMFeedType,
-            config: LMFeedVideoFeedConfig?
+            config: LMFeedVideoFeedConfig? = null
         ): Fragment {
             return when (feedType) {
-                PERSONALISED_FEED -> LMFeedVideoFeedPersonalizedFragment()
+                PERSONALISED_FEED -> LMFeedVideoFeedPersonalizedFragment(config)
                 UNIVERSAL_FEED -> LMFeedVideoFeedUniversalFragment(config)
             }
         }

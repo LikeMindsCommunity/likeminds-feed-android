@@ -122,6 +122,14 @@ class LMFeedVideoView @JvmOverloads constructor(
             .setLooper(Looper.getMainLooper())
             .send()
 
+        // create message on reaching swipe idle state
+        exoPlayer.createMessage { _, _ ->
+            videoPlayerListener?.onIdleSwipeReached()
+        }.setPosition(5000)
+            .setDeleteAfterDelivery(true)
+            .setLooper(Looper.getMainLooper())
+            .send()
+
         val mediaSource = createCachedMediaSource(context.applicationContext, videoUri)
         exoPlayer.setMediaSource(mediaSource)
         exoPlayer.seekTo(lastPos)

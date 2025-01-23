@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.videofeed.view
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -48,6 +49,7 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapital
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
+import com.likeminds.feed.android.core.utils.feed.LMFeedPostSeenUtil
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.*
@@ -198,6 +200,11 @@ open class LMFeedVideoFeedPersonalizedFragment(private val config: LMFeedVideoFe
                     val item = videoFeedAdapter.items()[position]
                     if (item is LMFeedCaughtUpViewData) {
                         sendNoMoreReelsShownEvent()
+                    }
+
+                    // add post in static post seen
+                    if (item is LMFeedPostViewData) {
+                        LMFeedPostSeenUtil.insertSeenPost(item, System.currentTimeMillis())
                     }
 
                     //plays the video in the view pager
@@ -442,6 +449,10 @@ open class LMFeedVideoFeedPersonalizedFragment(private val config: LMFeedVideoFe
         }
     }
 
+    override fun onIdleSwipeReached() {
+        Log.d("PUI", "swipe idle state reached")
+    }
+
     //precache the videos from specified position till [PRECACHE_VIDEO_COUNT]
     private fun preCache(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -511,6 +522,11 @@ open class LMFeedVideoFeedPersonalizedFragment(private val config: LMFeedVideoFe
     override fun onPause() {
         super.onPause()
         postVideoPreviewAutoPlayHelper.removePlayer()
+    }
+
+    override fun onStop() {
+        videoFeedViewModel.helperViewModel.setPostSeenInLocalDb()
+        super.onStop()
     }
 
     override fun onDestroyView() {

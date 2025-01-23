@@ -10,6 +10,7 @@ import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
+import com.likeminds.feed.android.core.utils.feed.LMFeedPostSeenUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.post.model.*
@@ -285,6 +286,20 @@ class LMFeedHelperViewModel : ViewModel() {
                 //post the user response in LiveData
                 _userResponse.postValue(userViewData)
             }
+        }
+    }
+
+    fun setPostSeenInLocalDb() {
+        viewModelScope.launchIO {
+            val postsSeenByUser = LMFeedPostSeenUtil.getAllSeenPosts().toList()
+
+            val insertSeenPostRequest = InsertSeenPostRequest.Builder()
+                .seenPosts(postsSeenByUser)
+                .build()
+
+            lmFeedClient.insertSeenPosts(insertSeenPostRequest)
+
+            LMFeedPostSeenUtil.clearSeenPost()
         }
     }
 
