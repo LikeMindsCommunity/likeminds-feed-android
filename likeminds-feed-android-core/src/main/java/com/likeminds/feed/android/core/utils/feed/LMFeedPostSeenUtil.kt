@@ -18,7 +18,7 @@ object LMFeedPostSeenUtil {
 
     fun getAllSeenPosts(): HashSet<SeenPost> {
         Log.d(
-            "PUI", "seenPost: ${
+            "PUI", "static getAllSeenPosts: ${
                 seenPost.map {
                     it
                 }
@@ -28,7 +28,7 @@ object LMFeedPostSeenUtil {
     }
 
     fun clearSeenPost() {
-        Log.d("PUI", "clearSeenPost called")
+        Log.d("PUI", "clearSeenPost static called")
         seenPost.clear()
     }
 }

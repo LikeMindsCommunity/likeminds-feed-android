@@ -204,6 +204,7 @@ open class LMFeedVideoFeedPersonalizedFragment(private val config: LMFeedVideoFe
 
                     // add post in static post seen
                     if (item is LMFeedPostViewData) {
+                        Log.d("PUI", "inserting to static memory")
                         LMFeedPostSeenUtil.insertSeenPost(item, System.currentTimeMillis())
                     }
 
@@ -265,7 +266,16 @@ open class LMFeedVideoFeedPersonalizedFragment(private val config: LMFeedVideoFe
     private fun fetchData() {
         videoFeedViewModel.apply {
             pageToCall++
-            postViewModel.getPersonalisedFeed(pageToCall)
+            if (pageToCall == 1) {
+                postViewModel.getPersonalisedFeed(
+                    page = pageToCall,
+                    shouldReorder = true,
+                    shouldRecompute = true
+                )
+                helperViewModel.postSeen()
+            } else {
+                postViewModel.getPersonalisedFeed(page = pageToCall)
+            }
         }
     }
 
@@ -291,7 +301,12 @@ open class LMFeedVideoFeedPersonalizedFragment(private val config: LMFeedVideoFe
         videoFeedViewModel.apply {
             mSwipeRefreshLayout.isRefreshing = true
             pageToCall = 1
-            postViewModel.getUniversalFeed(pageToCall)
+            postViewModel.getPersonalisedFeed(
+                page = pageToCall,
+                shouldReorder = true,
+                shouldRecompute = true
+            )
+            helperViewModel.postSeen()
         }
     }
 
@@ -450,7 +465,11 @@ open class LMFeedVideoFeedPersonalizedFragment(private val config: LMFeedVideoFe
     }
 
     override fun onIdleSwipeReached() {
-        Log.d("PUI", "swipe idle state reached")
+        Log.d("PUI", "idle threshold reached")
+        videoFeedViewModel.helperViewModel.apply {
+            setPostSeenInLocalDb()
+            postSeen()
+        }
     }
 
     //precache the videos from specified position till [PRECACHE_VIDEO_COUNT]

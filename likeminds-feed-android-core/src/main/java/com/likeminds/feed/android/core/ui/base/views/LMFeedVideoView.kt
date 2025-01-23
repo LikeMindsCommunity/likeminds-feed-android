@@ -125,7 +125,7 @@ class LMFeedVideoView @JvmOverloads constructor(
         // create message on reaching swipe idle state
         exoPlayer.createMessage { _, _ ->
             videoPlayerListener?.onIdleSwipeReached()
-        }.setPosition(5000)
+        }.setPosition(10000) // todo revert to 5000 ms
             .setDeleteAfterDelivery(true)
             .setLooper(Looper.getMainLooper())
             .send()

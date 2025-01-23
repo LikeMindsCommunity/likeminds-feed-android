@@ -365,12 +365,18 @@ class LMFeedPostViewModel : ViewModel() {
     }
 
     // get personalised feed
-    fun getPersonalisedFeed(page: Int) {
+    fun getPersonalisedFeed(
+        page: Int,
+        shouldReorder: Boolean? = null,
+        shouldRecompute: Boolean? = null
+    ) {
         viewModelScope.launchIO {
             // build api request
             val request = GetPersonalisedFeedRequest.Builder()
                 .page(page)
                 .pageSize(PAGE_SIZE)
+                .shouldReorder(shouldReorder)
+                .shouldRecompute(shouldRecompute)
                 .build()
 
             //call api
