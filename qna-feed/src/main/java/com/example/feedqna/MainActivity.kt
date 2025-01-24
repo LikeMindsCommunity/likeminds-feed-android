@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.feedqna.LMQnAFeed.Companion.LM_QNA_FEED_TAG
 import com.likeminds.feed.android.core.LMFeedCore
 import com.likeminds.feed.android.core.qnafeed.view.LMFeedQnAFeedFragment
+import com.likeminds.feed.android.core.utils.feed.LMFeedType.PERSONALISED_FEED
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun replaceFragment() {
         val containerViewId = R.id.frame_layout
-        val fragment = LMFeedQnAFeedFragment()
+        val fragment = LMFeedQnAFeedFragment.getInstance(PERSONALISED_FEED)
 
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(containerViewId, fragment, containerViewId.toString())

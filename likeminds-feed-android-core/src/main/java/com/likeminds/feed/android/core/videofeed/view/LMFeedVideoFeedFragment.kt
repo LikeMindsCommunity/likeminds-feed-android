@@ -63,8 +63,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
 
 open class LMFeedVideoFeedFragment(
-    private val feedType: LMFeedType = UNIVERSAL_FEED,
-    private val config: LMFeedVideoFeedConfig? = null
+    private val feedType: LMFeedType,
+    private val config: LMFeedVideoFeedConfig?
 ) : LMFeedBaseThemeFragment(),
     LMFeedPostAdapterListener,
     LMFeedPostMenuBottomSheetListener,
