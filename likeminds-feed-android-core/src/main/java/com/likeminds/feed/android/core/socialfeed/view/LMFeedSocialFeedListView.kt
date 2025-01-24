@@ -8,8 +8,7 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedSocialFeedAdapter
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
-import com.likeminds.feed.android.core.utils.LMFeedEndlessRecyclerViewScrollListener
-import com.likeminds.feed.android.core.utils.LMFeedViewUtils
+import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoAutoPlayHelper
 
@@ -28,6 +27,7 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
     private lateinit var socialFeedAdapter: LMFeedSocialFeedAdapter
     private var postVideoAutoPlayHelper: LMFeedPostVideoAutoPlayHelper? = null
     private lateinit var paginationScrollListener: LMFeedEndlessRecyclerViewScrollListener
+    private lateinit var scrollStateListener: LMFeedRecyclerViewScrollStateListener
 
     val itemCount: Int get() = socialFeedAdapter.itemCount
 
@@ -81,7 +81,7 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
     }
 
     //create the adapter with the provided [listener] to the universal feed recycler view
-    fun initAdapterAndSetListener(listener: LMFeedPostAdapterListener){
+    fun initAdapterAndSetListener(listener: LMFeedPostAdapterListener) {
         socialFeedAdapter = LMFeedSocialFeedAdapter(listener)
     }
 
@@ -98,9 +98,22 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
     }
 
     //resets the scroll listener data
-    fun resetScrollListenerData() {
+    fun resetPaginationScrollListenerData() {
         if (::paginationScrollListener.isInitialized) {
             paginationScrollListener.resetData()
+        }
+    }
+
+    //sets the scroll state listener to the social feed recycler view
+    fun setScrollStateListener(scrollStateListener: LMFeedRecyclerViewScrollStateListener) {
+        this.scrollStateListener = scrollStateListener
+        addOnScrollListener(scrollStateListener)
+    }
+
+    //resets the scroll state listener data
+    fun resetScrollStateListenerData() {
+        if (::scrollStateListener.isInitialized) {
+            scrollStateListener.resetListener()
         }
     }
 
@@ -149,7 +162,7 @@ class LMFeedSocialFeedListView @JvmOverloads constructor(
     }
 
     //get post from the adapter using index
-    private fun getPostFromAdapter(position: Int): LMFeedPostViewData? {
+    fun getPostFromAdapter(position: Int): LMFeedPostViewData? {
         return socialFeedAdapter.items()[position] as? LMFeedPostViewData
     }
 

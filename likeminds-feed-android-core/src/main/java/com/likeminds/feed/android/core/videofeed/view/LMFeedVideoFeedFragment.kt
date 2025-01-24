@@ -1,23 +1,34 @@
 package com.likeminds.feed.android.core.videofeed.view
 
-import androidx.fragment.app.Fragment
-import com.likeminds.feed.android.core.utils.feed.LMFeedType
+import com.likeminds.feed.android.core.utils.feed.*
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.PERSONALISED_FEED
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.UNIVERSAL_FEED
 import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
 
-open class LMFeedVideoFeedFragment : Fragment() {
+open class LMFeedVideoFeedFragment : LMFeedBaseThemeFragment() {
 
-    companion object {
+    protected open var customUniversalFeed: LMFeedBaseListViewFragment? = null
+    protected open var customPersonalizedFeed: LMFeedBaseListViewFragment? = null
 
-        @JvmStatic
-        fun getInstance(
-            feedType: LMFeedType,
-            config: LMFeedVideoFeedConfig? = null
-        ): Fragment {
-            return when (feedType) {
-                PERSONALISED_FEED -> LMFeedVideoFeedPersonalizedFragment(config)
-                UNIVERSAL_FEED -> LMFeedVideoFeedUniversalFragment(config)
+    fun getInstance(
+        feedType: LMFeedType,
+        config: LMFeedVideoFeedConfig? = null
+    ): LMFeedBaseListViewFragment? {
+        return when (feedType) {
+            PERSONALISED_FEED -> {
+                if (customPersonalizedFeed != null) {
+                    customPersonalizedFeed
+                } else {
+                    LMFeedVideoFeedPersonalizedFragment(config)
+                }
+            }
+
+            UNIVERSAL_FEED -> {
+                if (customUniversalFeed != null) {
+                    customUniversalFeed
+                } else {
+                    LMFeedVideoFeedUniversalFragment(config)
+                }
             }
         }
     }

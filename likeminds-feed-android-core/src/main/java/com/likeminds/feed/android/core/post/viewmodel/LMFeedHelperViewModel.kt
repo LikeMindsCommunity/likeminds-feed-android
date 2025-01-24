@@ -295,7 +295,7 @@ class LMFeedHelperViewModel : ViewModel() {
     fun postSeen() {
         viewModelScope.launchIO {
             val postSeenFromLocalDb = lmFeedClient.getAllSeenPosts().data?.seenPosts ?: emptyList()
-            val postSeenFromMemory = LMFeedPostSeenUtil.getAllSeenPosts().toList()
+            val postSeenFromMemory = LMFeedPostSeenUtil.getAllSeenPosts()
 
             val finalPostSeenIds = (postSeenFromLocalDb + postSeenFromMemory).map { it.postId }
 
@@ -319,7 +319,7 @@ class LMFeedHelperViewModel : ViewModel() {
                     .minimumSeenAt(System.currentTimeMillis())
                     .build()
 
-                Log.d("PUI","clearing local db")
+                Log.d("PUI", "clearing local db")
                 //clear local db
                 lmFeedClient.removeSeenPost(removeSeenPostRequest)
             } else {
@@ -331,7 +331,9 @@ class LMFeedHelperViewModel : ViewModel() {
     //Get all seen post from static hash set and insert into the local db
     fun setPostSeenInLocalDb() {
         viewModelScope.launchIO {
-            val postsSeenByUser = LMFeedPostSeenUtil.getAllSeenPosts().toList()
+            val postsSeenByUser = LMFeedPostSeenUtil.getAllSeenPosts()
+
+            if (postsSeenByUser.isEmpty()) return@launchIO
 
             val insertSeenPostRequest = InsertSeenPostRequest.Builder()
                 .seenPosts(postsSeenByUser)

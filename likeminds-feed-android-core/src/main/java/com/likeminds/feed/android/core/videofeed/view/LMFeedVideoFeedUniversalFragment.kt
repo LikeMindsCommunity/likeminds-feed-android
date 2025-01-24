@@ -9,7 +9,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.containsKey
 import androidx.core.view.get
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -48,6 +47,7 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapital
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
+import com.likeminds.feed.android.core.utils.feed.LMFeedBaseListViewFragment
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.*
@@ -59,7 +59,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
 
 open class LMFeedVideoFeedUniversalFragment(private val config: LMFeedVideoFeedConfig? = null) :
-    Fragment(),
+    LMFeedBaseListViewFragment(),
     LMFeedPostAdapterListener,
     LMFeedPostMenuBottomSheetListener,
     LMFeedVideoPlayerListener {

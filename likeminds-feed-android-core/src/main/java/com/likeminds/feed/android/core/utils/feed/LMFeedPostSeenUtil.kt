@@ -5,18 +5,20 @@ import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.likemindsfeed.post.model.SeenPost
 
 object LMFeedPostSeenUtil {
-    private val seenPost = HashSet<SeenPost>()
+    private val seenPost = HashMap<String, SeenPost>()
 
     fun insertSeenPost(post: LMFeedPostViewData, seenAt: Long) {
+        val postId = post.id
+
         val postSeenByUser = SeenPost.Builder()
-            .postId(post.id)
+            .postId(postId)
             .seenAt(seenAt)
             .build()
 
-        seenPost.add(postSeenByUser)
+        seenPost[postId] = postSeenByUser
     }
 
-    fun getAllSeenPosts(): HashSet<SeenPost> {
+    fun getAllSeenPosts(): List<SeenPost> {
         Log.d(
             "PUI", "static getAllSeenPosts: ${
                 seenPost.map {
@@ -24,7 +26,9 @@ object LMFeedPostSeenUtil {
                 }
             }"
         )
-        return seenPost
+        return seenPost.map {
+            it.value
+        }
     }
 
     fun clearSeenPost() {

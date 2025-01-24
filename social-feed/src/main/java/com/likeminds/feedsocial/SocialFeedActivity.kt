@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.LMFeedCore
-import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedFragment
+import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedPersonalisedFragment
 import com.likeminds.feedsocial.LMSocialFeed.Companion.LM_SOCIAL_FEED_TAG
 import com.likeminds.feedsocial.auth.util.LMSocialFeedAuthPreferences
 import kotlinx.coroutines.*
@@ -51,7 +51,7 @@ class SocialFeedActivity : AppCompatActivity() {
 
     private fun replaceFragment() {
         val containerViewId = R.id.frame_layout
-        val fragment = LMFeedSocialFeedFragment()
+        val fragment = LMFeedSocialFeedPersonalisedFragment()
 
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(containerViewId, fragment, containerViewId.toString())
