@@ -184,6 +184,7 @@ open class LMFeedSocialFeedFragment(private val feedType: LMFeedType) :
                         shouldReorder = true,
                         shouldRecompute = true
                     )
+                    helperViewModel.postSeen()
                 }
 
                 UNIVERSAL_FEED -> {
