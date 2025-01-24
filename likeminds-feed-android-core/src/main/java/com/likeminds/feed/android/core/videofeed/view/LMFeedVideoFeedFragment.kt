@@ -1,12 +1,17 @@
 package com.likeminds.feed.android.core.videofeed.view
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.containsKey
 import androidx.core.view.get
@@ -85,10 +90,17 @@ open class LMFeedVideoFeedFragment(
         LMFeedUserPreferences(requireContext())
     }
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
         private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
         private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
+
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        private const val POST_NOTIFICATIONS = Manifest.permission.POST_NOTIFICATIONS
 
         @JvmStatic
         fun getInstance(
@@ -268,6 +280,18 @@ open class LMFeedVideoFeedFragment(
         sendExploreReelsOpenedEvent()
         initSwipeRefreshLayout()
         observeResponses()
+        checkForNotificationPermission()
+    }
+
+    //check for notification permission
+    private fun checkForNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()) {
+                if (activity?.checkSelfPermission(POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    notificationPermissionLauncher.launch(POST_NOTIFICATIONS)
+                }
+            }
+        }
     }
 
     //calls the getFeed() function to fetch feed videos

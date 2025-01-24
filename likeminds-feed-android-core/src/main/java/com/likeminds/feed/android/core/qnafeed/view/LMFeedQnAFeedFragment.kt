@@ -1,14 +1,19 @@
 package com.likeminds.feed.android.core.qnafeed.view
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -112,7 +117,14 @@ open class LMFeedQnAFeedFragment(
         LMFeedPostEvent.getPublisher()
     }
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
     companion object {
+
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        private const val POST_NOTIFICATIONS = Manifest.permission.POST_NOTIFICATIONS
 
         @JvmStatic
         fun getInstance(feedType: LMFeedType = UNIVERSAL_FEED): LMFeedQnAFeedFragment {
@@ -310,6 +322,7 @@ open class LMFeedQnAFeedFragment(
         fetchData()
         initListeners()
         observeResponses()
+        checkForNotificationPermission()
     }
 
     override fun onStart() {
@@ -466,6 +479,17 @@ open class LMFeedQnAFeedFragment(
             //show layout accordingly
             topicSelectorBar.setSelectedTopicFilterVisibility(false)
             topicSelectorBar.setAllTopicsTextVisibility(true)
+        }
+    }
+
+    //check for notification permission
+    private fun checkForNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()) {
+                if (activity?.checkSelfPermission(POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    notificationPermissionLauncher.launch(POST_NOTIFICATIONS)
+                }
+            }
         }
     }
 
