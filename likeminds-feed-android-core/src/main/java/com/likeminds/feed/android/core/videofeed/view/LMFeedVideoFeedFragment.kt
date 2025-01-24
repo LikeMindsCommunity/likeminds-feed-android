@@ -1,14 +1,15 @@
 package com.likeminds.feed.android.core.videofeed.view
 
-import com.likeminds.feed.android.core.utils.feed.*
+import com.likeminds.feed.android.core.utils.feed.LMFeedBaseListViewFragment
+import com.likeminds.feed.android.core.utils.feed.LMFeedType
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.PERSONALISED_FEED
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.UNIVERSAL_FEED
 import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
 
-open class LMFeedVideoFeedFragment : LMFeedBaseThemeFragment() {
+open class LMFeedVideoFeedFragment : LMFeedBaseListViewFragment() {
 
-    protected open var customUniversalFeed: LMFeedBaseListViewFragment? = null
-    protected open var customPersonalizedFeed: LMFeedBaseListViewFragment? = null
+    open var customUniversalFeed: LMFeedBaseListViewFragment? = null
+    open var customPersonalizedFeed: LMFeedBaseListViewFragment? = null
 
     fun getInstance(
         feedType: LMFeedType,

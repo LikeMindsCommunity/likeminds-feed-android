@@ -1,11 +1,10 @@
 package com.likeminds.feedvideo
 
-import CVF
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.LMFeedCore
-import com.likeminds.feed.android.core.utils.feed.LMFeedType
+import com.likeminds.feed.android.core.videofeed.view.CVPF
 import com.likeminds.feedvideo.LMVideoFeed.Companion.LM_VIDEO_FEED_TAG
 import com.likeminds.feedvideo.auth.util.LMVideoFeedAuthPreferences
 import kotlinx.coroutines.*
@@ -36,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun replaceFragment() {
         val containerViewId = R.id.frame_layout
-        val fragment = CVF().getInstance(LMFeedType.PERSONALISED_FEED)
+        val fragment = CVPF()
 
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(containerViewId, fragment, containerViewId.toString())
