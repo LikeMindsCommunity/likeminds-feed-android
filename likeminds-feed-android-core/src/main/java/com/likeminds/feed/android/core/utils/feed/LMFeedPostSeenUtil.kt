@@ -7,6 +7,7 @@ import com.likeminds.likemindsfeed.post.model.SeenPost
 object LMFeedPostSeenUtil {
     private val seenPost = HashMap<String, SeenPost>()
 
+    // insert post seen by user to the hashmap
     fun insertSeenPost(post: LMFeedPostViewData, seenAt: Long) {
         val postId = post.id
 
@@ -18,6 +19,7 @@ object LMFeedPostSeenUtil {
         seenPost[postId] = postSeenByUser
     }
 
+    // get all seen posts by user from hashmap
     fun getAllSeenPosts(): List<SeenPost> {
         Log.d(
             "PUI", "static getAllSeenPosts: ${
@@ -31,6 +33,7 @@ object LMFeedPostSeenUtil {
         }
     }
 
+    //clear the hashmap
     fun clearSeenPost() {
         Log.d("PUI", "clearSeenPost static called")
         seenPost.clear()

@@ -14,6 +14,11 @@ abstract class LMFeedRecyclerViewScrollStateListener(private val mLinearLayoutMa
     private var scrollHandler: Handler? = null
     private var scrollRunnable: Runnable? = null
 
+    companion object {
+        private const val SCROLL_DEBOUNCE = 5000L
+        private const val ITEM_VISIBILITY_PERCENTAGE = 40
+    }
+
     init {
         scrollHandler = Handler(Looper.getMainLooper())
     }
@@ -36,7 +41,7 @@ abstract class LMFeedRecyclerViewScrollStateListener(private val mLinearLayoutMa
             val visibilityPercentage = (visibleHeight.toFloat() / itemHeight.toFloat()) * 100
 
             // Check if the item is at least 40% visible
-            if (visibilityPercentage >= 40) {
+            if (visibilityPercentage >= ITEM_VISIBILITY_PERCENTAGE) {
                 Log.d("RecyclerView", "Item $i is ${visibilityPercentage.toInt()}% visible")
                 // Perform action for 40% visible items
                 onItemVisibleMoreThan40Percent(i)
@@ -55,7 +60,7 @@ abstract class LMFeedRecyclerViewScrollStateListener(private val mLinearLayoutMa
             scrollRunnable = Runnable {
                 onScrollStateIdleReached()
             }
-            scrollHandler?.postDelayed(scrollRunnable!!, 5000)
+            scrollHandler?.postDelayed(scrollRunnable!!, SCROLL_DEBOUNCE)
         }
     }
 
