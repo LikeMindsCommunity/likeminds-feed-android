@@ -64,6 +64,7 @@ abstract class LMFeedRecyclerViewScrollStateListener(private val mLinearLayoutMa
         }
     }
 
+    // resets the listener
     fun resetListener() {
         scrollHandler = null
         scrollRunnable = null
