@@ -19,6 +19,7 @@
 -keep class com.likeminds.feed.android.core.ui.theme.model.** { *; }
 -keep class com.likeminds.feed.android.core.ui.widgets.poll.model.** { *; }
 -keep class com.likeminds.feed.android.core.utils.base.model.** { *; }
+-keep class com.likeminds.feed.android.core.utils.feed.** { *; }
 -keep class com.likeminds.feed.android.core.utils.mediauploader.model.** { *; }
 -keep class com.likeminds.feed.android.core.utils.pluralize.model.** { *; }
 -keep class com.likeminds.feed.android.core.videofeed.model.** { *; }

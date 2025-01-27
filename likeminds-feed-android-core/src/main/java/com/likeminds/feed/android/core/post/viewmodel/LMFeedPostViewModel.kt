@@ -17,6 +17,7 @@ import com.likeminds.feed.android.core.utils.coroutine.launchIO
 import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.feed.model.GetFeedRequest
+import com.likeminds.likemindsfeed.feed.model.GetPersonalisedFeedRequest
 import com.likeminds.likemindsfeed.poll.model.AddPollOptionRequest
 import com.likeminds.likemindsfeed.poll.model.SubmitVoteRequest
 import com.likeminds.likemindsfeed.post.model.*
@@ -29,12 +30,20 @@ class LMFeedPostViewModel : ViewModel() {
         LMFeedClient.getInstance()
     }
 
-    private val _feedResponse by lazy {
+    private val _universalFeedResponse by lazy {
         MutableLiveData<Pair<Int, List<LMFeedPostViewData>>>()
     }
 
-    val feedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
-        _feedResponse
+    val universalFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
+        _universalFeedResponse
+    }
+
+    private val _personalisedFeedResponse by lazy {
+        MutableLiveData<Pair<Int, List<LMFeedPostViewData>>>()
+    }
+
+    val personalisedFeedResponse: LiveData<Pair<Int, List<LMFeedPostViewData>>> by lazy {
+        _personalisedFeedResponse
     }
 
     private val _hasCreatePostRights by lazy {
@@ -43,14 +52,6 @@ class LMFeedPostViewModel : ViewModel() {
 
     val hasCreatePostRights: LiveData<Boolean> by lazy {
         _hasCreatePostRights
-    }
-
-    private val _unreadNotificationCount by lazy {
-        MutableLiveData<Int>()
-    }
-
-    val unreadNotificationCount: LiveData<Int> by lazy {
-        _unreadNotificationCount
     }
 
     private val _postResponse by lazy {
@@ -70,9 +71,7 @@ class LMFeedPostViewModel : ViewModel() {
     }
 
     sealed class ErrorMessageEvent {
-        data class Feed(val errorMessage: String?) : ErrorMessageEvent()
-
-        data class GetUnreadNotificationCount(val errorMessage: String?) : ErrorMessageEvent()
+        data class UniversalFeed(val errorMessage: String?) : ErrorMessageEvent()
 
         data class AddPost(val errorMessage: String?) : ErrorMessageEvent()
 
@@ -81,6 +80,8 @@ class LMFeedPostViewModel : ViewModel() {
         data class AddPollOption(val errorMessage: String?) : ErrorMessageEvent()
 
         data class GetPost(val errorMessage: String?) : ErrorMessageEvent()
+
+        data class PersonalisedFeed(val errorMessage: String?) : ErrorMessageEvent()
     }
 
     sealed class PostDataEvent {
@@ -168,7 +169,7 @@ class LMFeedPostViewModel : ViewModel() {
         }
     }
 
-    fun getFeed(page: Int, topicsIds: List<String>? = null) {
+    fun getUniversalFeed(page: Int, topicsIds: List<String>? = null) {
         viewModelScope.launchIO {
             val request = GetFeedRequest.Builder()
                 .page(page)
@@ -198,10 +199,10 @@ class LMFeedPostViewModel : ViewModel() {
                     )
 
                 //send it to ui
-                _feedResponse.postValue(Pair(page, listOfPostViewData))
+                _universalFeedResponse.postValue(Pair(page, listOfPostViewData))
             } else {
                 //for error
-                errorMessageChannel.send(ErrorMessageEvent.Feed(response.errorMessage))
+                errorMessageChannel.send(ErrorMessageEvent.UniversalFeed(response.errorMessage))
             }
         }
     }
@@ -359,6 +360,53 @@ class LMFeedPostViewModel : ViewModel() {
                 getPost(post.id)
             } else {
                 errorMessageChannel.send(ErrorMessageEvent.AddPollOption(response.errorMessage))
+            }
+        }
+    }
+
+    // get personalised feed
+    fun getPersonalisedFeed(
+        page: Int,
+        shouldReorder: Boolean? = null,
+        shouldRecompute: Boolean? = null
+    ) {
+        viewModelScope.launchIO {
+            // build api request
+            val request = GetPersonalisedFeedRequest.Builder()
+                .page(page)
+                .pageSize(PAGE_SIZE)
+                .shouldReorder(shouldReorder)
+                .shouldRecompute(shouldRecompute)
+                .build()
+
+            //call api
+            val response = lmFeedClient.getPersonalisedFeed(request)
+
+            //process the response
+            if (response.success) {
+                //get all entities
+                val data = response.data ?: return@launchIO
+                val posts = data.posts
+                val usersMap = data.users
+                val topicsMap = data.topics
+                val widgetsMap = data.widgets
+                val filteredCommentsMap = data.filteredComments
+
+                //convert to view data
+                val listOfPostViewData =
+                    LMFeedViewDataConvertor.convertGetFeedPosts(
+                        posts,
+                        usersMap,
+                        topicsMap,
+                        widgetsMap,
+                        filteredCommentsMap
+                    )
+
+                //send to fragment
+                _personalisedFeedResponse.postValue(Pair(page, listOfPostViewData))
+            } else {
+                //send error message
+                errorMessageChannel.send(ErrorMessageEvent.PersonalisedFeed(response.errorMessage))
             }
         }
     }

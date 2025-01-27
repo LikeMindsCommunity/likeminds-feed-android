@@ -6,4 +6,6 @@ interface LMFeedVideoPlayerListener {
 
     // triggered when video is swiped or scrolled at threshold set
     fun onVideoSwipedOrScrolled(duration: Long, totalDuration: Long)
+
+    fun onIdleSwipeReached()
 }

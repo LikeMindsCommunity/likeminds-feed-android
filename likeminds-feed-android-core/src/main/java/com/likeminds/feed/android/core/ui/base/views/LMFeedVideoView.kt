@@ -31,6 +31,10 @@ class LMFeedVideoView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : StyledPlayerView(context, attrs, defStyleAttr) {
 
+    companion object {
+        private const val SCROLL_STATE_IDLE_THRESHOLD = 5000L
+    }
+
     private lateinit var exoPlayer: ExoPlayer
     private var progressBar: LMFeedProgressBar? = null
     private var thumbnailView: LMFeedImageView? = null
@@ -118,6 +122,14 @@ class LMFeedVideoView @JvmOverloads constructor(
             val totalDuration = exoPlayer.duration
             videoPlayerListener?.onDurationThresholdReached(currentTime, totalDuration)
         }.setPosition(thresholdValue)
+            .setDeleteAfterDelivery(true)
+            .setLooper(Looper.getMainLooper())
+            .send()
+
+        // create message on reaching swipe idle state
+        exoPlayer.createMessage { _, _ ->
+            videoPlayerListener?.onIdleSwipeReached()
+        }.setPosition(SCROLL_STATE_IDLE_THRESHOLD)
             .setDeleteAfterDelivery(true)
             .setLooper(Looper.getMainLooper())
             .send()

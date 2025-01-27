@@ -1,7 +1,9 @@
 package com.likeminds.feed.android.core.post.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.LMFeedTheme.*
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
@@ -10,6 +12,7 @@ import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
+import com.likeminds.feed.android.core.utils.feed.LMFeedPostSeenUtil
 import com.likeminds.feed.android.core.utils.user.LMFeedUserViewData
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.post.model.*
@@ -285,6 +288,48 @@ class LMFeedHelperViewModel : ViewModel() {
                 //post the user response in LiveData
                 _userResponse.postValue(userViewData)
             }
+        }
+    }
+
+    // calls post seen api and clear the post seen ids from local db
+    fun postSeen() {
+        viewModelScope.launchIO {
+            val postSeenFromLocalDb = lmFeedClient.getAllSeenPosts().data?.seenPosts ?: emptyList()
+            val postSeenFromMemory = LMFeedPostSeenUtil.getAllSeenPosts()
+
+            val finalPostSeenIds = (postSeenFromLocalDb + postSeenFromMemory).map { it.postId }
+
+            if (finalPostSeenIds.isEmpty()) return@launchIO
+
+            val postSeenRequest = PostSeenRequest.Builder()
+                .seenPostIds(finalPostSeenIds)
+                .build()
+
+            val response = lmFeedClient.postSeen(postSeenRequest)
+
+            if (response.success) {
+                //clear static memory
+                LMFeedPostSeenUtil.clearSeenPost()
+            } else {
+                Log.e(LOG_TAG, "post seen api failed: ${response.errorMessage}")
+            }
+        }
+    }
+
+    //Get all seen post from static hash set and insert into the local db
+    fun setPostSeenInLocalDb() {
+        viewModelScope.launchIO {
+            val postsSeenByUser = LMFeedPostSeenUtil.getAllSeenPosts()
+
+            if (postsSeenByUser.isEmpty()) return@launchIO
+
+            val insertSeenPostRequest = InsertSeenPostRequest.Builder()
+                .seenPosts(postsSeenByUser)
+                .build()
+
+            lmFeedClient.insertSeenPosts(insertSeenPostRequest)
+
+            LMFeedPostSeenUtil.clearSeenPost()
         }
     }
 

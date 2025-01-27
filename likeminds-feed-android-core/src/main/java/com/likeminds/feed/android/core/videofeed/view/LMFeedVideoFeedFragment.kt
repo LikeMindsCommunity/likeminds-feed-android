@@ -1,15 +1,20 @@
 package com.likeminds.feed.android.core.videofeed.view
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.containsKey
 import androidx.core.view.get
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -27,7 +32,8 @@ import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
 import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
 import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
-import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.PersonalisedFeed
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.UniversalFeed
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
@@ -48,6 +54,9 @@ import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapital
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.base.LMFeedDataBoundViewHolder
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
+import com.likeminds.feed.android.core.utils.feed.*
+import com.likeminds.feed.android.core.utils.feed.LMFeedType.PERSONALISED_FEED
+import com.likeminds.feed.android.core.utils.feed.LMFeedType.UNIVERSAL_FEED
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.*
@@ -58,8 +67,10 @@ import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewMo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
 
-open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = null) :
-    Fragment(),
+open class LMFeedVideoFeedFragment(
+    private val feedType: LMFeedType,
+    private val config: LMFeedVideoFeedConfig?
+) : LMFeedBaseThemeFragment(),
     LMFeedPostAdapterListener,
     LMFeedPostMenuBottomSheetListener,
     LMFeedVideoPlayerListener {
@@ -79,13 +90,24 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         LMFeedUserPreferences(requireContext())
     }
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
     companion object {
         private const val VIDEO_PRELOAD_THRESHOLD = 5
         private const val CACHE_SIZE_EACH_VIDEO = 50 * 1024 * 1024L // 50 MB
         private const val PRECACHE_VIDEO_COUNT = 2 //we will precache 2 videos from current position
 
-        fun getInstance(config: LMFeedVideoFeedConfig?): LMFeedVideoFeedFragment {
-            return LMFeedVideoFeedFragment(config)
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        private const val POST_NOTIFICATIONS = Manifest.permission.POST_NOTIFICATIONS
+
+        @JvmStatic
+        fun getInstance(
+            feedType: LMFeedType = UNIVERSAL_FEED,
+            config: LMFeedVideoFeedConfig? = null
+        ): LMFeedVideoFeedFragment {
+            return LMFeedVideoFeedFragment(feedType, config)
         }
     }
 
@@ -106,7 +128,6 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         return binding.root
     }
 
-    //sets view style to vertical video post
     private fun setVerticalVideoPostViewStyle() {
         val postViewStyle = LMFeedStyleTransformer.postViewStyle
         val postHeaderViewStyle = postViewStyle.postHeaderViewStyle
@@ -199,6 +220,13 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
                         sendNoMoreReelsShownEvent()
                     }
 
+                    if (feedType == PERSONALISED_FEED) {
+                        // add post in static post seen
+                        if (item is LMFeedPostViewData) {
+                            LMFeedPostSeenUtil.insertSeenPost(item, System.currentTimeMillis())
+                        }
+                    }
+
                     //plays the video in the view pager
                     playVideoInViewPager(position)
                 }
@@ -251,13 +279,42 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         sendExploreReelsOpenedEvent()
         initSwipeRefreshLayout()
         observeResponses()
+        checkForNotificationPermission()
+    }
+
+    //check for notification permission
+    private fun checkForNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()) {
+                if (activity?.checkSelfPermission(POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    notificationPermissionLauncher.launch(POST_NOTIFICATIONS)
+                }
+            }
+        }
     }
 
     //calls the getFeed() function to fetch feed videos
     private fun fetchData() {
         videoFeedViewModel.apply {
             pageToCall++
-            postViewModel.getFeed(pageToCall)
+            when (feedType) {
+                PERSONALISED_FEED -> {
+                    if (pageToCall == 1) {
+                        postViewModel.getPersonalisedFeed(
+                            page = pageToCall,
+                            shouldReorder = true,
+                            shouldRecompute = true
+                        )
+                        helperViewModel.postSeen()
+                    } else {
+                        postViewModel.getPersonalisedFeed(page = pageToCall)
+                    }
+                }
+
+                UNIVERSAL_FEED -> {
+                    postViewModel.getUniversalFeed(pageToCall)
+                }
+            }
         }
     }
 
@@ -283,13 +340,53 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         videoFeedViewModel.apply {
             mSwipeRefreshLayout.isRefreshing = true
             pageToCall = 1
-            postViewModel.getFeed(pageToCall)
+            when (feedType) {
+                PERSONALISED_FEED -> {
+                    postViewModel.getPersonalisedFeed(
+                        page = pageToCall,
+                        shouldReorder = true,
+                        shouldRecompute = true
+                    )
+                    helperViewModel.postSeen()
+                }
+
+                UNIVERSAL_FEED -> {
+                    postViewModel.getUniversalFeed(pageToCall)
+                }
+            }
         }
     }
 
     //observes live data responses
     private fun observeResponses() {
-        videoFeedViewModel.postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
+        videoFeedViewModel.postViewModel.universalFeedResponse.observe(viewLifecycleOwner) { response ->
+            val page = response.first
+            val posts = response.second
+
+            // update the variable that no new posts are available now
+            if (posts.isEmpty()) {
+                videoFeedViewModel.postsFinished = true
+            }
+
+            //add only those posts which are supported by the adapter
+            val finalPosts = posts.filter {
+                (videoFeedAdapter.supportedViewBinderResolverMap.containsKey(it.viewType))
+            }
+
+            if (mSwipeRefreshLayout.isRefreshing) {
+                checkPostsAndReplace(finalPosts)
+                mSwipeRefreshLayout.isRefreshing = false
+                return@observe
+            }
+
+            if (page == 1) {
+                checkPostsAndReplace(finalPosts)
+            } else {
+                videoFeedAdapter.addAll(finalPosts)
+            }
+        }
+
+        videoFeedViewModel.postViewModel.personalisedFeedResponse.observe(viewLifecycleOwner) { response ->
             val page = response.first
             val posts = response.second
 
@@ -318,7 +415,14 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
 
         videoFeedViewModel.postViewModel.errorMessageEventFlow.onEach { response ->
             when (response) {
-                is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
+                is UniversalFeed -> {
+                    videoFeedViewModel.pageToCall--
+                    val errorMessage = response.errorMessage
+                    mSwipeRefreshLayout.isRefreshing = false
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+
+                is PersonalisedFeed -> {
                     videoFeedViewModel.pageToCall--
                     val errorMessage = response.errorMessage
                     mSwipeRefreshLayout.isRefreshing = false
@@ -441,6 +545,15 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
         }
     }
 
+    override fun onIdleSwipeReached() {
+        if (feedType == PERSONALISED_FEED) {
+            videoFeedViewModel.helperViewModel.apply {
+                setPostSeenInLocalDb()
+                postSeen()
+            }
+        }
+    }
+
     //precache the videos from specified position till [PRECACHE_VIDEO_COUNT]
     private fun preCache(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -510,6 +623,13 @@ open class LMFeedVideoFeedFragment(private val config: LMFeedVideoFeedConfig? = 
     override fun onPause() {
         super.onPause()
         postVideoPreviewAutoPlayHelper.removePlayer()
+    }
+
+    override fun onStop() {
+        if (feedType == PERSONALISED_FEED) {
+            videoFeedViewModel.helperViewModel.setPostSeenInLocalDb()
+        }
+        super.onStop()
     }
 
     override fun onDestroyView() {
