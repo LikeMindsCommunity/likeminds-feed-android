@@ -53,6 +53,7 @@ abstract class LMFeedRecyclerViewScrollStateListener(private val mLinearLayoutMa
         super.onScrollStateChanged(recyclerView, newState)
 
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            Log.d("PUI","scroll state idle reached")
             scrollRunnable?.let {
                 scrollHandler?.removeCallbacks(it)
             }

@@ -3,7 +3,6 @@ package com.likeminds.feed.android.core.post.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import com.likeminds.feed.android.core.LMFeedCoreApplication
-import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.LMFeedTheme.*
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
@@ -322,8 +321,11 @@ class LMFeedHelperViewModel : ViewModel() {
                 Log.d("PUI", "clearing local db")
                 //clear local db
                 lmFeedClient.removeSeenPost(removeSeenPostRequest)
+
+                //clear static memory
+                LMFeedPostSeenUtil.clearSeenPost()
             } else {
-                Log.e(LOG_TAG, "post seen api failed: ${response.errorMessage}")
+                Log.e("PUI", "post seen api failed: ${response.errorMessage}")
             }
         }
     }
