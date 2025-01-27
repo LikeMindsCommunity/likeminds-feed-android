@@ -21,13 +21,6 @@ object LMFeedPostSeenUtil {
 
     // get all seen posts by user from hashmap
     fun getAllSeenPosts(): List<SeenPost> {
-        Log.d(
-            "PUI", "static getAllSeenPosts: ${
-                seenPost.map {
-                    it
-                }
-            }"
-        )
         return seenPost.map {
             it.value
         }
@@ -35,7 +28,6 @@ object LMFeedPostSeenUtil {
 
     //clear the hashmap
     fun clearSeenPost() {
-        Log.d("PUI", "clearSeenPost static called")
         seenPost.clear()
     }
 }

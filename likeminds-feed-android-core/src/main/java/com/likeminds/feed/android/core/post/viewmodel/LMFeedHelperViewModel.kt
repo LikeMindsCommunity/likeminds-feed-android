@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.post.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import com.likeminds.feed.android.core.LMFeedCoreApplication
+import com.likeminds.feed.android.core.LMFeedCoreApplication.Companion.LOG_TAG
 import com.likeminds.feed.android.core.LMFeedTheme.*
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.topics.model.LMFeedTopicViewData
@@ -298,34 +299,19 @@ class LMFeedHelperViewModel : ViewModel() {
 
             val finalPostSeenIds = (postSeenFromLocalDb + postSeenFromMemory).map { it.postId }
 
-            Log.d(
-                "PUI", """
-                calling post seen api with finalPostSeenIds: ${finalPostSeenIds.map { it }}
-            """.trimIndent()
-            )
-
             if (finalPostSeenIds.isEmpty()) return@launchIO
 
             val postSeenRequest = PostSeenRequest.Builder()
                 .seenPostIds(finalPostSeenIds)
                 .build()
 
-            Log.d("PUI", "calling api")
             val response = lmFeedClient.postSeen(postSeenRequest)
 
             if (response.success) {
-                val removeSeenPostRequest = RemoveSeenPostRequest.Builder()
-                    .minimumSeenAt(System.currentTimeMillis())
-                    .build()
-
-                Log.d("PUI", "clearing local db")
-                //clear local db
-                lmFeedClient.removeSeenPost(removeSeenPostRequest)
-
                 //clear static memory
                 LMFeedPostSeenUtil.clearSeenPost()
             } else {
-                Log.e("PUI", "post seen api failed: ${response.errorMessage}")
+                Log.e(LOG_TAG, "post seen api failed: ${response.errorMessage}")
             }
         }
     }
@@ -340,12 +326,6 @@ class LMFeedHelperViewModel : ViewModel() {
             val insertSeenPostRequest = InsertSeenPostRequest.Builder()
                 .seenPosts(postsSeenByUser)
                 .build()
-
-            Log.d(
-                "PUI", """
-                inserting to local db: ${postsSeenByUser.map { it.postId }}
-            """.trimIndent()
-            )
 
             lmFeedClient.insertSeenPosts(insertSeenPostRequest)
 

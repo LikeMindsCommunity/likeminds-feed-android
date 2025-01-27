@@ -3,7 +3,6 @@ package com.likeminds.feed.android.core.utils
 import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,7 +41,6 @@ abstract class LMFeedRecyclerViewScrollStateListener(private val mLinearLayoutMa
 
             // Check if the item is at least 40% visible
             if (visibilityPercentage >= ITEM_VISIBILITY_PERCENTAGE) {
-                Log.d("RecyclerView", "Item $i is ${visibilityPercentage.toInt()}% visible")
                 // Perform action for 40% visible items
                 onItemVisibleMoreThan40Percent(i)
             }
@@ -53,7 +51,6 @@ abstract class LMFeedRecyclerViewScrollStateListener(private val mLinearLayoutMa
         super.onScrollStateChanged(recyclerView, newState)
 
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-            Log.d("PUI","scroll state idle reached")
             scrollRunnable?.let {
                 scrollHandler?.removeCallbacks(it)
             }

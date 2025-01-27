@@ -7,7 +7,6 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -759,13 +758,6 @@ open class LMFeedSocialFeedFragment(private val feedType: LMFeedType) :
                     override fun onItemVisibleMoreThan40Percent(position: Int) {
                         val postViewData = getPostFromAdapter(position)
                         postViewData?.let {
-                            Log.d(
-                                "PUI", """
-                            item visible more than 40 percent: 
-                            position: $position
-                            postViewData: ${postViewData.id}
-                        """.trimIndent()
-                            )
                             LMFeedPostSeenUtil.insertSeenPost(
                                 postViewData,
                                 System.currentTimeMillis()
@@ -774,11 +766,6 @@ open class LMFeedSocialFeedFragment(private val feedType: LMFeedType) :
                     }
 
                     override fun onScrollStateIdleReached() {
-                        Log.d(
-                            "PUI", """
-                            scroll state idle reached after 5 seconds
-                        """.trimIndent()
-                        )
                         socialFeedViewModel.helperViewModel.apply {
                             setPostSeenInLocalDb()
                             postSeen()

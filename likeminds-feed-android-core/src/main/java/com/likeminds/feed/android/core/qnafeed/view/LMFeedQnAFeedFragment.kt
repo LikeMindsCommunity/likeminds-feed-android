@@ -405,13 +405,6 @@ open class LMFeedQnAFeedFragment(
                     override fun onItemVisibleMoreThan40Percent(position: Int) {
                         val postViewData = getPostFromAdapter(position)
                         postViewData?.let {
-                            Log.d(
-                                "PUI", """
-                            item visible more than 40 percent: 
-                            position: $position
-                            postViewData: ${postViewData.id}
-                        """.trimIndent()
-                            )
                             LMFeedPostSeenUtil.insertSeenPost(
                                 postViewData,
                                 System.currentTimeMillis()
@@ -420,11 +413,6 @@ open class LMFeedQnAFeedFragment(
                     }
 
                     override fun onScrollStateIdleReached() {
-                        Log.d(
-                            "PUI", """
-                            scroll state idle reached after 5 seconds
-                        """.trimIndent()
-                        )
                         qnaFeedViewModel.helperViewModel.apply {
                             setPostSeenInLocalDb()
                             postSeen()

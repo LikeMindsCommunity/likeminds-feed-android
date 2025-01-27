@@ -223,7 +223,6 @@ open class LMFeedVideoFeedFragment(
                     if (feedType == PERSONALISED_FEED) {
                         // add post in static post seen
                         if (item is LMFeedPostViewData) {
-                            Log.d("PUI", "inserting to static memory")
                             LMFeedPostSeenUtil.insertSeenPost(item, System.currentTimeMillis())
                         }
                     }
@@ -548,7 +547,6 @@ open class LMFeedVideoFeedFragment(
 
     override fun onIdleSwipeReached() {
         if (feedType == PERSONALISED_FEED) {
-            Log.d("PUI", "idle threshold reached")
             videoFeedViewModel.helperViewModel.apply {
                 setPostSeenInLocalDb()
                 postSeen()
