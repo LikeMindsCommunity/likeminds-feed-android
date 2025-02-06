@@ -2,13 +2,16 @@ package com.likeminds.feed.android.core.videofeed.adapter.databinders
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedItemPostVideoFeedBinding
 import com.likeminds.feed.android.core.socialfeed.adapter.LMFeedPostAdapterListener
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
 import com.likeminds.feed.android.core.socialfeed.util.LMFeedPostBinderUtils
+import com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.base.LMFeedViewDataBinder
 import com.likeminds.feed.android.core.utils.base.model.ITEM_POST_VIDEO_FEED
+import com.likeminds.feed.android.core.utils.video.LMFeedPostVideoPreviewAutoPlayHelper
 
 class LMFeedItemPostVideoFeedViewDataBinder(
     private val postAdapterListener: LMFeedPostAdapterListener

@@ -27,6 +27,8 @@ import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
 import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.post.edit.model.LMFeedEditPostExtras
+import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostActivity
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
@@ -356,6 +358,7 @@ open class LMFeedVideoFeedFragment :
 
     //plays the video at specified position if present in view pager
     fun playVideoInViewPager(position: Int) {
+        val videoView = replaceVideoView(position) ?: return
         if (position >= 0 && videoFeedAdapter.items()[position] != null) {
             val data = videoFeedAdapter.items()[position]
             if (data !is LMFeedPostViewData) {
