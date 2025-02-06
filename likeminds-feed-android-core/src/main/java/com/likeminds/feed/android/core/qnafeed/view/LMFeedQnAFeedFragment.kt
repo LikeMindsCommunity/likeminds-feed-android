@@ -1,16 +1,21 @@
 package com.likeminds.feed.android.core.qnafeed.view
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.WorkInfo
@@ -38,6 +43,7 @@ import com.likeminds.feed.android.core.post.util.LMFeedPostEvent
 import com.likeminds.feed.android.core.post.util.LMFeedPostObserver
 import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
 import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.*
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.qnafeed.viewmodel.LMFeedQnAFeedViewModel
 import com.likeminds.feed.android.core.report.model.LMFeedReportExtras
@@ -76,6 +82,9 @@ import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.base.LMFeedBaseViewType
 import com.likeminds.feed.android.core.utils.coroutine.observeInLifecycle
+import com.likeminds.feed.android.core.utils.feed.*
+import com.likeminds.feed.android.core.utils.feed.LMFeedType.PERSONALISED_FEED
+import com.likeminds.feed.android.core.utils.feed.LMFeedType.UNIVERSAL_FEED
 import com.likeminds.feed.android.core.utils.mediauploader.LMFeedMediaUploadWorker
 import com.likeminds.feed.android.core.utils.model.LMFeedPadding
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
@@ -85,8 +94,9 @@ import com.likeminds.likemindsfeed.search.model.SearchType
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 
-open class LMFeedQnAFeedFragment :
-    Fragment(),
+open class LMFeedQnAFeedFragment(
+    private val feedType: LMFeedType
+) : LMFeedBaseThemeFragment(),
     LMFeedPostObserver,
     LMFeedAdminDeleteDialogListener,
     LMFeedSelfDeleteDialogListener,
@@ -105,6 +115,21 @@ open class LMFeedQnAFeedFragment :
 
     private val postPublisher by lazy {
         LMFeedPostEvent.getPublisher()
+    }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
+    companion object {
+
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        private const val POST_NOTIFICATIONS = Manifest.permission.POST_NOTIFICATIONS
+
+        @JvmStatic
+        fun getInstance(feedType: LMFeedType = UNIVERSAL_FEED): LMFeedQnAFeedFragment {
+            return LMFeedQnAFeedFragment(feedType)
+        }
     }
 
     override fun onCreateView(
@@ -297,6 +322,7 @@ open class LMFeedQnAFeedFragment :
         fetchData()
         initListeners()
         observeResponses()
+        checkForNotificationPermission()
     }
 
     override fun onStart() {
@@ -329,7 +355,15 @@ open class LMFeedQnAFeedFragment :
     private fun initUI() {
         initQnAFeedRecyclerView()
         initSwipeRefreshLayout()
-        initSelectedTopicRecyclerView()
+        when (feedType) {
+            PERSONALISED_FEED -> {
+                binding.topicSelectorBar.hide()
+            }
+
+            UNIVERSAL_FEED -> {
+                initSelectedTopicRecyclerView()
+            }
+        }
     }
 
     override fun onPause() {
@@ -347,14 +381,48 @@ open class LMFeedQnAFeedFragment :
                 object : LMFeedEndlessRecyclerViewScrollListener(linearLayoutManager) {
                     override fun onLoadMore(currentPage: Int) {
                         if (currentPage > 0) {
-                            qnaFeedViewModel.postViewModel.getFeed(
-                                currentPage,
-                                qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(binding.topicSelectorBar.getAllSelectedTopics())
-                            )
+                            when (feedType) {
+                                PERSONALISED_FEED -> {
+                                    qnaFeedViewModel.postViewModel.getPersonalisedFeed(currentPage)
+                                }
+
+                                UNIVERSAL_FEED -> {
+                                    qnaFeedViewModel.postViewModel.getUniversalFeed(
+                                        currentPage,
+                                        qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(
+                                            binding.topicSelectorBar.getAllSelectedTopics()
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             setPaginationScrollListener(paginationScrollListener)
+
+            val scrollStateListener =
+                object : LMFeedRecyclerViewScrollStateListener(linearLayoutManager) {
+                    override fun onItemVisibleMoreThan40Percent(position: Int) {
+                        val postViewData = getPostFromAdapter(position)
+                        postViewData?.let {
+                            LMFeedPostSeenUtil.insertSeenPost(
+                                postViewData,
+                                System.currentTimeMillis()
+                            )
+                        }
+                    }
+
+                    override fun onScrollStateIdleReached() {
+                        qnaFeedViewModel.helperViewModel.apply {
+                            setPostSeenInLocalDb()
+                            postSeen()
+                        }
+                    }
+                }
+
+            if (feedType == PERSONALISED_FEED) {
+                setScrollStateListener(scrollStateListener)
+            }
         }
     }
 
@@ -392,13 +460,24 @@ open class LMFeedQnAFeedFragment :
         binding.apply {
             //call api
             topicSelectorBar.clearSelectedTopicsAndNotify()
-            rvQna.resetScrollListenerData()
+            rvQna.resetPaginationScrollListenerData()
             LMFeedProgressBarHelper.showProgress(progressBar, true)
-            qnaFeedViewModel.postViewModel.getFeed(1, null)
+            qnaFeedViewModel.postViewModel.getUniversalFeed(1, null)
 
             //show layout accordingly
             topicSelectorBar.setSelectedTopicFilterVisibility(false)
             topicSelectorBar.setAllTopicsTextVisibility(true)
+        }
+    }
+
+    //check for notification permission
+    private fun checkForNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()) {
+                if (activity?.checkSelfPermission(POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    notificationPermissionLauncher.launch(POST_NOTIFICATIONS)
+                }
+            }
         }
     }
 
@@ -407,7 +486,20 @@ open class LMFeedQnAFeedFragment :
             helperViewModel.getLoggedInUser()
             postViewModel.getCreatePostRights()
             helperViewModel.getUnreadNotificationCount()
-            postViewModel.getFeed(1, null)
+            when (feedType) {
+                PERSONALISED_FEED -> {
+                    postViewModel.getPersonalisedFeed(
+                        page = 1,
+                        shouldReorder = true,
+                        shouldRecompute = true
+                    )
+                    helperViewModel.postSeen()
+                }
+
+                UNIVERSAL_FEED -> {
+                    postViewModel.getUniversalFeed(1, null)
+                }
+            }
         }
     }
 
@@ -457,7 +549,26 @@ open class LMFeedQnAFeedFragment :
             }
 
             // observes feedResponse LiveData
-            postViewModel.feedResponse.observe(viewLifecycleOwner) { response ->
+            postViewModel.universalFeedResponse.observe(viewLifecycleOwner) { response ->
+                LMFeedProgressBarHelper.hideProgress(binding.progressBar)
+                val page = response.first
+                val posts = response.second
+
+                if (mSwipeRefreshLayout.isRefreshing) {
+                    checkPostsAndReplace(posts)
+                    mSwipeRefreshLayout.isRefreshing = false
+                    return@observe
+                }
+
+                if (page == 1) {
+                    checkPostsAndReplace(posts)
+                } else {
+                    binding.rvQna.addPosts(posts)
+                    binding.rvQna.refreshVideoAutoPlayer()
+                }
+            }
+
+            postViewModel.personalisedFeedResponse.observe(viewLifecycleOwner) { response ->
                 LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                 val page = response.first
                 val posts = response.second
@@ -567,14 +678,14 @@ open class LMFeedQnAFeedFragment :
             // observes errorMessageEventFlow
             postViewModel.errorMessageEventFlow.onEach { response ->
                 when (response) {
-                    is LMFeedPostViewModel.ErrorMessageEvent.Feed -> {
+                    is UniversalFeed -> {
                         val errorMessage = response.errorMessage
                         mSwipeRefreshLayout.isRefreshing = false
                         LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                         LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                     }
 
-                    is LMFeedPostViewModel.ErrorMessageEvent.AddPost -> {
+                    is AddPost -> {
                         LMFeedViewUtils.showErrorMessageToast(
                             requireContext(),
                             response.errorMessage
@@ -582,33 +693,32 @@ open class LMFeedQnAFeedFragment :
                         removePostingView()
                     }
 
-                    is LMFeedPostViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
-                        binding.headerViewQna.setNotificationIconVisibility(false)
+                    is SubmitVote -> {
                         LMFeedViewUtils.showErrorMessageToast(
                             requireContext(),
                             response.errorMessage
                         )
                     }
 
-                    is LMFeedPostViewModel.ErrorMessageEvent.SubmitVote -> {
+                    is AddPollOption -> {
                         LMFeedViewUtils.showErrorMessageToast(
                             requireContext(),
                             response.errorMessage
                         )
                     }
 
-                    is LMFeedPostViewModel.ErrorMessageEvent.AddPollOption -> {
+                    is GetPost -> {
                         LMFeedViewUtils.showErrorMessageToast(
                             requireContext(),
                             response.errorMessage
                         )
                     }
 
-                    is LMFeedPostViewModel.ErrorMessageEvent.GetPost -> {
-                        LMFeedViewUtils.showErrorMessageToast(
-                            requireContext(),
-                            response.errorMessage
-                        )
+                    is PersonalisedFeed -> {
+                        val errorMessage = response.errorMessage
+                        mSwipeRefreshLayout.isRefreshing = false
+                        LMFeedProgressBarHelper.hideProgress(binding.progressBar)
+                        LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                     }
                 }
             }.observeInLifecycle(viewLifecycleOwner)
@@ -714,7 +824,13 @@ open class LMFeedQnAFeedFragment :
                         LMFeedViewUtils.showSomethingWentWrongToast(requireContext())
                     }
 
-                    is LMFeedHelperViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {}
+                    is LMFeedHelperViewModel.ErrorMessageEvent.GetUnreadNotificationCount -> {
+                        binding.headerViewQna.setNotificationIconVisibility(false)
+                        LMFeedViewUtils.showErrorMessageToast(
+                            requireContext(),
+                            response.errorMessage
+                        )
+                    }
                 }
             }.observeInLifecycle(viewLifecycleOwner)
 
@@ -926,12 +1042,27 @@ open class LMFeedQnAFeedFragment :
     protected open fun onFeedRefreshed() {
         binding.apply {
             mSwipeRefreshLayout.isRefreshing = true
-            rvQna.resetScrollListenerData()
+            rvQna.resetPaginationScrollListenerData()
             qnaFeedViewModel.helperViewModel.getUnreadNotificationCount()
-            qnaFeedViewModel.postViewModel.getFeed(
-                1,
-                qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(topicSelectorBar.getAllSelectedTopics())
-            )
+
+            when (feedType) {
+                PERSONALISED_FEED -> {
+                    rvQna.resetScrollStateListenerData()
+                    qnaFeedViewModel.postViewModel.getPersonalisedFeed(
+                        page = 1,
+                        shouldReorder = true,
+                        shouldRecompute = true
+                    )
+                    qnaFeedViewModel.helperViewModel.postSeen()
+                }
+
+                UNIVERSAL_FEED -> {
+                    qnaFeedViewModel.postViewModel.getUniversalFeed(
+                        1,
+                        qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(topicSelectorBar.getAllSelectedTopics())
+                    )
+                }
+            }
         }
     }
 
@@ -1080,7 +1211,7 @@ open class LMFeedQnAFeedFragment :
     //handles result after selecting filters and show recyclers views
     private fun handleTopicSelectionResult(resultExtras: LMFeedTopicSelectionResultExtras) {
         binding.apply {
-            rvQna.resetScrollListenerData()
+            rvQna.resetPaginationScrollListenerData()
             rvQna.clearPostsAndNotify()
 
             if (resultExtras.isAllTopicSelected) {
@@ -1090,7 +1221,7 @@ open class LMFeedQnAFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                qnaFeedViewModel.postViewModel.getFeed(1, null)
+                qnaFeedViewModel.postViewModel.getUniversalFeed(1, null)
             } else {
                 //show layouts accordingly
                 topicSelectorBar.setAllTopicsTextVisibility(false)
@@ -1102,7 +1233,7 @@ open class LMFeedQnAFeedFragment :
 
                 //call api
                 LMFeedProgressBarHelper.showProgress(progressBar, true)
-                qnaFeedViewModel.postViewModel.getFeed(
+                qnaFeedViewModel.postViewModel.getUniversalFeed(
                     1,
                     qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )
@@ -1124,10 +1255,18 @@ open class LMFeedQnAFeedFragment :
         topicSelectionLauncher.launch(intent)
     }
 
+    override fun onStop() {
+        if (feedType == PERSONALISED_FEED) {
+            qnaFeedViewModel.helperViewModel.setPostSeenInLocalDb()
+        }
+        super.onStop()
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
         // unsubscribes itself from the [PostPublisher]
         postPublisher.unsubscribe(this)
+
+        super.onDestroy()
     }
 
     //callback when publisher publishes any updated postData
@@ -1442,10 +1581,10 @@ open class LMFeedQnAFeedFragment :
                 topicSelectorBar.removeTopicAndNotify(position)
 
                 //call apis
-                rvQna.resetScrollListenerData()
+                rvQna.resetPaginationScrollListenerData()
                 rvQna.clearPostsAndNotify()
                 LMFeedProgressBarHelper.showProgress(binding.progressBar, true)
-                qnaFeedViewModel.postViewModel.getFeed(
+                qnaFeedViewModel.postViewModel.getUniversalFeed(
                     1,
                     qnaFeedViewModel.helperViewModel.getTopicIdsFromAdapterList(selectedTopics)
                 )
