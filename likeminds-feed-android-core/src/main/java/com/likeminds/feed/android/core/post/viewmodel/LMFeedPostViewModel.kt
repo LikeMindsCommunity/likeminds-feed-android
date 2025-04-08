@@ -169,12 +169,17 @@ class LMFeedPostViewModel : ViewModel() {
         }
     }
 
-    fun getUniversalFeed(page: Int, topicsIds: List<String>? = null) {
+    fun getUniversalFeed(
+        page: Int,
+        topicsIds: List<String>? = null,
+        startFeedWithPostIds: List<String>? = null
+    ) {
         viewModelScope.launchIO {
             val request = GetFeedRequest.Builder()
                 .page(page)
                 .pageSize(PAGE_SIZE)
                 .topicIds(topicsIds)
+                .startFeedWithPostIds(startFeedWithPostIds)
                 .build()
 
             //call get feed api
@@ -368,7 +373,8 @@ class LMFeedPostViewModel : ViewModel() {
     fun getPersonalisedFeed(
         page: Int,
         shouldReorder: Boolean? = null,
-        shouldRecompute: Boolean? = null
+        shouldRecompute: Boolean? = null,
+        startFeedWithPostIds: List<String>? = null
     ) {
         viewModelScope.launchIO {
             // build api request
@@ -377,6 +383,7 @@ class LMFeedPostViewModel : ViewModel() {
                 .pageSize(PAGE_SIZE)
                 .shouldReorder(shouldReorder)
                 .shouldRecompute(shouldRecompute)
+                .startFeedWithPostIds(startFeedWithPostIds)
                 .build()
 
             //call api

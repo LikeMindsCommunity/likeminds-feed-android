@@ -27,7 +27,7 @@ feed_versions.aws_s3 = '2.47.0'
 feed_versions.firebase = '30.1.0'
 feed_versions.custom_gallery = '1.2.0'
 feed_versions.user_tagging = '1.2.0'
-feed_versions.feed_data = "1.14.0"
+feed_versions.feed_data = "1.15.0"
 ext.feed_versions = feed_versions
 
 ext.feed_deps = [:]

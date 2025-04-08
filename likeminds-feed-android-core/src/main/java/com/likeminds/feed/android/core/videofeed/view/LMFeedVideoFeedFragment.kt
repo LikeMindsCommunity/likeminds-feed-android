@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -61,15 +60,15 @@ import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.*
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
-import com.likeminds.feed.android.core.videofeed.model.LMFeedCaughtUpViewData
-import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
+import com.likeminds.feed.android.core.videofeed.model.*
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
 
 open class LMFeedVideoFeedFragment(
     private val feedType: LMFeedType,
-    private val config: LMFeedVideoFeedConfig?
+    private val config: LMFeedVideoFeedConfig?,
+    private val props: LMFeedVideoFeedProps?
 ) : LMFeedBaseThemeFragment(),
     LMFeedPostAdapterListener,
     LMFeedPostMenuBottomSheetListener,
@@ -105,9 +104,10 @@ open class LMFeedVideoFeedFragment(
         @JvmStatic
         fun getInstance(
             feedType: LMFeedType = UNIVERSAL_FEED,
-            config: LMFeedVideoFeedConfig? = null
+            config: LMFeedVideoFeedConfig? = null,
+            props: LMFeedVideoFeedProps? = null
         ): LMFeedVideoFeedFragment {
-            return LMFeedVideoFeedFragment(feedType, config)
+            return LMFeedVideoFeedFragment(feedType, config, props)
         }
     }
 
@@ -303,7 +303,8 @@ open class LMFeedVideoFeedFragment(
                         postViewModel.getPersonalisedFeed(
                             page = pageToCall,
                             shouldReorder = true,
-                            shouldRecompute = true
+                            shouldRecompute = true,
+                            startFeedWithPostIds = props?.startFeedWithPostIds
                         )
                         helperViewModel.postSeen()
                     } else {
@@ -312,7 +313,10 @@ open class LMFeedVideoFeedFragment(
                 }
 
                 UNIVERSAL_FEED -> {
-                    postViewModel.getUniversalFeed(pageToCall)
+                    postViewModel.getUniversalFeed(
+                        page = pageToCall,
+                        startFeedWithPostIds = props?.startFeedWithPostIds
+                    )
                 }
             }
         }
