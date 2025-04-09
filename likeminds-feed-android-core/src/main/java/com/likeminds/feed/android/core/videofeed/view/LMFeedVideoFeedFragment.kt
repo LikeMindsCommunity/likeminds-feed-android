@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -57,6 +58,7 @@ import com.likeminds.feed.android.core.utils.feed.*
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.PERSONALISED_FEED
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.UNIVERSAL_FEED
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
+import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.*
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
@@ -170,7 +172,11 @@ open class LMFeedVideoFeedFragment(
             .postActionViewStyle(
                 postActionViewStyle.toBuilder()
                     .commentTextStyle(null)
-                    .shareIconStyle(null)
+                    .shareIconStyle(
+                        postActionViewStyle.shareIconStyle?.toBuilder()
+                            ?.inActiveSrc(R.drawable.lm_feed_ic_share_white)
+                            ?.build()
+                    )
                     .likeIconStyle(
                         postActionViewStyle.likeIconStyle.toBuilder()
                             .inActiveSrc(R.drawable.lm_feed_ic_like_white)
@@ -661,6 +667,22 @@ open class LMFeedVideoFeedFragment(
 
         //update view pager item
         videoFeedAdapter.update(adapterPosition, postViewData)
+    }
+
+    //callback when the user clicks on the post share button
+    override fun onPostShareClicked(position: Int, postViewData: LMFeedPostViewData) {
+        Log.d("PUI", "post shared clicked: ${postViewData.id}")
+        val userMeta = LMFeedUserMetaData.getInstance()
+        LMFeedShareUtils.sharePost(
+            requireContext(),
+            postViewData.id,
+            userMeta.domain ?: "",
+            LMFeedCommunityUtil.getPostVariable()
+        )
+
+        val loggedInUUID = userPreferences.getUUID()
+
+        LMFeedAnalytics.sendReelSharedEvent(loggedInUUID, postViewData)
     }
 
     //updates the fromPostLiked/fromPostSaved variables and updates the rv list

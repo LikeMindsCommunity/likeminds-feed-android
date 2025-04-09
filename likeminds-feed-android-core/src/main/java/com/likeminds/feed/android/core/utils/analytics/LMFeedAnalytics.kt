@@ -61,6 +61,7 @@ object LMFeedAnalytics {
         const val NO_MORE_REELS_SHOWN = "no_more_reels_shown"
         const val REEL_REPORTED = "reel_reported"
         const val REEL_SWIPED = "reel_swiped"
+        const val REEL_SHARED = "reel_shared"
     }
 
     /*
@@ -622,6 +623,23 @@ object LMFeedAnalytics {
                 "previous_reel_id" to previousReelId,
                 "previous_reel_watch_duration" to "$previousWatchDuration secs",
                 "previous_reel_total_duration" to "$previousReelTotalDuration secs"
+            )
+        )
+    }
+
+    /**
+     * Triggers when the user shares a reel
+     * @param loggedInUUID - uuid of the user
+     * @param post - view data of post
+     */
+    fun sendReelSharedEvent(loggedInUUID: String, post: LMFeedPostViewData) {
+        val postCreatorUUID = post.headerViewData.user.sdkClientInfoViewData.uuid
+        track(
+            LMFeedEvents.REEL_SHARED,
+            mapOf(
+                "post_shared_by" to loggedInUUID,
+                "reel_id" to post.id,
+                "reel_created_by" to postCreatorUUID
             )
         )
     }
