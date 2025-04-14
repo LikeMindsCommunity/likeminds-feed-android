@@ -2,7 +2,6 @@ package com.likeminds.feedvideo.auth.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.feed.android.core.utils.LMFeedRoute
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
@@ -29,7 +28,6 @@ class LMVideoFeedAuthActivity : AppCompatActivity() {
         if (isLoggedIn) {
             // user already logged in, navigate using deep linking or to [MainActivity]
             if (intent.data != null) {
-                Log.d("PUI", "Deep link received: ${intent.data}")
                 parseDeepLink()
             } else {
                 navigateToMainActivity()
@@ -43,7 +41,6 @@ class LMVideoFeedAuthActivity : AppCompatActivity() {
     // parses deep link to start corresponding activity
     private fun parseDeepLink() {
         val postId = LMFeedRoute.getPostIdFromUrl(intent.data.toString())
-        Log.d("PUI", "postId received: $postId")
         if (postId != null) {
             navigateToMainActivity(postId)
         }

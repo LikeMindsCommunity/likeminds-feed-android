@@ -675,7 +675,6 @@ open class LMFeedVideoFeedFragment(
 
     //callback when the user clicks on the post share button
     override fun onPostShareClicked(position: Int, postViewData: LMFeedPostViewData) {
-        Log.d("PUI", "post shared clicked: ${postViewData.id}")
         val userMeta = LMFeedUserMetaData.getInstance()
         LMFeedShareUtils.sharePost(
             requireContext(),

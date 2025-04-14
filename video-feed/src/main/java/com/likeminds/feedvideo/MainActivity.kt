@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         val startFeedWithPostId = intent.getStringExtra(POST_ID_TO_START_WITH)
         val props = if (startFeedWithPostId != null) {
-            Log.d("PUI", "post id received startFeedWithPostId: $startFeedWithPostId")
             LMFeedVideoFeedProps.Builder()
                 .startFeedWithPostIds(listOf(startFeedWithPostId))
                 .build()
