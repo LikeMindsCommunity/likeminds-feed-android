@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.post.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.WorkContinuation
 import androidx.work.WorkManager
@@ -174,6 +175,7 @@ class LMFeedPostViewModel : ViewModel() {
         topicsIds: List<String>? = null,
         startFeedWithPostIds: List<String>? = null
     ) {
+        Log.d("PUI", "getUniversalFeed startFeedWithPostIds: $startFeedWithPostIds")
         viewModelScope.launchIO {
             val request = GetFeedRequest.Builder()
                 .page(page)

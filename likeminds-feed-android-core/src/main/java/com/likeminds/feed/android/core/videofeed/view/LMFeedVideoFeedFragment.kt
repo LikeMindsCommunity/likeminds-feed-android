@@ -355,13 +355,17 @@ open class LMFeedVideoFeedFragment(
                     postViewModel.getPersonalisedFeed(
                         page = pageToCall,
                         shouldReorder = true,
-                        shouldRecompute = true
+                        shouldRecompute = true,
+                        startFeedWithPostIds = props?.startFeedWithPostIds
                     )
                     helperViewModel.postSeen()
                 }
 
                 UNIVERSAL_FEED -> {
-                    postViewModel.getUniversalFeed(pageToCall)
+                    postViewModel.getUniversalFeed(
+                        page = pageToCall,
+                        startFeedWithPostIds = props?.startFeedWithPostIds
+                    )
                 }
             }
         }
