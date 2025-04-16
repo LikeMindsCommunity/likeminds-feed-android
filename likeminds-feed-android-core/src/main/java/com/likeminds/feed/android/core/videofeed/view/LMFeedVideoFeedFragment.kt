@@ -32,8 +32,7 @@ import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
 import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
 import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
-import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.PersonalisedFeed
-import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.UniversalFeed
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.*
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
@@ -246,6 +245,7 @@ open class LMFeedVideoFeedFragment(
                     if (currentItem > 0 && currentItem >= size - VIDEO_PRELOAD_THRESHOLD) {
                         if (size > videoFeedViewModel.previousTotal && !videoFeedViewModel.postsFinished) {
                             videoFeedViewModel.previousTotal = size
+                            Log.d("PUI", "pagination call")
                             fetchData()
                         }
                     }
@@ -272,6 +272,7 @@ open class LMFeedVideoFeedFragment(
         super.onViewCreated(view, savedInstanceState)
 
         if (videoFeedViewModel.adapterItems.isEmpty()) {
+            Log.d("PUI", "video feed adapter is empty")
             fetchData()
         } else {
             videoFeedAdapter.replace(videoFeedViewModel.adapterItems.toList())
@@ -303,6 +304,7 @@ open class LMFeedVideoFeedFragment(
     private fun fetchData() {
         videoFeedViewModel.apply {
             pageToCall++
+            Log.d("PUI", "pageToCall: $pageToCall")
             when (feedType) {
                 PERSONALISED_FEED -> {
                     if (pageToCall == 1) {
@@ -323,6 +325,7 @@ open class LMFeedVideoFeedFragment(
                         page = pageToCall,
                         startFeedWithPostIds = props?.startFeedWithPostIds
                     )
+                    Log.d("PUI", "update page: $pageToCall")
                 }
             }
         }
@@ -438,6 +441,12 @@ open class LMFeedVideoFeedFragment(
 
                 is PersonalisedFeed -> {
                     videoFeedViewModel.pageToCall--
+                    val errorMessage = response.errorMessage
+                    mSwipeRefreshLayout.isRefreshing = false
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+
+                is PostDeletedInFeed -> {
                     val errorMessage = response.errorMessage
                     mSwipeRefreshLayout.isRefreshing = false
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)

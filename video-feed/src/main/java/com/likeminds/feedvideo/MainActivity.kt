@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val fragment = LMFeedVideoFeedFragment.getInstance(
-            feedType = LMFeedType.PERSONALISED_FEED,
+            feedType = LMFeedType.UNIVERSAL_FEED,
             props = props
         )
 

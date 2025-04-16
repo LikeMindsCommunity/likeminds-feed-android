@@ -2,6 +2,7 @@ package com.likeminds.feed.android.core.post.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.WorkContinuation
 import androidx.work.WorkManager
@@ -9,11 +10,14 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.poll.util.LMFeedPollUtil
 import com.likeminds.feed.android.core.post.create.util.LMFeedPostAttachmentUploadWorker
 import com.likeminds.feed.android.core.socialfeed.model.LMFeedPostViewData
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
+import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
 import com.likeminds.feed.android.core.utils.LMFeedViewDataConvertor
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedKeys
 import com.likeminds.feed.android.core.utils.analytics.LMFeedAnalytics.LMFeedScreenNames
 import com.likeminds.feed.android.core.utils.coroutine.launchIO
+import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 import com.likeminds.feed.android.core.utils.user.LMFeedMemberRightsUtil
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.feed.model.GetFeedRequest
@@ -82,6 +86,8 @@ class LMFeedPostViewModel : ViewModel() {
         data class GetPost(val errorMessage: String?) : ErrorMessageEvent()
 
         data class PersonalisedFeed(val errorMessage: String?) : ErrorMessageEvent()
+
+        data class PostDeletedInFeed(val errorMessage: String?) : ErrorMessageEvent()
     }
 
     sealed class PostDataEvent {
@@ -192,6 +198,25 @@ class LMFeedPostViewModel : ViewModel() {
                 val topicsMap = data.topics
                 val widgetsMap = data.widgets
                 val filteredCommentsMap = data.filteredComments
+
+                Log.d("PUI", "request: page: $page and startFeedWithPostIds: $startFeedWithPostIds")
+
+                if (page == 1 && !startFeedWithPostIds.isNullOrEmpty()) {
+                    Log.d("PUI", "universal feed loop entered")
+                    for (i in startFeedWithPostIds.indices) {
+                        if (posts[i].id != startFeedWithPostIds[i]) {
+                            //for error i.e. Post is deleted
+                            val errorMessage =
+                                "${
+                                    LMFeedCommunityUtil.getPostVariable()
+                                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                                } is deleted or not available."
+
+                            errorMessageChannel.send(ErrorMessageEvent.PostDeletedInFeed(errorMessage))
+                            break
+                        }
+                    }
+                }
 
                 //convert to view data
                 val listOfPostViewData =
@@ -377,6 +402,7 @@ class LMFeedPostViewModel : ViewModel() {
         startFeedWithPostIds: List<String>? = null
     ) {
         viewModelScope.launchIO {
+
             // build api request
             val request = GetPersonalisedFeedRequest.Builder()
                 .page(page)
@@ -398,6 +424,23 @@ class LMFeedPostViewModel : ViewModel() {
                 val topicsMap = data.topics
                 val widgetsMap = data.widgets
                 val filteredCommentsMap = data.filteredComments
+
+                if (page == 1 && !startFeedWithPostIds.isNullOrEmpty()) {
+                    Log.d("PUI", "personalized feed loop entered")
+                    for (i in startFeedWithPostIds.indices) {
+                        if (posts[i].id != startFeedWithPostIds[i]) {
+                            //for error i.e. Post is deleted
+                            val errorMessage =
+                                "${
+                                    LMFeedCommunityUtil.getPostVariable()
+                                        .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
+                                } is deleted or not available."
+
+                            errorMessageChannel.send(ErrorMessageEvent.PostDeletedInFeed(errorMessage))
+                            break
+                        }
+                    }
+                }
 
                 //convert to view data
                 val listOfPostViewData =
