@@ -2,7 +2,6 @@ package com.likeminds.feed.android.core.post.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.work.WorkContinuation
 import androidx.work.WorkManager
@@ -199,10 +198,7 @@ class LMFeedPostViewModel : ViewModel() {
                 val widgetsMap = data.widgets
                 val filteredCommentsMap = data.filteredComments
 
-                Log.d("PUI", "request: page: $page and startFeedWithPostIds: $startFeedWithPostIds")
-
                 if (page == 1 && !startFeedWithPostIds.isNullOrEmpty()) {
-                    Log.d("PUI", "universal feed loop entered")
                     for (i in startFeedWithPostIds.indices) {
                         if (posts[i].id != startFeedWithPostIds[i]) {
                             //for error i.e. Post is deleted
@@ -426,7 +422,6 @@ class LMFeedPostViewModel : ViewModel() {
                 val filteredCommentsMap = data.filteredComments
 
                 if (page == 1 && !startFeedWithPostIds.isNullOrEmpty()) {
-                    Log.d("PUI", "personalized feed loop entered")
                     for (i in startFeedWithPostIds.indices) {
                         if (posts[i].id != startFeedWithPostIds[i]) {
                             //for error i.e. Post is deleted

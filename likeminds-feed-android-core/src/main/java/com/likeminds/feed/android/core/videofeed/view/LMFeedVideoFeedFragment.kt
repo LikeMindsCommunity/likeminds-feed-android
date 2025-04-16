@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -245,7 +244,6 @@ open class LMFeedVideoFeedFragment(
                     if (currentItem > 0 && currentItem >= size - VIDEO_PRELOAD_THRESHOLD) {
                         if (size > videoFeedViewModel.previousTotal && !videoFeedViewModel.postsFinished) {
                             videoFeedViewModel.previousTotal = size
-                            Log.d("PUI", "pagination call")
                             fetchData()
                         }
                     }
@@ -272,7 +270,6 @@ open class LMFeedVideoFeedFragment(
         super.onViewCreated(view, savedInstanceState)
 
         if (videoFeedViewModel.adapterItems.isEmpty()) {
-            Log.d("PUI", "video feed adapter is empty")
             fetchData()
         } else {
             videoFeedAdapter.replace(videoFeedViewModel.adapterItems.toList())
@@ -304,7 +301,6 @@ open class LMFeedVideoFeedFragment(
     private fun fetchData() {
         videoFeedViewModel.apply {
             pageToCall++
-            Log.d("PUI", "pageToCall: $pageToCall")
             when (feedType) {
                 PERSONALISED_FEED -> {
                     if (pageToCall == 1) {
@@ -325,7 +321,6 @@ open class LMFeedVideoFeedFragment(
                         page = pageToCall,
                         startFeedWithPostIds = props?.startFeedWithPostIds
                     )
-                    Log.d("PUI", "update page: $pageToCall")
                 }
             }
         }
