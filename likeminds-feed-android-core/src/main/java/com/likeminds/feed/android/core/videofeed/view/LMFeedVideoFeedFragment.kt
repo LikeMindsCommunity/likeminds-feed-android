@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -32,8 +31,7 @@ import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
 import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
 import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
-import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.PersonalisedFeed
-import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.UniversalFeed
+import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.*
 import com.likeminds.feed.android.core.postmenu.model.*
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetListener
@@ -58,18 +56,19 @@ import com.likeminds.feed.android.core.utils.feed.*
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.PERSONALISED_FEED
 import com.likeminds.feed.android.core.utils.feed.LMFeedType.UNIVERSAL_FEED
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
+import com.likeminds.feed.android.core.utils.user.LMFeedUserMetaData
 import com.likeminds.feed.android.core.utils.user.LMFeedUserPreferences
 import com.likeminds.feed.android.core.utils.video.*
 import com.likeminds.feed.android.core.videofeed.adapter.LMFeedVideoFeedAdapter
-import com.likeminds.feed.android.core.videofeed.model.LMFeedCaughtUpViewData
-import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
+import com.likeminds.feed.android.core.videofeed.model.*
 import com.likeminds.feed.android.core.videofeed.viewmodel.LMFeedVideoFeedViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
 
 open class LMFeedVideoFeedFragment(
     private val feedType: LMFeedType,
-    private val config: LMFeedVideoFeedConfig?
+    private val config: LMFeedVideoFeedConfig?,
+    private val props: LMFeedVideoFeedProps?
 ) : LMFeedBaseThemeFragment(),
     LMFeedPostAdapterListener,
     LMFeedPostMenuBottomSheetListener,
@@ -105,9 +104,10 @@ open class LMFeedVideoFeedFragment(
         @JvmStatic
         fun getInstance(
             feedType: LMFeedType = UNIVERSAL_FEED,
-            config: LMFeedVideoFeedConfig? = null
+            config: LMFeedVideoFeedConfig? = null,
+            props: LMFeedVideoFeedProps? = null
         ): LMFeedVideoFeedFragment {
-            return LMFeedVideoFeedFragment(feedType, config)
+            return LMFeedVideoFeedFragment(feedType, config, props)
         }
     }
 
@@ -170,7 +170,11 @@ open class LMFeedVideoFeedFragment(
             .postActionViewStyle(
                 postActionViewStyle.toBuilder()
                     .commentTextStyle(null)
-                    .shareIconStyle(null)
+                    .shareIconStyle(
+                        postActionViewStyle.shareIconStyle?.toBuilder()
+                            ?.inActiveSrc(R.drawable.lm_feed_ic_share_white)
+                            ?.build()
+                    )
                     .likeIconStyle(
                         postActionViewStyle.likeIconStyle.toBuilder()
                             .inActiveSrc(R.drawable.lm_feed_ic_like_white)
@@ -303,7 +307,8 @@ open class LMFeedVideoFeedFragment(
                         postViewModel.getPersonalisedFeed(
                             page = pageToCall,
                             shouldReorder = true,
-                            shouldRecompute = true
+                            shouldRecompute = true,
+                            startFeedWithPostIds = props?.startFeedWithPostIds
                         )
                         helperViewModel.postSeen()
                     } else {
@@ -312,7 +317,10 @@ open class LMFeedVideoFeedFragment(
                 }
 
                 UNIVERSAL_FEED -> {
-                    postViewModel.getUniversalFeed(pageToCall)
+                    postViewModel.getUniversalFeed(
+                        page = pageToCall,
+                        startFeedWithPostIds = props?.startFeedWithPostIds
+                    )
                 }
             }
         }
@@ -345,13 +353,17 @@ open class LMFeedVideoFeedFragment(
                     postViewModel.getPersonalisedFeed(
                         page = pageToCall,
                         shouldReorder = true,
-                        shouldRecompute = true
+                        shouldRecompute = true,
+                        startFeedWithPostIds = props?.startFeedWithPostIds
                     )
                     helperViewModel.postSeen()
                 }
 
                 UNIVERSAL_FEED -> {
-                    postViewModel.getUniversalFeed(pageToCall)
+                    postViewModel.getUniversalFeed(
+                        page = pageToCall,
+                        startFeedWithPostIds = props?.startFeedWithPostIds
+                    )
                 }
             }
         }
@@ -424,6 +436,12 @@ open class LMFeedVideoFeedFragment(
 
                 is PersonalisedFeed -> {
                     videoFeedViewModel.pageToCall--
+                    val errorMessage = response.errorMessage
+                    mSwipeRefreshLayout.isRefreshing = false
+                    LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
+                }
+
+                is PostDeletedInFeed -> {
                     val errorMessage = response.errorMessage
                     mSwipeRefreshLayout.isRefreshing = false
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
@@ -657,6 +675,21 @@ open class LMFeedVideoFeedFragment(
 
         //update view pager item
         videoFeedAdapter.update(adapterPosition, postViewData)
+    }
+
+    //callback when the user clicks on the post share button
+    override fun onPostShareClicked(position: Int, postViewData: LMFeedPostViewData) {
+        val userMeta = LMFeedUserMetaData.getInstance()
+        LMFeedShareUtils.sharePost(
+            requireContext(),
+            postViewData.id,
+            userMeta.domain ?: "",
+            LMFeedCommunityUtil.getPostVariable()
+        )
+
+        val loggedInUUID = userPreferences.getUUID()
+
+        LMFeedAnalytics.sendReelSharedEvent(loggedInUUID, postViewData)
     }
 
     //updates the fromPostLiked/fromPostSaved variables and updates the rv list

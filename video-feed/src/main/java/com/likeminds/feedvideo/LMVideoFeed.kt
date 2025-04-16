@@ -24,7 +24,7 @@ class LMVideoFeed : Application(), LMFeedCoreCallback {
             LMFeedTheme.VIDEO_FEED,
             enablePushNotifications = true,
             deviceId = deviceId,
-            domain = "https://www.samplefeed.com",
+            domain = "https://www.videofeed.com",
             lmFeedCoreCallback = this
         )
     }

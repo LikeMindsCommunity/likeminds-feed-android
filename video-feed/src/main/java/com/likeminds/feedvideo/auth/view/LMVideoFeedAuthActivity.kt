@@ -40,18 +40,16 @@ class LMVideoFeedAuthActivity : AppCompatActivity() {
 
     // parses deep link to start corresponding activity
     private fun parseDeepLink() {
-        //get intent for route
-        val intent = LMFeedRoute.handleDeepLink(
-            this,
-            intent.data.toString()
-        )
-        startActivity(intent)
-        finish()
+        val postId = LMFeedRoute.getPostIdFromUrl(intent.data.toString())
+        if (postId != null) {
+            navigateToMainActivity(postId)
+        }
     }
 
     // navigates user to [MainActivity]
-    private fun navigateToMainActivity() {
+    private fun navigateToMainActivity(postId: String? = null) {
         val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra(MainActivity.POST_ID_TO_START_WITH, postId)
         startActivity(intent)
         finish()
     }

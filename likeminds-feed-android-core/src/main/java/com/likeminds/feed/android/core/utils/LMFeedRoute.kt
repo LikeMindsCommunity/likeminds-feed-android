@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
 import com.likeminds.feed.android.core.post.create.model.LMFeedCreatePostExtras
 import com.likeminds.feed.android.core.post.create.view.LMFeedCreatePostActivity
 import com.likeminds.feed.android.core.post.detail.model.LMFeedPostDetailExtras
@@ -91,12 +92,12 @@ object LMFeedRoute {
     }
 
     private fun getRouteToBrowser(route: Uri): Intent {
-        return Intent(Intent.ACTION_VIEW, Uri.parse(route.getQueryParameter("link")))
+        return Intent(Intent.ACTION_VIEW, route.getQueryParameter("link")?.toUri())
     }
 
     // creates route for url and returns corresponding intent
     fun handleDeepLink(context: Context, url: String?): Intent? {
-        val data = Uri.parse(url).normalizeScheme() ?: return null
+        val data = url?.toUri()?.normalizeScheme() ?: return null
         val firstPath = getRouteFromDeepLink(data) ?: return null
         return getRouteIntent(
             context,
@@ -104,6 +105,14 @@ object LMFeedRoute {
             0,
             source = LMFeedAnalytics.LMFeedSource.DEEP_LINK
         )
+    }
+
+    /**
+     * Get [postId] from url from query params, if url is off type "<domain>/post?post_id=<post_id>"
+     */
+    fun getPostIdFromUrl(url: String?): String? {
+        val data = url?.toUri()?.normalizeScheme() ?: return null
+        return data.getQueryParameter(PARAM_POST_ID)
     }
 
     //create route string as per uri
