@@ -95,6 +95,11 @@ class LMFeedItemPostVideoFeedViewDataBinder(
                 val post = this.postViewData ?: return@setMenuIconListener
                 postAdapterListener.onPostActionMenuClicked(position, post)
             }
+
+            postActionView.setShareIconListener {
+                val post = this.postViewData ?: return@setShareIconListener
+                postAdapterListener.onPostShareClicked(position, post)
+            }
         }
     }
 }
