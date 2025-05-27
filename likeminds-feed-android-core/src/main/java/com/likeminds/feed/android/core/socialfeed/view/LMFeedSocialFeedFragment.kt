@@ -439,6 +439,8 @@ open class LMFeedSocialFeedFragment(private val feedType: LMFeedType) :
                     LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                     LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                 }
+
+                else -> {}
             }
         }.observeInLifecycle(viewLifecycleOwner)
 
