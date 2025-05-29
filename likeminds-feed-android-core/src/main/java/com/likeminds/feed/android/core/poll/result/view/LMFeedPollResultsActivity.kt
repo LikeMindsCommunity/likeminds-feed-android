@@ -1,17 +1,11 @@
 package com.likeminds.feed.android.core.poll.result.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedActivityPollResultsBinding
 import com.likeminds.feed.android.core.poll.result.model.LMFeedPollResultsExtras
@@ -52,7 +46,6 @@ class LMFeedPollResultsActivity : AppCompatActivity() {
         binding = LmFeedActivityPollResultsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setStatusBarColor()
         ViewCompat.setOnApplyWindowInsetsListener(binding.clCreatePoll) { view, windowInsets ->
             val innerPadding = windowInsets.getInsets(
                 // Notice we're using systemBars, not statusBar
@@ -75,23 +68,6 @@ class LMFeedPollResultsActivity : AppCompatActivity() {
 
         //inflates poll results fragment
         inflatePollResultsFragment()
-    }
-
-    @SuppressLint("InlinedApi")
-    @Suppress("Deprecation")
-    private fun setStatusBarColor() {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-            windowInsetsController.isAppearanceLightStatusBars = true
-            window.statusBarColor = ContextCompat.getColor(this, R.color.lm_feed_white)
-        } else {
-            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-
-            window.decorView.setBackgroundColor(ContextCompat.getColor(this, R.color.lm_feed_white))
-            window.insetsController?.hide(WindowInsets.Type.statusBars())
-            window.insetsController?.show(WindowInsets.Type.statusBars())
-        }
     }
 
     private fun assignExtras() {

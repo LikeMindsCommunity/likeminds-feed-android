@@ -1,12 +1,16 @@
 package com.likeminds.feed.android.core.post.detail.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -146,6 +150,7 @@ open class LMFeedPostDetailFragment :
     protected open fun customizePostDetailHeaderView(headerViewPostDetail: LMFeedHeaderView) {
         headerViewPostDetail.apply {
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle)
+            setStatusBarColor(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle.backgroundColor)
 
             setTitleText(
                 getString(
@@ -154,6 +159,29 @@ open class LMFeedPostDetailFragment :
                         .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
                 )
             )
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    @Suppress("Deprecation")
+    private fun setStatusBarColor(backgroundColor: Int) {
+        val window = requireActivity().window
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+            windowInsetsController.isAppearanceLightStatusBars = true
+            window.statusBarColor = ContextCompat.getColor(requireContext(), backgroundColor)
+        } else {
+            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+
+            window.decorView.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    backgroundColor
+                )
+            )
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+            window.insetsController?.show(WindowInsets.Type.statusBars())
         }
     }
 

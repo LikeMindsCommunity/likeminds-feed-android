@@ -1,8 +1,12 @@
 package com.likeminds.feed.android.core.activityfeed.view
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -66,8 +70,32 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
     protected open fun customizeActivityFeedHeaderView(headerViewActivityFeed: LMFeedHeaderView) {
         headerViewActivityFeed.apply {
             setStyle(LMFeedStyleTransformer.activityFeedFragmentViewStyle.headerViewStyle)
+            setStatusBarColor(LMFeedStyleTransformer.activityFeedFragmentViewStyle.headerViewStyle.backgroundColor)
 
             setTitleText(getString(R.string.lm_feed_notifications))
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    @Suppress("Deprecation")
+    private fun setStatusBarColor(backgroundColor: Int) {
+        val window = requireActivity().window
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+            windowInsetsController.isAppearanceLightStatusBars = true
+            window.statusBarColor = ContextCompat.getColor(requireContext(), backgroundColor)
+        } else {
+            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+
+            window.decorView.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    backgroundColor
+                )
+            )
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+            window.insetsController?.show(WindowInsets.Type.statusBars())
         }
     }
 

@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.post.create.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.*
 import android.util.Log
@@ -13,6 +14,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CheckResult
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -173,6 +176,7 @@ open class LMFeedCreatePostFragment :
     protected open fun customizeCreatePostHeaderView(headerViewCreatePost: LMFeedHeaderView) {
         headerViewCreatePost.apply {
             setStyle(LMFeedStyleTransformer.createPostFragmentViewStyle.headerViewStyle)
+            setStatusBarColor(LMFeedStyleTransformer.createPostFragmentViewStyle.headerViewStyle.backgroundColor)
 
             setTitleText(
                 getString(
@@ -184,6 +188,29 @@ open class LMFeedCreatePostFragment :
 
             setSubmitText(getString(R.string.lm_feed_create))
             setSubmitButtonEnabled(false)
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    @Suppress("Deprecation")
+    private fun setStatusBarColor(backgroundColor: Int) {
+        val window = requireActivity().window
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+            windowInsetsController.isAppearanceLightStatusBars = true
+            window.statusBarColor = ContextCompat.getColor(requireContext(), backgroundColor)
+        } else {
+            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+
+            window.decorView.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    backgroundColor
+                )
+            )
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+            window.insetsController?.show(WindowInsets.Type.statusBars())
         }
     }
 
