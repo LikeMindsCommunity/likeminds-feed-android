@@ -3,9 +3,13 @@ package com.likeminds.feed.android.core.poll.create.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -120,6 +124,10 @@ open class LMFeedCreatePollFragment : Fragment(), LMFeedCreatePollOptionAdapterL
     protected open fun customizeCreatePollHeader(headerView: LMFeedHeaderView) {
         headerView.apply {
             setStyle(LMFeedStyleTransformer.createPollFragmentViewStyle.headerViewStyle)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.createPollFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(getString(R.string.lm_feed_new_poll))
             setSubmitText(getString(R.string.lm_feed_done))

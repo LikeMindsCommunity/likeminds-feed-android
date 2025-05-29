@@ -66,6 +66,10 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
     protected open fun customizeActivityFeedHeaderView(headerViewActivityFeed: LMFeedHeaderView) {
         headerViewActivityFeed.apply {
             setStyle(LMFeedStyleTransformer.activityFeedFragmentViewStyle.headerViewStyle)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.activityFeedFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(getString(R.string.lm_feed_notifications))
         }

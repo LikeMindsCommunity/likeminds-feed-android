@@ -83,6 +83,10 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
     protected open fun customizeLikesFragmentHeaderView(headerViewLikes: LMFeedHeaderView) {
         headerViewLikes.apply {
             setStyle(LMFeedStyleTransformer.likesFragmentViewStyle.headerViewStyle)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.likesFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(
                 getString(

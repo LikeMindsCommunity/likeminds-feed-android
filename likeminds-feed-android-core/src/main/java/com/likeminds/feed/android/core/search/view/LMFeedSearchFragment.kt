@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -133,6 +134,12 @@ open class LMFeedSearchFragment : Fragment(),
             val searchBarStyle =
                 LMFeedStyleTransformer.searchFeedFragmentViewStyle.feedSearchBarViewStyle
             setStyle(searchBarStyle)
+
+            val backgroundColor = searchBarStyle.backgroundColor ?: ContextCompat.getColor(
+                requireContext(),
+                R.color.lm_feed_white
+            )
+            LMFeedViewUtils.setStatusBarColor(requireActivity(), backgroundColor)
         }
     }
 

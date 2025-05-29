@@ -80,7 +80,16 @@ open class LMFeedPollResultsFragment : Fragment() {
     //customizes the header view of the poll results fragment with the header style set for the poll results fragment
     protected open fun customizePollResultsHeaderView(headerViewPollResults: LMFeedHeaderView) {
         headerViewPollResults.apply {
-            setStyle(LMFeedStyleTransformer.pollResultsFragmentViewStyle.headerViewStyle)
+            val headerViewStyle =
+                LMFeedStyleTransformer.pollResultsFragmentViewStyle.headerViewStyle
+            setStyle(headerViewStyle)
+            LMFeedViewUtils.setStatusBarColor(requireActivity(), headerViewStyle.backgroundColor)
+            binding.tabLayoutPollResults.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    headerViewStyle.backgroundColor
+                )
+            )
 
             setTitleText(getString(R.string.lm_feed_poll_results))
         }
