@@ -3,7 +3,10 @@ package com.likeminds.feed.android.core.poll.result.view
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowInsets
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -19,7 +22,10 @@ import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsActivit
 import com.likeminds.feed.android.core.ui.base.styles.setStyle
 import com.likeminds.feed.android.core.ui.base.views.LMFeedTextView
 import com.likeminds.feed.android.core.ui.widgets.headerview.view.LMFeedHeaderView
-import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
+import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
+import com.likeminds.feed.android.core.utils.LMFeedViewUtils
+import com.likeminds.feed.android.core.utils.emptyExtrasException
 
 open class LMFeedPollResultsFragment : Fragment() {
 
@@ -84,8 +90,16 @@ open class LMFeedPollResultsFragment : Fragment() {
     //customizes the header view of the poll results fragment with the header style set for the poll results fragment
     protected open fun customizePollResultsHeaderView(headerViewPollResults: LMFeedHeaderView) {
         headerViewPollResults.apply {
-            setStyle(LMFeedStyleTransformer.pollResultsFragmentViewStyle.headerViewStyle)
-            setStatusBarColor(LMFeedStyleTransformer.pollResultsFragmentViewStyle.headerViewStyle.backgroundColor)
+            val headerViewStyle =
+                LMFeedStyleTransformer.pollResultsFragmentViewStyle.headerViewStyle
+            setStyle(headerViewStyle)
+            setStatusBarColor(headerViewStyle.backgroundColor)
+            binding.tabLayoutPollResults.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    headerViewStyle.backgroundColor
+                )
+            )
 
             setTitleText(getString(R.string.lm_feed_poll_results))
         }
