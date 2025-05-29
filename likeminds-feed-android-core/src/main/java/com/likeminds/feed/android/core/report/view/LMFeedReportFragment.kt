@@ -1,15 +1,11 @@
 package com.likeminds.feed.android.core.report.view
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -105,32 +101,12 @@ open class LMFeedReportFragment : Fragment(), LMFeedReportTagAdapterListener {
     protected open fun customizeReportFragmentHeaderView(headerViewReport: LMFeedHeaderView) {
         headerViewReport.apply {
             setStyle(LMFeedStyleTransformer.reportFragmentViewStyle.headerViewStyle)
-            setStatusBarColor(LMFeedStyleTransformer.reportFragmentViewStyle.headerViewStyle.backgroundColor)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.reportFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(getString(R.string.lm_feed_report_abuse))
-        }
-    }
-
-    @SuppressLint("InlinedApi")
-    @Suppress("Deprecation")
-    private fun setStatusBarColor(backgroundColor: Int) {
-        val window = requireActivity().window
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-            windowInsetsController.isAppearanceLightStatusBars = true
-            window.statusBarColor = ContextCompat.getColor(requireContext(), backgroundColor)
-        } else {
-            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-
-            window.decorView.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    backgroundColor
-                )
-            )
-            window.insetsController?.hide(WindowInsets.Type.statusBars())
-            window.insetsController?.show(WindowInsets.Type.statusBars())
         }
     }
 

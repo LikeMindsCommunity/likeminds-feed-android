@@ -150,7 +150,10 @@ open class LMFeedPostDetailFragment :
     protected open fun customizePostDetailHeaderView(headerViewPostDetail: LMFeedHeaderView) {
         headerViewPostDetail.apply {
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle)
-            setStatusBarColor(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle.backgroundColor)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(
                 getString(
@@ -159,29 +162,6 @@ open class LMFeedPostDetailFragment :
                         .pluralizeOrCapitalize(LMFeedWordAction.FIRST_LETTER_CAPITAL_SINGULAR)
                 )
             )
-        }
-    }
-
-    @SuppressLint("InlinedApi")
-    @Suppress("Deprecation")
-    private fun setStatusBarColor(backgroundColor: Int) {
-        val window = requireActivity().window
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-            windowInsetsController.isAppearanceLightStatusBars = true
-            window.statusBarColor = ContextCompat.getColor(requireContext(), backgroundColor)
-        } else {
-            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-
-            window.decorView.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    backgroundColor
-                )
-            )
-            window.insetsController?.hide(WindowInsets.Type.statusBars())
-            window.insetsController?.show(WindowInsets.Type.statusBars())
         }
     }
 

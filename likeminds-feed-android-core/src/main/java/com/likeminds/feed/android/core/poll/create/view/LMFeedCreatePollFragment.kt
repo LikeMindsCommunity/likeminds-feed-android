@@ -124,34 +124,14 @@ open class LMFeedCreatePollFragment : Fragment(), LMFeedCreatePollOptionAdapterL
     protected open fun customizeCreatePollHeader(headerView: LMFeedHeaderView) {
         headerView.apply {
             setStyle(LMFeedStyleTransformer.createPollFragmentViewStyle.headerViewStyle)
-            setStatusBarColor(LMFeedStyleTransformer.createPollFragmentViewStyle.headerViewStyle.backgroundColor)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.createPollFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(getString(R.string.lm_feed_new_poll))
             setSubmitText(getString(R.string.lm_feed_done))
             setSubmitButtonEnabled(false)
-        }
-    }
-
-    @SuppressLint("InlinedApi")
-    @Suppress("Deprecation")
-    private fun setStatusBarColor(backgroundColor: Int) {
-        val window = requireActivity().window
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-            windowInsetsController.isAppearanceLightStatusBars = true
-            window.statusBarColor = ContextCompat.getColor(requireContext(), backgroundColor)
-        } else {
-            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-            insetsController.isAppearanceLightStatusBars = true
-
-            window.decorView.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    backgroundColor
-                )
-            )
-            window.insetsController?.hide(WindowInsets.Type.statusBars())
-            window.insetsController?.show(WindowInsets.Type.statusBars())
         }
     }
 
