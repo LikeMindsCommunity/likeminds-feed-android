@@ -1,12 +1,16 @@
 package com.likeminds.feed.android.core.post.detail.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -146,6 +150,10 @@ open class LMFeedPostDetailFragment :
     protected open fun customizePostDetailHeaderView(headerViewPostDetail: LMFeedHeaderView) {
         headerViewPostDetail.apply {
             setStyle(LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.postDetailFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(
                 getString(

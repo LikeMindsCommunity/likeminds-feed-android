@@ -3,6 +3,7 @@ package com.likeminds.feed.android.core.post.create.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.*
 import android.util.Log
@@ -13,6 +14,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CheckResult
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -173,6 +176,10 @@ open class LMFeedCreatePostFragment :
     protected open fun customizeCreatePostHeaderView(headerViewCreatePost: LMFeedHeaderView) {
         headerViewCreatePost.apply {
             setStyle(LMFeedStyleTransformer.createPostFragmentViewStyle.headerViewStyle)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.createPostFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(
                 getString(

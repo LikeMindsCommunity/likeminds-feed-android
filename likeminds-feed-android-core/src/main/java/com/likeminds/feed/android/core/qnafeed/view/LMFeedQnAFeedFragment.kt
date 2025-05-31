@@ -720,6 +720,8 @@ open class LMFeedQnAFeedFragment(
                         LMFeedProgressBarHelper.hideProgress(binding.progressBar)
                         LMFeedViewUtils.showErrorMessageToast(requireContext(), errorMessage)
                     }
+
+                    else -> {}
                 }
             }.observeInLifecycle(viewLifecycleOwner)
 

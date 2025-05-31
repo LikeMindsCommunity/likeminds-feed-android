@@ -1,5 +1,6 @@
 package com.likeminds.feed.android.core.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
@@ -18,6 +19,8 @@ import android.widget.*
 import androidx.annotation.ColorRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.ImageViewCompat
 import com.facebook.shimmer.Shimmer
 import com.facebook.shimmer.ShimmerDrawable
@@ -221,5 +224,29 @@ object LMFeedViewUtils {
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         editText.hint = mandatoryAsteriskHint
+    }
+
+    //set status color in fragments as per edge-to-edge function
+    @SuppressLint("InlinedApi")
+    @Suppress("Deprecation")
+    fun setStatusBarColor(activity: Activity, backgroundColor: Int) {
+        val window = activity.window
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+            windowInsetsController.isAppearanceLightStatusBars = true
+            window.statusBarColor = ContextCompat.getColor(activity, backgroundColor)
+        } else {
+            val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+            insetsController.isAppearanceLightStatusBars = true
+
+            window.decorView.setBackgroundColor(
+                ContextCompat.getColor(
+                    activity,
+                    backgroundColor
+                )
+            )
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+            window.insetsController?.show(WindowInsets.Type.statusBars())
+        }
     }
 }
