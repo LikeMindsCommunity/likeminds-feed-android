@@ -101,6 +101,10 @@ open class LMFeedReportFragment : Fragment(), LMFeedReportTagAdapterListener {
     protected open fun customizeReportFragmentHeaderView(headerViewReport: LMFeedHeaderView) {
         headerViewReport.apply {
             setStyle(LMFeedStyleTransformer.reportFragmentViewStyle.headerViewStyle)
+            LMFeedViewUtils.setStatusBarColor(
+                requireActivity(),
+                LMFeedStyleTransformer.reportFragmentViewStyle.headerViewStyle.backgroundColor
+            )
 
             setTitleText(getString(R.string.lm_feed_report_abuse))
         }
