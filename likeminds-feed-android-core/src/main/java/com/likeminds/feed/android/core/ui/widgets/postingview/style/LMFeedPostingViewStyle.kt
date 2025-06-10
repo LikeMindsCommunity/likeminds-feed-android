@@ -1,4 +1,4 @@
-package com.likeminds.feed.android.core.socialfeed.style
+package com.likeminds.feed.android.core.ui.widgets.postingview.style
 
 import android.text.TextUtils
 import androidx.annotation.ColorRes
