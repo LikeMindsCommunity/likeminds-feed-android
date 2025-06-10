@@ -105,7 +105,7 @@ open class LMFeedCreatePostFragment :
         const val TYPE_OF_ATTACHMENT_CLICKED = "image, video"
 
         fun getInstance(createPostExtras: LMFeedCreatePostExtras): LMFeedCreatePostFragment {
-            val createPostFragment = LMFeedCreatePostFragment()
+            val createPostFragment = LMFeedNavigationFragments.getInstance().getCreatePostFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_CREATE_POST_FRAGMENT_EXTRAS, createPostExtras)
             createPostFragment.arguments = bundle

@@ -107,7 +107,7 @@ open class LMFeedVideoFeedFragment(
             config: LMFeedVideoFeedConfig? = null,
             props: LMFeedVideoFeedProps? = null
         ): LMFeedVideoFeedFragment {
-            return LMFeedVideoFeedFragment(feedType, config, props)
+            return LMFeedNavigationFragments.getInstance().getVideoFeedFragment(feedType, config, props)
         }
     }
 
@@ -872,10 +872,7 @@ open class LMFeedVideoFeedFragment(
                 } else {
                     data
                 }
-                LMFeedReportSuccessDialogFragment(entityType ?: "").show(
-                    childFragmentManager,
-                    LMFeedReportSuccessDialogFragment.TAG
-                )
+                LMFeedReportSuccessDialogFragment.showDialog(childFragmentManager, (entityType ?: ""))
             }
         }
 

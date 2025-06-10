@@ -6,7 +6,7 @@
         android:layout_height="match_parent">
 
         <com.likeminds.feed.android.core.ui.widgets.alertdialog.view.LMFeedAlertDialogView
-            android:id="@+id/alert_dialog_delete"
+            android:id="@+id/alert_dialog_report"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"

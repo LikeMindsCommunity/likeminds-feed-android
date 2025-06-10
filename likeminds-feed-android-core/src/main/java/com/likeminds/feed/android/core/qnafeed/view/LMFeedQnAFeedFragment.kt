@@ -128,7 +128,7 @@ open class LMFeedQnAFeedFragment(
 
         @JvmStatic
         fun getInstance(feedType: LMFeedType = UNIVERSAL_FEED): LMFeedQnAFeedFragment {
-            return LMFeedQnAFeedFragment(feedType)
+            return LMFeedNavigationFragments.getInstance().getQnAFeedFragment(feedType)
         }
     }
 
@@ -2146,10 +2146,7 @@ open class LMFeedQnAFeedFragment(
                 } else {
                     data
                 }
-                LMFeedReportSuccessDialogFragment(entityType ?: "").show(
-                    childFragmentManager,
-                    LMFeedReportSuccessDialogFragment.TAG
-                )
+                LMFeedReportSuccessDialogFragment.showDialog(childFragmentManager, (entityType ?: ""))
             }
         }
 

@@ -27,7 +27,7 @@ open class LMFeedAdminDeleteDialogFragment
             supportFragmentManager: FragmentManager,
             deleteExtras: LMFeedDeleteExtras
         ) {
-            LMFeedAdminDeleteDialogFragment().apply {
+            LMFeedNavigationFragments.getInstance().getAdminDeleteDialogFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(LM_FEED_ADMIN_DELETE_EXTRAS, deleteExtras)
                 }

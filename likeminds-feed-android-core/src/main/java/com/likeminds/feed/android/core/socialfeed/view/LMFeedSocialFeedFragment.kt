@@ -122,7 +122,7 @@ open class LMFeedSocialFeedFragment(private val feedType: LMFeedType) :
         fun getInstance(
             feedType: LMFeedType = UNIVERSAL_FEED
         ): LMFeedSocialFeedFragment {
-            return LMFeedSocialFeedFragment(feedType)
+            return LMFeedNavigationFragments.getInstance().getSocialFeedFragment(feedType)
         }
     }
 
@@ -1866,10 +1866,7 @@ open class LMFeedSocialFeedFragment(private val feedType: LMFeedType) :
                 } else {
                     data
                 }
-                LMFeedReportSuccessDialogFragment(entityType ?: "").show(
-                    childFragmentManager,
-                    LMFeedReportSuccessDialogFragment.TAG
-                )
+                LMFeedReportSuccessDialogFragment.showDialog(childFragmentManager, (entityType ?: ""))
             }
         }
 

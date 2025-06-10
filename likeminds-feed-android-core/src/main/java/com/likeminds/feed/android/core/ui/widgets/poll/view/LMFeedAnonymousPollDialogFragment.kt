@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedDialogFragmentAnonymousPollBinding
 import com.likeminds.feed.android.core.ui.widgets.alertdialog.view.LMFeedAlertDialogView
+import com.likeminds.feed.android.core.utils.LMFeedNavigationFragments
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 
 open class LMFeedAnonymousPollDialogFragment : DialogFragment() {
@@ -16,7 +17,7 @@ open class LMFeedAnonymousPollDialogFragment : DialogFragment() {
 
         @JvmStatic
         fun showDialog(supportFragmentManager: FragmentManager) {
-            LMFeedAnonymousPollDialogFragment().show(supportFragmentManager, TAG)
+            LMFeedNavigationFragments.getInstance().getAnonymousPollDialogFragment().show(supportFragmentManager, TAG)
         }
     }
 

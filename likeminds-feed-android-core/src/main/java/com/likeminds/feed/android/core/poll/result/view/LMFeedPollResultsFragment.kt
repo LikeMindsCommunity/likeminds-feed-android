@@ -28,7 +28,7 @@ open class LMFeedPollResultsFragment : Fragment() {
         const val TAG = "LMFeedPollResultsFragment"
 
         fun getInstance(pollResultsExtras: LMFeedPollResultsExtras): LMFeedPollResultsFragment {
-            val pollResultsFragment = LMFeedPollResultsFragment()
+            val pollResultsFragment = LMFeedNavigationFragments.getInstance().getPollResultsFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_POLL_RESULTS_EXTRAS, pollResultsExtras)
             pollResultsFragment.arguments = bundle

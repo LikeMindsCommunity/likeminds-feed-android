@@ -25,7 +25,7 @@ open class LMFeedAddPollOptionBottomSheetFragment : BottomSheetDialogFragment() 
             fragmentManager: FragmentManager,
             addPollOptionExtras: LMFeedAddPollOptionExtras
         ) {
-            LMFeedAddPollOptionBottomSheetFragment().apply {
+            LMFeedNavigationFragments.getInstance().getAddPollOptionBottomSheetFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(LM_FEED_ADD_POLL_OPTION_EXTRAS, addPollOptionExtras)
                 }

@@ -43,7 +43,7 @@ open class LMFeedTopicSelectionFragment :
         const val TAG = "LMFeedTopicSelectionFragment"
 
         fun getInstance(topicSelectionExtras: LMFeedTopicSelectionExtras): LMFeedTopicSelectionFragment {
-            val topicSelectionFragment = LMFeedTopicSelectionFragment()
+            val topicSelectionFragment = LMFeedNavigationFragments.getInstance().getTopicSelectionFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_TOPIC_SELECTION_EXTRAS, topicSelectionExtras)
             topicSelectionFragment.arguments = bundle
