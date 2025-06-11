@@ -5,7 +5,7 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.widgets.comment.commentcomposer.style.LMFeedCommentComposerViewStyle
-import com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view.LMFeedCommentViewStyle
+import com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.style.LMFeedCommentViewStyle
 import com.likeminds.feed.android.core.ui.widgets.headerview.style.LMFeedHeaderViewStyle
 import com.likeminds.feed.android.core.ui.widgets.noentitylayout.style.LMFeedNoEntityLayoutViewStyle
 import com.likeminds.feed.android.core.ui.widgets.viewmore.style.LMFeedViewMoreViewStyle

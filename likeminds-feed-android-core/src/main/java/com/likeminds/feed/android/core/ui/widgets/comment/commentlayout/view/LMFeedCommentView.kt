@@ -1,4 +1,4 @@
-package com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.style
+package com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view
 
 import android.content.Context
 import android.text.*
@@ -16,7 +16,7 @@ import com.likeminds.feed.android.core.R
 import com.likeminds.feed.android.core.databinding.LmFeedCommentViewBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
-import com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view.LMFeedCommentViewStyle
+import com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.style.LMFeedCommentViewStyle
 import com.likeminds.feed.android.core.utils.*
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.getValidTextForLinkify
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide
@@ -194,7 +194,7 @@ class LMFeedCommentView : ConstraintLayout {
      *
      * @param commentText - string to be set for comment text.
      * @param alreadySeenFullContent - whether the comment content was seen completely or not.
-     * @param onCommentSeeMoreClickListener [LMFeedOnClickListener] - interface to have click listener
+     * @param onCommentSeeMoreClickListener [com.likeminds.feed.android.core.utils.listeners.LMFeedOnClickListener] - interface to have click listener
      */
     fun setCommentContent(
         commentText: String,
@@ -458,7 +458,7 @@ class LMFeedCommentView : ConstraintLayout {
     /**
      * Linkify the comment content and returns a link click listener along with the clicked link url
      *
-     * @param linkClickListener [LMFeedOnLinkClickListener] interface to have a  link click listener
+     * @param linkClickListener [com.likeminds.feed.android.core.utils.link.LMFeedOnLinkClickListener] interface to have a  link click listener
      */
     fun linkifyCommentContent(linkClickListener: LMFeedOnLinkClickListener) {
         binding.apply {
