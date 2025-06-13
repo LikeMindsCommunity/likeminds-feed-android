@@ -1,9 +1,7 @@
 package com.likeminds.feed.android.core.utils
 
 import com.likeminds.feed.android.core.activityfeed.view.LMFeedActivityFeedFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedReasonChooseBottomSheetFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.*
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesFragment
 import com.likeminds.feed.android.core.poll.create.view.LMFeedCreatePollFragment
 import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsFragment
@@ -13,19 +11,12 @@ import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailFragment
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostDisabledTopicsDialogFragment
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
-import com.likeminds.feed.android.core.qnafeed.view.LMFeedQnAFeedFragment
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
 import com.likeminds.feed.android.core.search.view.LMFeedSearchFragment
-import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedFragment
 import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionFragment
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionBottomSheetFragment
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAnonymousPollDialogFragment
-import com.likeminds.feed.android.core.utils.feed.LMFeedType
-import com.likeminds.feed.android.core.utils.feed.LMFeedType.UNIVERSAL_FEED
-import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedConfig
-import com.likeminds.feed.android.core.videofeed.model.LMFeedVideoFeedProps
-import com.likeminds.feed.android.core.videofeed.view.LMFeedVideoFeedFragment
 import javax.inject.Singleton
 
 @Singleton
@@ -45,15 +36,12 @@ class LMFeedNavigationFragments {
         null
     private var editPostFragment: LMFeedEditPostFragment? = null
     private var postMenuBottomSheetFragment: LMFeedPostMenuBottomSheetFragment? = null
-    private var qnaFeedFragment: LMFeedQnAFeedFragment? = null
     private var reportFragment: LMFeedReportFragment? = null
     private var reportSuccessDialogFragment: LMFeedReportSuccessDialogFragment? = null
     private var searchFragment: LMFeedSearchFragment? = null
-    private var socialFeedFragment: LMFeedSocialFeedFragment? = null
     private var topicSelectionFragment: LMFeedTopicSelectionFragment? = null
     private var addPollOptionBottomSheetFragment: LMFeedAddPollOptionBottomSheetFragment? = null
     private var anonymousPollDialogFragment: LMFeedAnonymousPollDialogFragment? = null
-    private var videoFeedFragment: LMFeedVideoFeedFragment? = null
 
     companion object {
         private var instance: LMFeedNavigationFragments? = null
@@ -224,18 +212,6 @@ class LMFeedNavigationFragments {
         return LMFeedPostMenuBottomSheetFragment()
     }
 
-    fun setQnAFeedFragment(qnaFeedFragment: LMFeedQnAFeedFragment) {
-        this.qnaFeedFragment = qnaFeedFragment
-    }
-
-    fun getQnAFeedFragment(feedType: LMFeedType = UNIVERSAL_FEED): LMFeedQnAFeedFragment {
-        if (qnaFeedFragment != null) {
-            return qnaFeedFragment!!
-        }
-
-        return LMFeedQnAFeedFragment(feedType)
-    }
-
     fun setReportFragment(reportFragment: LMFeedReportFragment) {
         this.reportFragment = reportFragment
     }
@@ -272,18 +248,6 @@ class LMFeedNavigationFragments {
         return LMFeedSearchFragment()
     }
 
-    fun setSocialFeedFragment(socialFeedFragment: LMFeedSocialFeedFragment) {
-        this.socialFeedFragment = socialFeedFragment
-    }
-
-    fun getSocialFeedFragment(feedType: LMFeedType): LMFeedSocialFeedFragment {
-        if (socialFeedFragment != null) {
-            return socialFeedFragment!!
-        }
-
-        return LMFeedSocialFeedFragment(feedType)
-    }
-
     fun setTopicSelectionFragment(topicSelectionFragment: LMFeedTopicSelectionFragment) {
         this.topicSelectionFragment = topicSelectionFragment
     }
@@ -318,21 +282,5 @@ class LMFeedNavigationFragments {
         }
 
         return LMFeedAnonymousPollDialogFragment()
-    }
-
-    fun setVideoFeedFragment(videoFeedFragment: LMFeedVideoFeedFragment) {
-        this.videoFeedFragment = videoFeedFragment
-    }
-
-    fun getVideoFeedFragment(
-        feedType: LMFeedType,
-        config: LMFeedVideoFeedConfig?,
-        props: LMFeedVideoFeedProps?
-    ): LMFeedVideoFeedFragment {
-        if (videoFeedFragment != null) {
-            return videoFeedFragment!!
-        }
-
-        return LMFeedVideoFeedFragment(feedType, config, props)
     }
 }

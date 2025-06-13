@@ -3,9 +3,7 @@ package com.likeminds.feed.android.core
 import android.app.Application
 import android.content.Context
 import com.likeminds.feed.android.core.activityfeed.view.LMFeedActivityFeedFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedReasonChooseBottomSheetFragment
-import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.*
 import com.likeminds.feed.android.core.likes.view.LMFeedLikesFragment
 import com.likeminds.feed.android.core.poll.create.view.LMFeedCreatePollFragment
 import com.likeminds.feed.android.core.poll.result.view.LMFeedPollResultsFragment
@@ -15,11 +13,9 @@ import com.likeminds.feed.android.core.post.detail.view.LMFeedPostDetailFragment
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostDisabledTopicsDialogFragment
 import com.likeminds.feed.android.core.post.edit.view.LMFeedEditPostFragment
 import com.likeminds.feed.android.core.postmenu.view.LMFeedPostMenuBottomSheetFragment
-import com.likeminds.feed.android.core.qnafeed.view.LMFeedQnAFeedFragment
 import com.likeminds.feed.android.core.report.view.LMFeedReportFragment
 import com.likeminds.feed.android.core.report.view.LMFeedReportSuccessDialogFragment
 import com.likeminds.feed.android.core.search.view.LMFeedSearchFragment
-import com.likeminds.feed.android.core.socialfeed.view.LMFeedSocialFeedFragment
 import com.likeminds.feed.android.core.topicselection.view.LMFeedTopicSelectionFragment
 import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance
 import com.likeminds.feed.android.core.ui.theme.model.LMFeedAppearanceRequest
@@ -27,7 +23,6 @@ import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAddPollOptionB
 import com.likeminds.feed.android.core.ui.widgets.poll.view.LMFeedAnonymousPollDialogFragment
 import com.likeminds.feed.android.core.utils.LMFeedNavigationFragments
 import com.likeminds.feed.android.core.utils.user.*
-import com.likeminds.feed.android.core.videofeed.view.LMFeedVideoFeedFragment
 import com.likeminds.likemindsfeed.LMFeedClient
 import com.likeminds.likemindsfeed.user.model.InitiateUserRequest
 import com.likeminds.likemindsfeed.user.model.ValidateUserRequest
@@ -289,15 +284,6 @@ object LMFeedCore {
     }
 
     /**
-     * Sets the provided LMFeedQnAFeedFragment instance
-     *
-     * @param qnaFeedFragment The fragment instance of LMFeedQnAFeedFragment
-     */
-    fun setQnAFeedFragment(qnaFeedFragment: LMFeedQnAFeedFragment) {
-        LMFeedNavigationFragments.getInstance().setQnAFeedFragment(qnaFeedFragment)
-    }
-
-    /**
      * Sets the provided LMFeedReportFragment instance
      *
      * @param reportFragment The fragment instance of LMFeedReportFragment
@@ -325,15 +311,6 @@ object LMFeedCore {
     }
 
     /**
-     * Sets the provided LMFeedSocialFeedFragment instance
-     *
-     * @param socialFeedFragment The fragment instance of LMFeedSocialFeedFragment
-     */
-    fun setSocialFeedFragment(socialFeedFragment: LMFeedSocialFeedFragment) {
-        LMFeedNavigationFragments.getInstance().setSocialFeedFragment(socialFeedFragment)
-    }
-
-    /**
      * Sets the provided LMFeedTopicSelectionFragment instance
      *
      * @param topicSelectionFragment The fragment instance of LMFeedTopicSelectionFragment
@@ -358,14 +335,5 @@ object LMFeedCore {
      */
     fun setAnonymousPollDialogFragment(anonymousPollDialogFragment: LMFeedAnonymousPollDialogFragment) {
         LMFeedNavigationFragments.getInstance().setAnonymousPollDialogFragment(anonymousPollDialogFragment)
-    }
-
-    /**
-     * Sets the provided LMFeedVideoFeedFragment instance
-     *
-     * @param videoFeedFragment The fragment instance of LMFeedVideoFeedFragment
-     */
-    fun setVideoFeedFragment(videoFeedFragment: LMFeedVideoFeedFragment) {
-        LMFeedNavigationFragments.getInstance().setVideoFeedFragment(videoFeedFragment)
     }
 }
