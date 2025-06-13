@@ -16,7 +16,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.likeminds.feed.android.core.socialfeed.view.LMFeedPostingView
+        <com.likeminds.feed.android.core.ui.widgets.postingview.view.LMFeedPostingView
             android:id="@+id/layout_posting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -107,7 +107,7 @@ open class LMFeedVideoFeedFragment(
             config: LMFeedVideoFeedConfig? = null,
             props: LMFeedVideoFeedProps? = null
         ): LMFeedVideoFeedFragment {
-            return LMFeedNavigationFragments.getInstance().getVideoFeedFragment(feedType, config, props)
+            return LMFeedVideoFeedFragment(feedType, config, props)
         }
     }
 

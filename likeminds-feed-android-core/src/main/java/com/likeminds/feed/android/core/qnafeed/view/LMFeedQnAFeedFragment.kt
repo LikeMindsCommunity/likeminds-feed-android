@@ -127,7 +127,7 @@ open class LMFeedQnAFeedFragment(
 
         @JvmStatic
         fun getInstance(feedType: LMFeedType = UNIVERSAL_FEED): LMFeedQnAFeedFragment {
-            return LMFeedNavigationFragments.getInstance().getQnAFeedFragment(feedType)
+            return LMFeedQnAFeedFragment(feedType)
         }
     }
 

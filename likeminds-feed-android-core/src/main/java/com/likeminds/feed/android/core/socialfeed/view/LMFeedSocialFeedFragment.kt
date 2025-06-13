@@ -123,7 +123,7 @@ open class LMFeedSocialFeedFragment(private val feedType: LMFeedType) :
         fun getInstance(
             feedType: LMFeedType = UNIVERSAL_FEED
         ): LMFeedSocialFeedFragment {
-            return LMFeedNavigationFragments.getInstance().getSocialFeedFragment(feedType)
+            return LMFeedSocialFeedFragment(feedType)
         }
     }
 
