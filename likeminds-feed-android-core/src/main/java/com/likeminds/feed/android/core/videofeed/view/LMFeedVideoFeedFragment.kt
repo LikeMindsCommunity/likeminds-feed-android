@@ -30,6 +30,7 @@ import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.delete.view.LMFeedAdminDeleteDialogFragment
 import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogFragment
+import com.likeminds.feed.android.core.delete.view.LMFeedSelfDeleteDialogListener
 import com.likeminds.feed.android.core.post.viewmodel.LMFeedHelperViewModel
 import com.likeminds.feed.android.core.post.viewmodel.LMFeedPostViewModel.ErrorMessageEvent.*
 import com.likeminds.feed.android.core.postmenu.model.*
@@ -72,7 +73,8 @@ open class LMFeedVideoFeedFragment(
 ) : LMFeedBaseThemeFragment(),
     LMFeedPostAdapterListener,
     LMFeedPostMenuBottomSheetListener,
-    LMFeedVideoPlayerListener {
+    LMFeedVideoPlayerListener,
+    LMFeedSelfDeleteDialogListener {
 
     lateinit var binding: LmFeedFragmentVideoFeedBinding
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
