@@ -10,8 +10,12 @@ import com.likeminds.feed.android.core.databinding.LmFeedDialogFragmentSelfDelet
 import com.likeminds.feed.android.core.delete.model.DELETE_TYPE_POST
 import com.likeminds.feed.android.core.delete.model.LMFeedDeleteExtras
 import com.likeminds.feed.android.core.ui.widgets.alertdialog.view.LMFeedAlertDialogView
-import com.likeminds.feed.android.core.utils.*
+import com.likeminds.feed.android.core.utils.LMFeedCommunityUtil
+import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
+import com.likeminds.feed.android.core.utils.LMFeedNavigationFragments
+import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedValueUtils.pluralizeOrCapitalize
+import com.likeminds.feed.android.core.utils.emptyExtrasException
 import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 
 open class LMFeedSelfDeleteDialogFragment :
@@ -26,7 +30,7 @@ open class LMFeedSelfDeleteDialogFragment :
             supportFragmentManager: FragmentManager,
             deleteExtras: LMFeedDeleteExtras
         ) {
-            LMFeedSelfDeleteDialogFragment().apply {
+            LMFeedNavigationFragments.getInstance().getSelfDeleteDialogFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(LM_FEED_SELF_DELETE_EXTRAS, deleteExtras)
                 }

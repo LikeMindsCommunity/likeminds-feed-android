@@ -10,6 +10,7 @@ import com.likeminds.feed.android.core.postmenu.adapter.LMFeedPostMenuAdapterLis
 import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuExtras
 import com.likeminds.feed.android.core.postmenu.model.LMFeedPostMenuItemViewData
 import com.likeminds.feed.android.core.utils.LMFeedExtrasUtil
+import com.likeminds.feed.android.core.utils.LMFeedNavigationFragments
 import com.likeminds.feed.android.core.utils.emptyExtrasException
 
 open class LMFeedPostMenuBottomSheetFragment :
@@ -31,7 +32,7 @@ open class LMFeedPostMenuBottomSheetFragment :
             fragmentManager: FragmentManager,
             postMenuExtras: LMFeedPostMenuExtras
         ) {
-            LMFeedPostMenuBottomSheetFragment().apply {
+            LMFeedNavigationFragments.getInstance().getPostMenuBottomSheetFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(LM_FEED_POST_MENU_EXTRAS, postMenuExtras)
                 }

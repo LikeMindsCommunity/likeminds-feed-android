@@ -32,7 +32,7 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
         const val TAG = "LMFeedActivityFeedFragment"
 
         fun getInstance(): LMFeedActivityFeedFragment {
-            return LMFeedActivityFeedFragment()
+            return LMFeedNavigationFragments.getInstance().getActivityFeedFragment()
         }
     }
 

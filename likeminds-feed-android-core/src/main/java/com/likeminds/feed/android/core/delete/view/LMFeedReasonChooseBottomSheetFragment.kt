@@ -10,9 +10,10 @@ import com.likeminds.feed.android.core.databinding.LmFeedReasonChooseBottomSheet
 import com.likeminds.feed.android.core.delete.adapter.LMFeedReasonChooseAdapterListener
 import com.likeminds.feed.android.core.delete.model.LMFeedReasonChooseViewData
 import com.likeminds.feed.android.core.delete.viewmodel.LMFeedReasonChooseViewModel
+import com.likeminds.feed.android.core.utils.LMFeedNavigationFragments
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils
 
-class LMFeedReasonChooseBottomSheetFragment : BottomSheetDialogFragment(),
+open class LMFeedReasonChooseBottomSheetFragment : BottomSheetDialogFragment(),
     LMFeedReasonChooseAdapterListener {
 
     companion object {
@@ -20,7 +21,8 @@ class LMFeedReasonChooseBottomSheetFragment : BottomSheetDialogFragment(),
 
         @JvmStatic
         fun newInstance(fragmentManager: FragmentManager) =
-            LMFeedReasonChooseBottomSheetFragment().show(fragmentManager, TAG)
+            LMFeedNavigationFragments.getInstance().getReasonChooseBottomSheetFragment()
+                .show(fragmentManager, TAG)
     }
 
     private lateinit var binding: LmFeedReasonChooseBottomSheetFragmentBinding

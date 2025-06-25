@@ -1,4 +1,4 @@
-package com.likeminds.feed.android.core.socialfeed.view
+package com.likeminds.feed.android.core.ui.widgets.postingview.view
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.likeminds.feed.android.core.databinding.LmFeedLayoutPostingBinding
 import com.likeminds.feed.android.core.ui.base.styles.*
-import com.likeminds.feed.android.core.socialfeed.style.LMFeedPostingViewStyle
+import com.likeminds.feed.android.core.ui.widgets.postingview.style.LMFeedPostingViewStyle
 import com.likeminds.feed.android.core.utils.LMFeedImageBindingUtil
 import com.likeminds.feed.android.core.utils.LMFeedStyleTransformer
 import com.likeminds.feed.android.core.utils.LMFeedViewUtils.hide

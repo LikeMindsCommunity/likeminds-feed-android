@@ -78,7 +78,7 @@ open class LMFeedSearchFragment : Fragment(),
         const val TAG = "LMFeedSearchFragment"
 
         fun getInstance(searchFragmentExtras: LMFeedSearchExtras): LMFeedSearchFragment {
-            val searchFragment = LMFeedSearchFragment()
+            val searchFragment = LMFeedNavigationFragments.getInstance().getSearchFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_SEARCH_EXTRAS, searchFragmentExtras)
             searchFragment.arguments = bundle
@@ -1350,10 +1350,7 @@ open class LMFeedSearchFragment : Fragment(),
                 } else {
                     data
                 }
-                LMFeedReportSuccessDialogFragment(entityType ?: "").show(
-                    childFragmentManager,
-                    LMFeedReportSuccessDialogFragment.TAG
-                )
+                LMFeedReportSuccessDialogFragment.showDialog(childFragmentManager, (entityType ?: ""))
             }
         }
 

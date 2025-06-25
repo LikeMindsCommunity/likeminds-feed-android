@@ -22,7 +22,7 @@ open class LMFeedEditPostDisabledTopicsDialogFragment : DialogFragment() {
             supportFragmentManager: FragmentManager,
             extras: LMFeedEditPostDisabledTopicsDialogExtras
         ) {
-            LMFeedAdminDeleteDialogFragment().apply {
+            LMFeedNavigationFragments.getInstance().getEditPostDisabledTopicsDialogFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(LM_FEED_DISABLE_TOPICS_EXTRAS, extras)
                 }

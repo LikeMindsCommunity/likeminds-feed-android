@@ -47,7 +47,7 @@ open class LMFeedReportFragment : Fragment(), LMFeedReportTagAdapterListener {
         const val LM_FEED_REPORT_RESULT = "LM_FEED_REPORT_RESULT"
 
         fun getInstance(reportExtras: LMFeedReportExtras): LMFeedReportFragment {
-            val reportFragment = LMFeedReportFragment()
+            val reportFragment = LMFeedNavigationFragments.getInstance().getReportFragment()
             val bundle = Bundle()
             bundle.putParcelable(LMFeedReportActivity.LM_FEED_REPORT_EXTRAS, reportExtras)
             reportFragment.arguments = bundle
