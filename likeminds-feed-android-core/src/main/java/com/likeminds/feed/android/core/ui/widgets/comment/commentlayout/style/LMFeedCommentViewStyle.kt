@@ -1,4 +1,4 @@
-package com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view
+package com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.style
 
 import android.text.TextUtils
 import androidx.annotation.ColorRes
@@ -7,19 +7,19 @@ import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.utils.LMFeedViewStyle
 
 /**
- * [LMFeedCommentViewStyle] helps you to customize the comment view [LMFeedCommentView]
+ * [LMFeedCommentViewStyle] helps you to customize the comment view [com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view.LMFeedCommentView]
  *
- * @property commenterImageViewStyle : [LMFeedImageStyle] this will help you to customize the comment creator image in the comment view
- * @property commenterNameTextStyle : [LMFeedTextStyle] this will help you to customize the comment creator name in the comment view
- * @property commentContentStyle: [LMFeedTextStyle] this will help you to customize the comment content text in the comment view
- * @property menuIconStyle: [LMFeedIconStyle] this will help you to customize the menu icon in the comment view |  set its value to [null] if you want to hide the menu icon in the comment view
- * @property likeIconStyle: [LMFeedIconStyle] this will help you to customize the like icon in the comment view
- * @property likeTextStyle: [LMFeedTextStyle] this will help you to customize the like text in the comment view | set its value to [null] if you want to hide the like text in the comment view
- * @property replyTextStyle: [LMFeedTextStyle] this will help you to customize the reply text in the comment view | set its value to [null] if you want to hide the reply text in the comment view
- * @property replyCountTextStyle: [LMFeedTextStyle] this will help you to customize the reply count text in the comment view | set its value to [null] if you want to hide the reply count text in the comment view
- * @property timestampTextStyle: [LMFeedTextStyle] this will help you to customize the timestamp text in the comment view | set its value to [null] if you want to hide the timestamp text in the comment view
- * @property commentEditedTextStyle: [LMFeedTextStyle] this will help you to customize the edited text tag in an edited comment view |  set its value to [null] if you want to hide the edited tag in the comment view
- * @property backgroundColor:  [Int] should be in format of [ColorRes] to add background color of the comment view | Default value = [null]
+ * @property commenterImageViewStyle : [com.likeminds.feed.android.core.ui.base.styles.LMFeedImageStyle] this will help you to customize the comment creator image in the comment view
+ * @property commenterNameTextStyle : [com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle] this will help you to customize the comment creator name in the comment view
+ * @property commentContentStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle] this will help you to customize the comment content text in the comment view
+ * @property menuIconStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle] this will help you to customize the menu icon in the comment view |  set its value to [null] if you want to hide the menu icon in the comment view
+ * @property likeIconStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedIconStyle] this will help you to customize the like icon in the comment view
+ * @property likeTextStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle] this will help you to customize the like text in the comment view | set its value to [null] if you want to hide the like text in the comment view
+ * @property replyTextStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle] this will help you to customize the reply text in the comment view | set its value to [null] if you want to hide the reply text in the comment view
+ * @property replyCountTextStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle] this will help you to customize the reply count text in the comment view | set its value to [null] if you want to hide the reply count text in the comment view
+ * @property timestampTextStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle] this will help you to customize the timestamp text in the comment view | set its value to [null] if you want to hide the timestamp text in the comment view
+ * @property commentEditedTextStyle: [com.likeminds.feed.android.core.ui.base.styles.LMFeedTextStyle] this will help you to customize the edited text tag in an edited comment view |  set its value to [null] if you want to hide the edited tag in the comment view
+ * @property backgroundColor:  [Int] should be in format of [androidx.annotation.ColorRes] to add background color of the comment view | Default value = [null]
  *
  * */
 class LMFeedCommentViewStyle private constructor(
