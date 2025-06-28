@@ -113,7 +113,7 @@ open class LMFeedEditPostFragment :
         const val TAG = "LMFeedEditPostFragment"
 
         fun getInstance(editPostExtras: LMFeedEditPostExtras): LMFeedEditPostFragment {
-            val editPostFragment = LMFeedEditPostFragment()
+            val editPostFragment = LMFeedNavigationFragments.getInstance().getEditPostFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_EDIT_POST_EXTRAS, editPostExtras)
             editPostFragment.arguments = bundle

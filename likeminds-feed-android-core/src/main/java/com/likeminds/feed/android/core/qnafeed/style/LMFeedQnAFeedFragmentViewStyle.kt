@@ -2,7 +2,7 @@ package com.likeminds.feed.android.core.qnafeed.style
 
 import android.text.TextUtils
 import com.likeminds.feed.android.core.R
-import com.likeminds.feed.android.core.socialfeed.style.LMFeedPostingViewStyle
+import com.likeminds.feed.android.core.ui.widgets.postingview.style.LMFeedPostingViewStyle
 import com.likeminds.feed.android.core.socialfeed.style.LMFeedTopicSelectorBarViewStyle
 import com.likeminds.feed.android.core.ui.base.styles.*
 import com.likeminds.feed.android.core.ui.theme.LMFeedAppearance

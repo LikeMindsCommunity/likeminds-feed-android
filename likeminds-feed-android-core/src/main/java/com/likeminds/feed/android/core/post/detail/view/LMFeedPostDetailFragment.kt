@@ -99,7 +99,7 @@ open class LMFeedPostDetailFragment :
         const val TAG = "LMFeedPostDetailFragment"
 
         fun getInstance(postDetailExtras: LMFeedPostDetailExtras): LMFeedPostDetailFragment {
-            val postDetailFragment = LMFeedPostDetailFragment()
+            val postDetailFragment = LMFeedNavigationFragments.getInstance().getPostDetailFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_POST_DETAIL_EXTRAS, postDetailExtras)
             postDetailFragment.arguments = bundle
@@ -1264,10 +1264,7 @@ open class LMFeedPostDetailFragment :
                     data
                 }
 
-                LMFeedReportSuccessDialogFragment(entityType ?: "").show(
-                    childFragmentManager,
-                    LMFeedReportSuccessDialogFragment.TAG
-                )
+                LMFeedReportSuccessDialogFragment.showDialog(childFragmentManager, (entityType ?: ""))
             }
         }
 

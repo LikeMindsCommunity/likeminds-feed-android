@@ -32,7 +32,7 @@ open class LMFeedPollResultsTabFragment : Fragment(), LMFeedPollVoteResultsAdapt
 
         @JvmStatic
         fun addFragment(pollResultsTabExtras: LMFeedPollResultsTabExtras): LMFeedPollResultsTabFragment {
-            val fragment = LMFeedPollResultsTabFragment()
+            val fragment = LMFeedNavigationFragments.getInstance().getPollResultsTabFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_POLL_RESULT_TAB_EXTRA, pollResultsTabExtras)
             fragment.arguments = bundle

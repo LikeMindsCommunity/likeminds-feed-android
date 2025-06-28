@@ -32,7 +32,7 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
         const val TAG = "LMFeedActivityFeedFragment"
 
         fun getInstance(): LMFeedActivityFeedFragment {
-            return LMFeedActivityFeedFragment()
+            return LMFeedNavigationFragments.getInstance().getActivityFeedFragment()
         }
     }
 
@@ -45,7 +45,8 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
 
         binding.apply {
             customizeActivityFeedHeaderView(headerViewActivityFeed)
-            customizeNoTopicsLayout(layoutNoActivity)
+            customizeNoActivityLayout(layoutNoActivity)
+            customizeActivityListView(rvActivityFeed)
 
             //set background color
             val backgroundColor =
@@ -75,7 +76,9 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
         }
     }
 
-    protected open fun customizeNoTopicsLayout(layoutNoActivity: LMFeedNoEntityLayoutView) {
+
+    //customizes the no activity layout of the activity feed fragment with the no activity layout style set for the activity feed fragment
+    protected open fun customizeNoActivityLayout(layoutNoActivity: LMFeedNoEntityLayoutView) {
         layoutNoActivity.apply {
             val noActivityLayoutStyle =
                 LMFeedStyleTransformer.activityFeedFragmentViewStyle.noActivityLayoutViewStyle
@@ -83,6 +86,10 @@ open class LMFeedActivityFeedFragment : Fragment(), LMFeedActivityFeedAdapterLis
             setStyle(noActivityLayoutStyle)
             setTitleText(getString(R.string.lm_feed_no_notifications_yet))
         }
+    }
+
+    //customizes the activity list view of the activity feed fragment with the activity list view style set for the activity feed fragment
+    protected open fun customizeActivityListView(activityListView: LMFeedActivityFeedListView) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

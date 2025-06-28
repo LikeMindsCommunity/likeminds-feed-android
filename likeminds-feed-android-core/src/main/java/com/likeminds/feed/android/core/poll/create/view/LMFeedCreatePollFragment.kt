@@ -59,7 +59,7 @@ open class LMFeedCreatePollFragment : Fragment(), LMFeedCreatePollOptionAdapterL
 
         @JvmStatic
         fun getInstance(poll: LMFeedPollViewData?): LMFeedCreatePollFragment {
-            val fragment = LMFeedCreatePollFragment()
+            val fragment = LMFeedNavigationFragments.getInstance().getCreatePollFragment()
             val args = Bundle()
             args.putParcelable(LM_FEED_CREATE_POLL_FRAGMENT_EXTRAS, poll)
             fragment.arguments = args

@@ -24,8 +24,7 @@ import com.likeminds.feed.android.core.utils.pluralize.model.LMFeedWordAction
 class LMFeedItemCommentViewDataBinder(
     private val postDetailAdapterListener: LMFeedPostDetailAdapterListener,
     private val replyAdapterListener: LMFeedReplyAdapterListener
-) :
-    LMFeedViewDataBinder<LmFeedItemCommentBinding, LMFeedCommentViewData>() {
+) : LMFeedViewDataBinder<LmFeedItemCommentBinding, LMFeedCommentViewData>() {
 
     override val viewType: Int
         get() = ITEM_COMMENT

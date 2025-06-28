@@ -34,7 +34,7 @@ open class LMFeedLikesFragment : Fragment(), LMFeedLikesAdapterListener {
         const val TAG = "LMFeedLikesFragment"
 
         fun getInstance(likesScreenExtras: LMFeedLikesScreenExtras): LMFeedLikesFragment {
-            val likesFragment = LMFeedLikesFragment()
+            val likesFragment = LMFeedNavigationFragments.getInstance().getLikesFragment()
             val bundle = Bundle()
             bundle.putParcelable(LM_FEED_LIKES_SCREEN_EXTRAS, likesScreenExtras)
             likesFragment.arguments = bundle

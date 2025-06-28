@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.style.LMFeedCommentView
+        <com.likeminds.feed.android.core.ui.widgets.comment.commentlayout.view.LMFeedCommentView
             android:id="@+id/reply_view"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
