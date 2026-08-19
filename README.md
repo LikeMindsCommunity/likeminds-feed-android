@@ -65,8 +65,8 @@ ExoPlayer · Glide · AWS S3 · Firebase · plus the standalone
 
 ## Contributing
 
-See the org-wide [contributing guide](https://github.com/LikeMindsCommunity/.github/blob/master/.github/CONTRIBUTING.md).
-Security issues go to **hi@likeminds.community**, not the issue tracker.
+See the org-wide [contributing guide](https://github.com/LikeMindsCommunity/.github/blob/main/.github/CONTRIBUTING.md).
+Security issues go to **natesh@likeminds.community**, not the issue tracker.
 
 ## License
 
